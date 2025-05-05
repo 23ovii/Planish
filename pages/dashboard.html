@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Planish - Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
 <body class="bg-[#232323] font-sans">
@@ -32,7 +31,7 @@
         </div>
       </div>
     </div>
-  </nav></svg>
+  </nav>
 
   <!-- Dashboard Content -->
   <div class="max-w-7xl mx-auto py-8">
@@ -45,17 +44,37 @@
         <p class="text-3xl font-bold text-gray-700 dark:text-gray-300">5h 12m</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">Totalul de timp petrecut pe activități azi</p>
       </div>
-
       <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg">
         <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Taskuri finalizate</h2>
         <p class="text-3xl font-bold text-gray-700 dark:text-gray-300">8/10</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">Taskuri completate din totalul zilnic</p>
       </div>
-
       <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg">
         <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Progres săptămânal</h2>
         <p class="text-3xl font-bold text-gray-700 dark:text-gray-300">72%</p>
         <p class="text-sm text-gray-500 dark:text-gray-400">Procentajul de completare al taskurilor săptămânale</p>
+      </div>
+    </div>
+
+    <!-- Orar Interactiv -->
+    <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg mt-8">
+      <h2 class="text-xl font-semibold text-[#232323] dark:text-white mb-4">Orar săptămânal interactiv</h2>
+      <div class="overflow-x-auto">
+        <table class="w-full table-fixed border border-gray-600 text-sm text-left text-gray-200">
+          <thead>
+            <tr>
+              <th class="border border-gray-600 px-2 py-1 w-24">Ora</th>
+              <th class="border border-gray-600 px-2 py-1">Luni</th>
+              <th class="border border-gray-600 px-2 py-1">Marti</th>
+              <th class="border border-gray-600 px-2 py-1">Miercuri</th>
+              <th class="border border-gray-600 px-2 py-1">Joi</th>
+              <th class="border border-gray-600 px-2 py-1">Vineri</th>
+              <th class="border border-gray-600 px-2 py-1">Sambata</th>
+              <th class="border border-gray-600 px-2 py-1">Duminica</th>
+            </tr>
+          </thead>
+          <tbody id="orar-body"></tbody>
+        </table>
       </div>
     </div>
 
@@ -64,7 +83,6 @@
       <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Programul zilei</h2>
       <div class="mt-4">
         <p class="text-gray-700 dark:text-gray-300">Selectează o zi din calendar pentru a-ți planifica activitățile:</p>
-        <!-- Implementare Calendar (poți folosi o bibliotecă externă pentru calendar) -->
         <div class="mt-4">
           <input type="date" class="border px-4 py-2 rounded-md" />
         </div>
@@ -98,6 +116,47 @@
       <button class="bg-[#7a65db] text-white px-6 py-2 mt-4 rounded hover:bg-[#7a65db]">Trimite Feedback</button>
     </div>
   </div>
+
+  <script>
+    const zile = ["Luni", "Marti", "Miercuri", "Joi", "Vineri", "Sambata", "Duminica"];
+    const ore = Array.from({ length: 15 }, (_, i) => `${(8 + i).toString().padStart(2, '0')}:00`);
+
+    const orarBody = document.getElementById("orar-body");
+
+    function loadOrar() {
+      orarBody.innerHTML = '';
+      ore.forEach(ora => {
+        const row = document.createElement("tr");
+        const oraCell = document.createElement("td");
+        oraCell.className = "border border-gray-600 px-2 py-1 text-white font-medium";
+        oraCell.textContent = ora;
+        row.appendChild(oraCell);
+
+        zile.forEach(zi => {
+          const key = `${zi}-${ora}`;
+          const savedText = localStorage.getItem(key) || "";
+
+          const cell = document.createElement("td");
+          cell.className = "border border-gray-600 px-2 py-1 cursor-pointer text-gray-200 hover:bg-[#333]";
+          cell.textContent = savedText;
+
+          cell.addEventListener("click", () => {
+            const newValue = prompt(`Adaugă activitate pentru ${zi} la ${ora}:`, savedText);
+            if (newValue !== null) {
+              cell.textContent = newValue;
+              localStorage.setItem(key, newValue);
+            }
+          });
+
+          row.appendChild(cell);
+        });
+
+        orarBody.appendChild(row);
+      });
+    }
+
+    document.addEventListener("DOMContentLoaded", loadOrar);
+  </script>
 
 </body>
 </html>
