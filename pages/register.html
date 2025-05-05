@@ -2,30 +2,145 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FocusFlow - Înregistrare</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-gray-50 dark:bg-gray-900 min-h-screen flex items-center justify-center">
+  <title>Înregistrare – Planish</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: system-ui, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
 
-  <!-- Registration Form -->
-  <div class="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
-    <h2 class="text-3xl font-bold text-gray-800 dark:text-white mb-6 text-center">Creează un cont</h2>
-    <form action="dashboard.html" method="POST">
-      <div class="mb-4">
-        <label for="nume" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Nume</label>
-        <input type="text" id="nume" name="nume" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700" />
+    .logo {
+      margin-bottom: 20px;
+    }
+
+    .logo svg {
+      fill: #7a56db;
+      width: 48px;
+      height: 48px;
+    }
+
+    .card {
+      background-color: #161b22;
+      border: 1px solid #30363d;
+      padding: 32px;
+      border-radius: 8px;
+      width: 340px;
+      box-shadow: 0 0 0 1px rgba(122, 86, 219, 0.1);
+    }
+
+    .card h1 {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #ffffff;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 14px;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #30363d;
+      background-color: #0d1117;
+      color: #ffffff;
+      font-size: 14px;
+    }
+
+    .form-group input:focus {
+      border-color: #7a56db;
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(122, 86, 219, 0.3);
+    }
+
+    .btn {
+      width: 100%;
+      background-color: #7a56db;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    .btn:hover {
+      background-color: #6848c1;
+    }
+
+    .login-link {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .login-link a {
+      color: #a08bff;
+      text-decoration: none;
+    }
+
+    .login-link a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo sus -->
+  <div class="logo">
+    <svg viewBox="0 0 16 16" version="1.1" aria-hidden="true">
+      <path fill-rule="evenodd"
+        d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 
+        0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52
+        -.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78
+        -.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21
+        2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82
+        2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75
+        -3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 
+        8.013 0 0016 8c0-4.42-3.58-8-8-8z">
+      </path>
+    </svg>
+  </div>
+
+  <!-- Card inregistrare -->
+  <div class="card">
+    <h1>Înregistrează-te pe Planish</h1>
+    <form>
+      <div class="form-group">
+        <label for="user">Email sau nume de utilizator</label>
+        <input type="text" id="user" name="user" required>
       </div>
-      <div class="mb-4">
-        <label for="email" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Email</label>
-        <input type="email" id="email" name="email" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700" />
+      <div class="form-group">
+        <label for="password">Parolă</label>
+        <input type="password" id="password" name="password" required>
       </div>
-      <div class="mb-6">
-        <label for="parola" class="block text-sm font-semibold text-gray-700 dark:text-gray-300">Parolă</label>
-        <input type="password" id="parola" name="parola" required class="w-full px-4 py-2 border rounded-lg dark:bg-gray-700" />
+      <div class="form-group">
+        <label for="confirm-password">Confirmă parola</label>
+        <input type="password" id="confirm-password" name="confirm-password" required>
       </div>
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700">Înregistrează-te</button>
+      <button type="submit" class="btn">Creează cont</button>
     </form>
+    <div class="login-link">
+      Ai deja cont? <a href="login.html">Autentifică-te</a>
+    </div>
   </div>
 
 </body>
