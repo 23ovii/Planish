@@ -29,6 +29,7 @@
       position: absolute;
       left: 2px;
       right: 2px;
+      top: 0;
       color: white;
       padding: 4px;
       border-radius: 6px;
@@ -132,26 +133,6 @@
     }
     .hover-container:hover .hidden-on-parent-hover {
       display: flex;
-    }
-    /* Event creation overlay */
-    .event-creation-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .event-creation-content {
-      background-color: #27272a;
-      border-radius: 12px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
   </style>
 </head>
@@ -412,4 +393,16 @@
               <span class="text-xl font-bold">9</span>
             </button>
             <button data-day="5" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
-              <span class="text-xs text-zinc-400">Sâm
+              <span class="text-xs text-zinc-400">Sâm</span>
+              <span class="text-xl font-bold">10</span>
+            </button>
+            <button data-day="6" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
+              <span class="text-xs text-zinc-400">Dum</span>
+              <span class="text-xl font-bold">11</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar
