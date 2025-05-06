@@ -2,102 +2,154 @@
 <html lang="ro">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Planish - Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Google Fonts: Inter -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    /* Sidebar */
+    #sidebar {
+      transition: transform 0.3s ease-in-out;
+    }
+    /* Estilizare Sidebar */
+    .sidebar-bg {
+      background: linear-gradient(180deg, #7a56db, #5f3fd6);
+    }
+    .sidebar-link {
+      transition: all 0.3s ease;
+    }
+    .sidebar-link:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding-left: 10px;
+    }
+    /* Header */
+    .header-bg {
+      background: #1a1a1a;
+      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    }
+    .header-title {
+      font-weight: 600;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+    /* Buton Hamburger */
+    .hamburger {
+      transition: transform 0.3s ease;
+    }
+    .hamburger:hover {
+      transform: rotate(90deg);
+    }
+    /* Main Content */
+    .main-content {
+      background: #2a2a2a;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    }
+    .main-title {
+      font-size: 1.75rem;
+      font-weight: 600;
+      color: #eaeaea;
+    }
+    /* Subtitluri pentru sidebar */
+    .subtitle {
+      font-size: 0.9rem;
+      color: #b0b0b0;
+      margin-top: 2px;
+    }
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #ffffff;
+      margin-top: 20px;
+    }
+  </style>
 </head>
-<body class="bg-[#232323] font-sans">
+<body class="bg-[#232323] text-white">
 
-  <!-- Navbar -->
-  <nav class="bg-[#7a65db] shadow-lg backdrop-blur-sm">
-    <div class="max-w-7xl mx-auto px-4">
-      <div class="flex justify-between items-center h-16">
-        <a href="index.html" class="flex items-center space-x-3">
-          <span class="text-2xl font-bold text-white tracking-tight">Planish</span>
-        </a>
-        <div class="hidden md:flex items-center space-x-8">
-          <a href="index.html" class="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Home</a>
-          <a href="index_features.html" class="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">Features</a>
-          <a href="index_about.html" class="text-white hover:text-gray-200 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200">About</a>
-          <a href="logout.html" class="bg-red-500 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-600 transition-colors duration-200">Logout</a>
-        </div>
-        <div class="md:hidden flex items-center">
-          <button class="text-white hover:text-gray-200">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-  </nav></svg>
+  <!-- Sidebar -->
+  <div id="sidebar" class="fixed top-0 left-0 h-full w-64 sidebar-bg transform -translate-x-full z-50">
+    <div class="p-6">
+      <h1 class="text-3xl font-semibold mb-10 text-white">Planish</h1>
+      <ul class="space-y-6 text-white">
+        <!-- Timer cu subtitlu Track (același rol ca Dashboard și Analyze) -->
+        <li>
+<div class="section-title">Track</div>          
+</li>
 
-  <!-- Dashboard Content -->
-  <div class="max-w-7xl mx-auto py-8">
-    <h1 class="text-4xl font-bold text-center text-white">Bine ai venit pe Dashboard-ul Planish</h1>
+<a href="#" class="block sidebar-link text-lg">⏱️ Timer</a>
+                  </li>
 
-    <!-- Stats Section -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-8">
-      <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Timp petrecut astăzi</h2>
-        <p class="text-3xl font-bold text-gray-700 dark:text-gray-300">5h 12m</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Totalul de timp petrecut pe activități azi</p>
-      </div>
-
-      <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Taskuri finalizate</h2>
-        <p class="text-3xl font-bold text-gray-700 dark:text-gray-300">8/10</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Taskuri completate din totalul zilnic</p>
-      </div>
-
-      <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg">
-        <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Progres săptămânal</h2>
-        <p class="text-3xl font-bold text-gray-700 dark:text-gray-300">72%</p>
-        <p class="text-sm text-gray-500 dark:text-gray-400">Procentajul de completare al taskurilor săptămânale</p>
-      </div>
-    </div>
-
-    <!-- Calendar Section -->
-    <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg mt-8">
-      <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Programul zilei</h2>
-      <div class="mt-4">
-        <p class="text-gray-700 dark:text-gray-300">Selectează o zi din calendar pentru a-ți planifica activitățile:</p>
-        <!-- Implementare Calendar (poți folosi o bibliotecă externă pentru calendar) -->
-        <div class="mt-4">
-          <input type="date" class="border px-4 py-2 rounded-md" />
-        </div>
-      </div>
-    </div>
-
-    <!-- Task List Section -->
-    <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg mt-8">
-      <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Taskuri de realizat</h2>
-      <ul class="mt-4 space-y-4">
-        <li class="flex justify-between items-center">
-          <span class="text-gray-700 dark:text-gray-300">Citit 20 de pagini</span>
-          <button class="bg-[#7a65db] text-white px-4 py-2 rounded hover:bg-[#7a65db]">Completează</button>
+        <!-- Subtitlu comun pentru Dashboard, Reports și Insights -->
+        <div class="section-title">Analyze</div>
+        <li>
+          <a href="#" class="block sidebar-link text-lg">📊 Dashboard</a>
         </li>
-        <li class="flex justify-between items-center">
-          <span class="text-gray-700 dark:text-gray-300">Mers la sală</span>
-          <button class="bg-[#7a65db] text-white px-4 py-2 rounded hover:bg-[#7a65db]">Completează</button>
+        <li>
+          <a href="#" class="block sidebar-link text-lg">📈 Reports</a>
         </li>
-        <li class="flex justify-between items-center">
-          <span class="text-gray-700 dark:text-gray-300">Muncă la proiectul X</span>
-          <button class="bg-[#7a65db] text-white px-4 py-2 rounded hover:bg-[#7a65db]">Completează</button>
+        <li>
+          <a href="#" class="block sidebar-link text-lg">💡 Insights</a>
+        </li>
+
+        <!-- Subtitlu comun pentru Projects și Team -->
+        <div class="section-title">Manage</div>
+        <li>
+          <a href="#" class="block sidebar-link text-lg">📁 Projects</a>
+        </li>
+        <li>
+          <a href="#" class="block sidebar-link text-lg">👥 Team</a>
+        </li>
+
+        <!-- Settings (fără subtitlu) -->
+        <li>
+          <a href="#" class="block sidebar-link text-lg">⚙️ Settings</a>
         </li>
       </ul>
     </div>
-
-    <!-- Feedback Section -->
-    <div class="bg-white dark:bg-[#232323] p-6 rounded-lg shadow-lg mt-8">
-      <h2 class="text-xl font-semibold text-[#232323] dark:text-white">Feedback-ul tău contează</h2>
-      <p class="text-gray-700 dark:text-gray-300 mt-4">Cum îți putem îmbunătăți experiența pe Planish? Lasă-ne un feedback pentru a ne ajuta să îmbunătățim platforma.</p>
-      <textarea class="mt-4 w-full p-4 rounded-md border" rows="4" placeholder="Scrie feedback-ul tău aici..."></textarea>
-      <button class="bg-[#7a65db] text-white px-6 py-2 mt-4 rounded hover:bg-[#7a65db]">Trimite Feedback</button>
-    </div>
   </div>
+
+  <!-- Top Navbar -->
+  <div class="flex items-center justify-between header-bg px-6 py-4">
+    <button id="toggleSidebar" class="hamburger text-white focus:outline-none">
+      <!-- Hamburger Icon -->
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+           viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 6h16M4 12h16M4 18h16"></path>
+      </svg>
+    </button>
+    <h2 class="header-title text-xl">Bine ai venit pe Planish</h2>
+  </div>
+
+  <!-- Main Content -->
+  <main class="pl-0 md:pl-0 transition-all duration-300" id="mainContent">
+    <div class="p-6">
+      <div class="main-content">
+        <h3 class="main-title mb-6">Activitățile tale</h3>
+        <p class="text-gray-300">Aici va apărea conținutul principal (calendar, task-uri etc.)</p>
+      </div>
+    </div>
+  </main>
+
+  <!-- JavaScript: Toggle Sidebar on all screen sizes -->
+  <script>
+    const toggleBtn = document.getElementById('toggleSidebar');
+    const sidebar = document.getElementById('sidebar');
+
+    // Event listener pentru butonul hamburger
+    toggleBtn.addEventListener('click', () => {
+      // Verificăm dacă sidebar-ul este deja deschis și îl închidem, sau îl deschidem
+      if (sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.remove('-translate-x-full');
+      } else {
+        sidebar.classList.add('-translate-x-full');
+      }
+    });
+  </script>
 
 </body>
 </html>
