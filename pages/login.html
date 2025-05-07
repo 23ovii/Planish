@@ -113,7 +113,7 @@
 
   <!-- Logo sus -->
   <div class="logo">
-    <img onclick="window.location.href='../index.html';" src="../assets/img/favicon-nobg.png" class="object-cover" alt="Logo" />
+    <img onclick="window.location.href='../index.html';" src="../assets/img/favicon-nobg.png" class="object-cover" alt="planish logo" />
   </div>
   
   <!-- Card login -->
@@ -139,7 +139,7 @@
     // Verifică dacă utilizatorul este deja logat
     window.onload = function() {
       if (localStorage.getItem('user')) {
-        window.location.href = 'dashboard.html'; // Redirect la dashboard
+        window.location.href = 'Dashboard/index.html'; // Redirect la dashboard
       }
     };
 
@@ -157,7 +157,7 @@
         localStorage.setItem('user', username); // Poți adăuga și parola, dar pentru siguranță recomand să o criptăm.
         
         // Redirect la dashboard
-        window.location.href = 'dashboard.html';
+        window.location.href = 'Dashboard/index.html';
       } else {
         alert('Te rugăm să completezi toate câmpurile.');
       }
