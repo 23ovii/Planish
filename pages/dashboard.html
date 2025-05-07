@@ -1,155 +1,408 @@
 <!DOCTYPE html>
 <html lang="ro">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Planish - Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planish - Modern Timer</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body {
+    body { 
       font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
     }
-    /* Sidebar */
-    #sidebar {
-      transition: transform 0.3s ease-in-out;
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: 60px repeat(7, 1fr);
     }
-    /* Estilizare Sidebar */
-    .sidebar-bg {
-      background: linear-gradient(180deg, #7a56db, #5f3fd6);
+    .calendar-cell {
+      border: 1px solid #2e2e2e;
+      height: 50px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    .sidebar-link {
-      transition: all 0.3s ease;
+    .calendar-cell:hover {
+      background-color: rgba(139, 92, 246, 0.1);
     }
-    .sidebar-link:hover {
-      background-color: rgba(255, 255, 255, 0.1);
+    .event-block {
+      position: absolute;
+      left: 2px;
+      right: 2px;
+      top: 0;
+      color: white;
+      padding: 4px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      z-index: 10;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.2s;
+      resize: vertical;
+      min-height: 25px;
+    }
+    .event-block:hover {
+      transform: scale(1.02);
+    }
+    .day-button {
+      transition: all 0.2s;
+      border: 1px solid #3f3f46;
+      background-color: #27272a;
+    }
+    .day-button:hover {
+      transform: translateY(-2px);
+    }
+    .day-cell {
+      border: 1px solid #2e2e2e;
+      height: 60px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .day-cell:hover {
+      background-color: rgba(139, 92, 246, 0.1);
+    }
+    .current-time-indicator {
+      position: absolute;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background-color: #ef4444;
+      z-index: 20;
+    }
+    .current-time-label {
+      position: absolute;
+      right: 100%;
+      margin-right: 8px;
+      background-color: #ef4444;
+      color: white;
+      font-size: 10px;
+      padding: 1px 4px;
+      border-radius: 4px;
+      transform: translateY(-50%);
+    }
+    .week-header {
+      background-color: #18181b;
       border-radius: 8px;
-      padding-left: 10px;
+      overflow: hidden;
     }
-    /* Header */
-    .header-bg {
-      background: #1a1a1a;
-      box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+    .resize-handle {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 6px;
+      cursor: ns-resize;
     }
-    .header-title {
-      font-weight: 600;
-      color: #ffffff;
-      text-transform: uppercase;
+    .resize-handle:hover {
+      background-color: rgba(255, 255, 255, 0.2);
     }
-    /* Buton Hamburger */
-    .hamburger {
-      transition: transform 0.3s ease;
+    .month-calendar {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      z-index: 50;
+      background-color: #18181b;
+      border: 1px solid #3f3f46;
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
+      width: 300px;
     }
-    .hamburger:hover {
-      transform: rotate(90deg);
+    .month-day {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
     }
-    /* Main Content */
-    .main-content {
-      background: #2a2a2a;
-      border-radius: 12px;
-      padding: 20px;
-      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+    .month-day:hover {
+      background-color: #3f3f46;
     }
-    .main-title {
-      font-size: 1.75rem;
-      font-weight: 600;
-      color: #eaeaea;
+    .month-day.active {
+      background-color: #8b5cf6;
+      color: white;
     }
-    /* Subtitluri pentru sidebar */
-    .subtitle {
-      font-size: 0.9rem;
-      color: #b0b0b0;
-      margin-top: 2px;
+    .month-day.other-month {
+      color: #71717a;
     }
-    .section-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #ffffff;
-      margin-top: 20px;
+    .hover-container:hover .hidden-on-parent-hover {
+      display: flex;
     }
   </style>
 </head>
-<body class="bg-[#232323] text-white">
-
+<body class="bg-zinc-900 text-white min-h-screen flex">
   <!-- Sidebar -->
-  <div id="sidebar" class="fixed top-0 left-0 h-full w-64 sidebar-bg transform -translate-x-full z-50">
-    <div class="p-6">
-      <h1 class="text-3xl font-semibold mb-10 text-white">Planish</h1>
-      <ul class="space-y-6 text-white">
-        <!-- Timer cu subtitlu Track (același rol ca Dashboard și Analyze) -->
-        <li>
-<div class="section-title">Track</div>          
-</li>
-
-<a href="#" class="block sidebar-link text-lg">⏱️ Timer</a>
-                  </li>
-
-        <!-- Subtitlu comun pentru Dashboard, Reports și Insights -->
-        <div class="section-title">Analyze</div>
-        <li>
-          <a href="#" class="block sidebar-link text-lg">📊 Dashboard</a>
-        </li>
-        <li>
-          <a href="#" class="block sidebar-link text-lg">📈 Reports</a>
-        </li>
-        <li>
-          <a href="#" class="block sidebar-link text-lg">💡 Insights</a>
-        </li>
-
-        <!-- Subtitlu comun pentru Projects și Team -->
-        <div class="section-title">Manage</div>
-        <li>
-          <a href="#" class="block sidebar-link text-lg">📁 Projects</a>
-        </li>
-        <li>
-          <a href="#" class="block sidebar-link text-lg">👥 Team</a>
-        </li>
-
-        <!-- Settings (fără subtitlu) -->
-        <li>
-          <a href="#" class="block sidebar-link text-lg">⚙️ Settings</a>
-        </li>
-      </ul>
+  <aside class="w-64 bg-zinc-800 p-6 space-y-6 border-r border-zinc-700 hidden md:block">
+    <div class="flex items-center space-x-2 mb-8">
+      <div class="h-6 w-6 rounded-full bg-purple-600 flex items-center justify-center">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      </div>
+      <h1 class="text-xl font-bold">Planish</h1>
     </div>
-  </div>
+    
+    <div>
+      <p class="uppercase text-zinc-400 text-xs font-semibold mb-3">Track</p>
+      <a href="#" class="block hover:bg-purple-700 px-3 py-2 rounded-lg flex items-center space-x-3 bg-purple-700 bg-opacity-20">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span>Timer</span>
+      </a>
+      <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3 mt-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+        </svg>
+        <span>Objectives</span>
+      </a>
+    </div>
+    
+    <div>
+      <p class="uppercase text-zinc-400 text-xs font-semibold mb-3">Analyze</p>
+      <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>Reports</span>
+      </a>
+      <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3 mt-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+        </svg>
+        <span>Analytics</span>
+      </a>
+    </div>
+    
+    <div>
+      <p class="uppercase text-zinc-400 text-xs font-semibold mb-3">Admin</p>
+      <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>Settings</span>
+      </a>
+      <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3 mt-1">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+        </svg>
+        <span>Profile</span>
+      </a>
+    </div>
+  </aside>
 
-  <!-- Top Navbar -->
-  <div class="flex items-center justify-between header-bg px-6 py-4">
-    <button id="toggleSidebar" class="hamburger text-white focus:outline-none">
-      <!-- Hamburger Icon -->
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
-           viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M4 6h16M4 12h16M4 18h16"></path>
+  <!-- Mobile menu button -->
+  <div class="md:hidden fixed top-4 left-4 z-50">
+    <button id="mobileMenuBtn" class="p-2 bg-zinc-800 rounded-lg">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
-    <h2 class="header-title text-xl">Bine ai venit pe Planish</h2>
+  </div>
+
+  <!-- Mobile sidebar (hidden by default) -->
+  <div id="mobileSidebar" class="fixed inset-0 bg-zinc-900 bg-opacity-90 z-40 hidden">
+    <div class="w-64 bg-zinc-800 h-full p-6 space-y-6">
+      <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center space-x-2">
+          <div class="h-6 w-6 rounded-full bg-purple-600 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <h1 class="text-xl font-bold">Planish</h1>
+        </div>
+        <button id="closeMobileMenu" class="p-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <!-- Mobile menu items - same as desktop sidebar -->
+      <div>
+        <p class="uppercase text-zinc-400 text-xs font-semibold mb-3">Track</p>
+        <a href="#" class="block hover:bg-purple-700 px-3 py-2 rounded-lg flex items-center space-x-3 bg-purple-700 bg-opacity-20">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span>Timer</span>
+        </a>
+        <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3 mt-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          </svg>
+          <span>Objectives</span>
+        </a>
+      </div>
+      
+      <!-- Repeat other menu items for mobile -->
+      <div>
+        <p class="uppercase text-zinc-400 text-xs font-semibold mb-3">Analyze</p>
+        <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+          <span>Reports</span>
+        </a>
+        <a href="#" class="block hover:bg-purple-700 hover:bg-opacity-20 px-3 py-2 rounded-lg flex items-center space-x-3 mt-1">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
+          </svg>
+          <span>Analytics</span>
+        </a>
+      </div>
+    </div>
   </div>
 
   <!-- Main Content -->
-  <main class="pl-0 md:pl-0 transition-all duration-300" id="mainContent">
-    <div class="p-6">
-      <div class="main-content">
-        <h3 class="main-title mb-6">Activitățile tale</h3>
-        <p class="text-gray-300">Aici va apărea conținutul principal (calendar, task-uri etc.)</p>
+  <main class="flex-1 p-4 md:p-6 md:ml-64">
+    <!-- Top navigation -->
+    <div class="flex justify-between items-center mb-6">
+      <h1 class="text-2xl font-bold md:hidden">Planish</h1>
+      <div class="flex items-center space-x-4">
+        <div class="relative">
+          <button class="p-2 rounded-full hover:bg-zinc-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+          </button>
+        </div>
+        <div class="h-8 w-8 rounded-full bg-purple-500 flex items-center justify-center">
+          <span class="font-semibold">VS</span>
+        </div>
       </div>
     </div>
-  </main>
 
-  <!-- JavaScript: Toggle Sidebar on all screen sizes -->
-  <script>
-    const toggleBtn = document.getElementById('toggleSidebar');
-    const sidebar = document.getElementById('sidebar');
+    <!-- Timer Section -->
+    <div class="bg-zinc-800 rounded-xl p-4 md:p-6 mb-6 shadow-lg border border-zinc-700">
+      <div class="flex flex-col md:flex-row md:items-center gap-4">
+        <div class="flex-1">
+          <input id="activityInput" class="w-full p-3 bg-zinc-700 text-white rounded-lg border border-zinc-600 focus:outline-none focus:ring-2 focus:ring-purple-500" placeholder="Ce faci acum?" />
+        </div>
+        <div class="flex flex-col items-center">
+          <div id="timeDisplay" class="text-3xl md:text-4xl font-semibold text-white">00:00:00</div>
+          <button id="playButton" onclick="toggleTimer()" class="mt-2 bg-purple-600 hover:bg-purple-700 p-3 rounded-full">
+            <svg id="playIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="white" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M14.752 11.168l-6.518-3.759A1 1 0 007 8.26v7.48a1 1 0 001.234.97l6.518-1.872a1 1 0 000-1.94z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
 
-    // Event listener pentru butonul hamburger
-    toggleBtn.addEventListener('click', () => {
-      // Verificăm dacă sidebar-ul este deja deschis și îl închidem, sau îl deschidem
-      if (sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.remove('-translate-x-full');
-      } else {
-        sidebar.classList.add('-translate-x-full');
-      }
-    });
-  </script>
+    <!-- Calendar Header -->
+    <div class="relative mb-6">
+      <div class="week-header p-4 bg-zinc-800 rounded-lg shadow-lg border border-zinc-700">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-4 mb-4">
+          <div class="flex items-center">
+            <button id="prevWeekBtn" class="p-2 rounded-full hover:bg-zinc-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div id="dateRangeDisplay" class="relative">
+              <button id="dateRangeBtn" class="mx-2 py-2 px-4 rounded-md hover:bg-zinc-700 flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <span id="currentWeekLabel">05/05/2025 - 11/05/2025</span>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
 
-</body>
-</html>
+              <!-- Month picker popup (hidden by default) -->
+              <div id="monthPickerPopup" class="month-calendar hidden">
+                <div class="flex justify-between items-center mb-4">
+                  <button id="prevMonthBtn" class="p-1 rounded-full hover:bg-zinc-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <h3 id="currentMonthYear" class="text-lg font-bold">Mai 2025</h3>
+                  <button id="nextMonthBtn" class="p-1 rounded-full hover:bg-zinc-700">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </div>
+
+                <div class="grid grid-cols-7 gap-1 mb-2">
+                  <div class="text-center text-xs text-zinc-400">L</div>
+                  <div class="text-center text-xs text-zinc-400">M</div>
+                  <div class="text-center text-xs text-zinc-400">M</div>
+                  <div class="text-center text-xs text-zinc-400">J</div>
+                  <div class="text-center text-xs text-zinc-400">V</div>
+                  <div class="text-center text-xs text-zinc-400">S</div>
+                  <div class="text-center text-xs text-zinc-400">D</div>
+                </div>
+
+                <div id="calendarDays" class="grid grid-cols-7 gap-1">
+                  <!-- Calendar days will be inserted here by JavaScript -->
+                </div>
+              </div>
+            </div>
+            <button id="nextWeekBtn" class="p-2 rounded-full hover:bg-zinc-700">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+          
+          <div class="flex items-center">
+            <button id="todayBtn" class="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-md mr-2">
+              Astăzi
+            </button>
+            <select id="viewSelector" class="bg-zinc-700 text-white rounded-md border border-zinc-600 px-3 py-2">
+              <option value="week">Săptămână</option>
+              <option value="day">Zi</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Week days navigation -->
+        <div class="flex justify-between mb-4 overflow-x-auto pb-2 -mx-2 px-2">
+          <div class="flex-shrink-0 w-12 md:w-[60px]"></div>
+          <div class="flex-1 grid grid-cols-7 gap-1">
+            <button data-day="0" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
+              <span class="text-xs text-zinc-400">Lun</span>
+              <span class="text-xl font-bold">5</span>
+            </button>
+            <button data-day="1" class="day-button flex flex-col items-center p-2 rounded-lg bg-zinc-700">
+              <span class="text-xs text-zinc-400">Mar</span>
+              <span class="text-xl font-bold">6</span>
+            </button>
+            <button data-day="2" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
+              <span class="text-xs text-zinc-400">Mie</span>
+              <span class="text-xl font-bold">7</span>
+            </button>
+            <button data-day="3" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
+              <span class="text-xs text-zinc-400">Joi</span>
+              <span class="text-xl font-bold">8</span>
+            </button>
+            <button data-day="4" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
+              <span class="text-xs text-zinc-400">Vin</span>
+              <span class="text-xl font-bold">9</span>
+            </button>
+            <button data-day="5" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
+              <span class="text-xs text-zinc-400">Sâm</span>
+              <span class="text-xl font-bold">10</span>
+            </button>
+            <button data-day="6" class="day-button flex flex-col items-center p-2 rounded-lg hover:bg-zinc-700">
+              <span class="text-xs text-zinc-400">Dum</span>
+              <span class="text-xl font-bold">11</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calendar
