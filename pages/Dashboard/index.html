@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TimeWise - Time Management Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: ["class"],
+        theme: {
+          extend: {
+            colors: {
+              primary: "#7a65db",
+              secondary: "#232323",
+              border: "hsl(var(--border))",
+              input: "hsl(var(--input))",
+              ring: "hsl(var(--ring))",
+              background: "hsl(var(--background))",
+              foreground: "hsl(var(--foreground))",
+              muted: {
+                DEFAULT: "hsl(var(--muted))",
+                foreground: "hsl(var(--muted-foreground))",
+              },
+              accent: {
+                DEFAULT: "hsl(var(--accent))",
+                foreground: "hsl(var(--accent-foreground))",
+              },
+              card: {
+                DEFAULT: "hsl(var(--card))",
+                foreground: "hsl(var(--card-foreground))",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      :root {
+        --background: 0 0% 100%;
+        --foreground: 222.2 84% 4.9%;
+        --card: 0 0% 100%;
+        --card-foreground: 222.2 84% 4.9%;
+        --popover: 0 0% 100%;
+        --popover-foreground: 222.2 84% 4.9%;
+        --primary: 263 53% 63%;
+        --primary-foreground: 210 40% 98%;
+        --secondary: 0 0% 14%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 210 40% 96.1%;
+        --muted-foreground: 215.4 16.3% 46.9%;
+        --accent: 210 40% 96.1%;
+        --accent-foreground: 222.2 47.4% 11.2%;
+        --destructive: 0 84.2% 60.2%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 214.3 31.8% 91.4%;
+        --input: 214.3 31.8% 91.4%;
+        --ring: 263 53% 63%;
+        --radius: 0.5rem;
+      }
+
+      .dark {
+        --background: 222.2 84% 4.9%;
+        --foreground: 210 40% 98%;
+        --card: 222.2 84% 4.9%;
+        --card-foreground: 210 40% 98%;
+        --popover: 222.2 84% 4.9%;
+        --popover-foreground: 210 40% 98%;
+        --primary: 263 53% 63%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+        --secondary: 0 0% 14%;
+        --secondary-foreground: 210 40% 98%;
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 263 53% 63%;
+      }
+
+      * {
+        border-color: hsl(var(--border));
+      }
+
+      body {
+        background-color: hsl(var(--background));
+        color: hsl(var(--foreground));
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/lucide-icons@latest/dist/umd/lucide.css"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns@latest/index.min.js"></script>
+  </head>
+  <body>
+    <div class="min-h-screen bg-background flex">
+      <!-- Sidebar -->
+      <div class="w-64 border-r bg-card p-4 flex flex-col">
+        <div class="flex items-center gap-2 mb-8">
+          <img src="/assets/img/favicon-nobg.png" class="h-6">
+
+          <h1 class="text-xl font-bold">Planish</h1>
+        </div>
+
+        <nav class="space-y-2 flex-1">
+          <button
+            id="calendar-btn"
+            class="w-full flex items-center px-3 py-2 text-left rounded-md bg-primary text-white"
+          >
+            <i data-lucide="calendar" class="mr-2 h-4 w-4"></i>
+            Calendar
+          </button>
+          <button
+            id="tasks-btn"
+            class="w-full flex items-center px-3 py-2 text-left rounded-md hover:bg-muted"
+          >
+            <i data-lucide="check-square" class="mr-2 h-4 w-4"></i>
+            Task Matrix
+          </button>
+          <button
+            id="analytics-btn"
+            class="w-full flex items-center px-3 py-2 text-left rounded-md hover:bg-muted"
+          >
+            <i data-lucide="bar-chart-3" class="mr-2 h-4 w-4"></i>
+            Analytics
+          </button>
+          <button
+            id="focus-btn"
+            class="w-full flex items-center px-3 py-2 text-left rounded-md hover:bg-muted"
+          >
+            <i data-lucide="timer" class="mr-2 h-4 w-4"></i>
+            Focus Timer
+          </button>
+        </nav>
+
+        <div class="mt-auto pt-4 border-t">
+          <div class="flex items-center gap-3">
+            <div
+              class="h-10 w-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden"
+            >
+              <img
+                src="https://api.dicebear.com/7.x/avataaars/svg?seed=user123"
+                alt="User Avatar"
+              />
+            </div>
+            <div>
+              <p class="text-sm font-medium">User Name</p>
+              <p class="text-xs text-muted-foreground">user@example.com</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="flex-1 p-6 overflow-auto">
+        <div class="mb-6">
+          <h1 class="text-2xl font-bold tracking-tight">
+            Time Management Dashboard
+          </h1>
+          <p class="text-muted-foreground">
+            Track, plan, and optimize your daily time usage
+          </p>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="mb-4 border-b">
+          <div class="flex space-x-2">
+            <button
+              id="tab-calendar"
+              class="px-4 py-2 border-b-2 border-primary text-primary font-medium"
+            >
+              Calendar
+            </button>
+            <button
+              id="tab-tasks"
+              class="px-4 py-2 border-b-2 border-transparent hover:text-primary"
+            >
+              Task Matrix
+            </button>
+            <button
+              id="tab-analytics"
+              class="px-4 py-2 border-b-2 border-transparent hover:text-primary"
+            >
+              Analytics
+            </button>
+            <button
+              id="tab-focus"
+              class="px-4 py-2 border-b-2 border-transparent hover:text-primary"
+            >
+              Focus Timer
+            </button>
+          </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div id="tab-content" class="bg-white rounded-lg shadow">
+          <!-- Calendar Tab Content (Default Active) -->
+          <div id="calendar-content" class="p-6">
+            <!-- Calendar content will be loaded here -->
+          </div>
+
+          <!-- Task Matrix Tab Content (Hidden by default) -->
+          <div id="tasks-content" class="p-6 hidden">
+            <!-- Task Matrix content will be loaded here -->
+          </div>
+
+          <!-- Analytics Tab Content (Hidden by default) -->
+          <div id="analytics-content" class="p-6 hidden">
+            <!-- Analytics content will be loaded here -->
+          </div>
+
+          <!-- Focus Timer Tab Content (Hidden by default) -->
+          <div id="focus-content" class="p-6 hidden">
+            <!-- Focus Timer content will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/main.js"></script>
+  </body>
+</html>
