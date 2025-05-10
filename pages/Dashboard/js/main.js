@@ -349,13 +349,75 @@ document.addEventListener("DOMContentLoaded", function () {
     // Wait for animation and redirect
     setTimeout(() => {
       window.location.href = '../login.html?status=logged_out';
-    }, 1500); // Redirect after 1.5 seconds
+    }, 1500);
   }
-    const logoutButton = document.getElementById('logout-btn');
-    if (logoutButton) {
-      logoutButton.addEventListener('click', function(e) {
-        e.preventDefault(); // Prevent any default button behavior
-        handleLogout();
-      });
+
+  const logoutButton = document.getElementById('logout-btn');
+  if (logoutButton) {
+    logoutButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      handleLogout();
+    });
+  }
+
+  let currentEvent = null;
+
+  function openEventModal(event) {
+    currentEvent = event;
+    const modal = document.getElementById('event-modal');
+    const form = document.getElementById('event-form');
+    
+    // Populate form fields
+    document.getElementById('event-title').value = event.title;
+    document.getElementById('event-start').value = event.start.toISOString().slice(0, 16);
+    document.getElementById('event-end').value = event.end.toISOString().slice(0, 16);
+    document.getElementById('event-description').value = event.extendedProps.description || '';
+    
+    // Show modal
+    modal.classList.remove('hidden');
+  }
+
+  function closeEventModal() {
+    const modal = document.getElementById('event-modal');
+    modal.classList.add('hidden');
+    currentEvent = null;
+  }
+
+  function deleteEvent() {
+    if (currentEvent) {
+      if (confirm('Are you sure you want to delete this event?')) {
+        currentEvent.remove();
+        closeEventModal();
+      }
     }
+  }
+
+  // Update calendar initialization to include event click
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    // ...existing calendar options...
+    eventClick: function(info) {
+      openEventModal(info.event);
+    }
+  });
+
+  // Handle form submission
+  document.getElementById('event-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (currentEvent) {
+      currentEvent.setProp('title', document.getElementById('event-title').value);
+      currentEvent.setStart(document.getElementById('event-start').value);
+      currentEvent.setEnd(document.getElementById('event-end').value);
+      currentEvent.setExtendedProp('description', document.getElementById('event-description').value);
+    }
+    
+    closeEventModal();
+  });
+
+  // Close modal when clicking outside
+  document.getElementById('event-modal').addEventListener('click', function(e) {
+    if (e.target === this) {
+      closeEventModal();
+    }
+  });
 });

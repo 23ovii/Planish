@@ -1,5 +1,7 @@
 // calendar.js - Calendar component with localStorage functionality
 
+let currentEvent = null;
+
 class Calendar {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
@@ -260,7 +262,7 @@ class Calendar {
           if (!position) return;
 
           const timeBlockEl = document.createElement("div");
-          timeBlockEl.className = `absolute rounded-md p-2 ${this.categoryColors[block.category] || "bg-gray-500"} text-white text-xs overflow-hidden`;
+          timeBlockEl.className = `absolute rounded-md p-2 ${this.categoryColors[block.category] || "bg-gray-500"} text-white text-xs overflow-hidden cursor-pointer`; // am adăugat cursor-pointer
           timeBlockEl.style.top = position.top;
           timeBlockEl.style.height = position.height;
           timeBlockEl.style.left = "5px";
@@ -273,6 +275,12 @@ class Calendar {
             </div>
             <button class="absolute top-1 right-1 text-white delete-event" data-id="${block.id}">×</button>
           `;
+
+          // Add click handler for editing
+          timeBlockEl.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.showEditEventModal(block);
+          });
 
           const dayColumn = document.getElementById(`day-column-${index}`);
           if (dayColumn) {
@@ -626,6 +634,121 @@ class Calendar {
       console.error("Eroare la adăugarea evenimentului:", error);
     }
   }
+
+  // Add this new method to handle event editing
+  editTimeBlock(blockId, updatedData) {
+    // Find the event in timeBlocks array
+    const index = this.timeBlocks.findIndex(block => block.id === blockId);
+    if (index !== -1) {
+      // Update the event with new data
+      this.timeBlocks[index] = {
+        ...this.timeBlocks[index],
+        ...updatedData,
+        start: new Date(updatedData.start),
+        end: new Date(updatedData.end)
+      };
+      
+      // Save to localStorage and re-render
+      this.saveToLocalStorage();
+      this.render();
+    }
+  }
+
+  // Add new method for edit modal
+  showEditEventModal(event) {
+    const modal = document.createElement("div");
+    modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+    
+    // Format dates for input fields
+    const startTime = `${String(event.start.getHours()).padStart(2, '0')}:${String(event.start.getMinutes()).padStart(2, '0')}`;
+    const endTime = `${String(event.end.getHours()).padStart(2, '0')}:${String(event.end.getMinutes()).padStart(2, '0')}`;
+
+    modal.innerHTML = `
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+        <div class="p-4 border-b">
+          <h3 class="text-lg font-medium">Editează eveniment</h3>
+          <div class="text-sm text-gray-500">Data: ${this.format(event.start, "PPP")}</div>
+        </div>
+        <div class="p-4">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Titlu</label>
+              <input type="text" id="edit-title" class="w-full p-2 border rounded-md" 
+                placeholder="Denumire eveniment" value="${event.title}">
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-1">Categorie</label>
+              <select id="edit-category" class="w-full p-2 border rounded-md">
+                <option value="work" ${event.category === 'work' ? 'selected' : ''}>Muncă</option>
+                <option value="personal" ${event.category === 'personal' ? 'selected' : ''}>Personal</option>
+                <option value="study" ${event.category === 'study' ? 'selected' : ''}>Studiu</option>
+                <option value="health" ${event.category === 'health' ? 'selected' : ''}>Sănătate</option>
+                <option value="other" ${event.category === 'other' ? 'selected' : ''}>Altele</option>
+              </select>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Ora de început</label>
+                <input type="time" id="edit-start" class="w-full p-2 border rounded-md" value="${startTime}">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">Ora de sfârșit</label>
+                <input type="time" id="edit-end" class="w-full p-2 border rounded-md" value="${endTime}">
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t flex justify-end space-x-2">
+          <button id="cancel-edit" class="px-4 py-2 border rounded-md">Anulează</button>
+          <button id="delete-event" class="px-4 py-2 border rounded-md text-red-500">Șterge</button>
+          <button id="save-edit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Salvează</button>
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Handle form actions
+    const self = this;
+    
+    // Save button
+    document.getElementById('save-edit').addEventListener('click', function() {
+      const updatedEvent = {
+        id: event.id,
+        title: document.getElementById('edit-title').value,
+        category: document.getElementById('edit-category').value,
+        start: new Date(event.start.setHours(
+          ...document.getElementById('edit-start').value.split(':').map(Number)
+        )),
+        end: new Date(event.end.setHours(
+          ...document.getElementById('edit-end').value.split(':').map(Number)
+        ))
+      };
+
+      self.editTimeBlock(event.id, updatedEvent);
+      document.body.removeChild(modal);
+    });
+
+    // Delete button
+    document.getElementById('delete-event').addEventListener('click', () => {
+      if (confirm('Ești sigur că vrei să ștergi acest eveniment?')) {
+        this.deleteTimeBlock(event.id);
+        document.body.removeChild(modal);
+      }
+    });
+
+    // Cancel button
+    document.getElementById('cancel-edit').addEventListener('click', () => {
+      document.body.removeChild(modal);
+    });
+
+    // Close on outside click
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        document.body.removeChild(modal);
+      }
+    });
+}
 }
 
 // Initialize calendar when loaded into the page
@@ -640,3 +763,94 @@ function initCalendar(containerId) {
     console.error("Eroare la inițializarea calendarului:", error);
   }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+  const calendarEl = document.getElementById('calendar-content');
+  
+  // Initialize FullCalendar
+  const calendar = new FullCalendar.Calendar(calendarEl, {
+    initialView: 'dayGridMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'dayGridMonth,timeGridWeek,timeGridDay'
+    },
+    editable: true,
+    selectable: true,
+    events: [], // Your events will go here
+    eventClick: function(info) {
+      showEditModal(info.event);
+    }
+  });
+
+  calendar.render();
+
+  function showEditModal(event) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    modal.innerHTML = `
+      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
+        <h3 class="text-lg font-semibold mb-4">Edit Event</h3>
+        <form id="edit-event-form">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium mb-1">Title</label>
+              <input type="text" id="edit-title" class="w-full p-2 border rounded" value="${event.title}">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-sm font-medium mb-1">Start</label>
+                <input type="datetime-local" id="edit-start" class="w-full p-2 border rounded" 
+                  value="${event.start ? event.start.toISOString().slice(0, 16) : ''}">
+              </div>
+              <div>
+                <label class="block text-sm font-medium mb-1">End</label>
+                <input type="datetime-local" id="edit-end" class="w-full p-2 border rounded"
+                  value="${event.end ? event.end.toISOString().slice(0, 16) : ''}">
+              </div>
+            </div>
+            <div class="flex justify-end space-x-2 pt-4">
+              <button type="button" class="px-4 py-2 text-red-500 hover:bg-red-50 rounded" onclick="deleteEvent('${event.id}')">
+                Delete
+              </button>
+              <button type="submit" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+      if (e.target === modal) {
+        document.body.removeChild(modal);
+      }
+    });
+
+    // Handle form submission
+    document.getElementById('edit-event-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      event.setProp('title', document.getElementById('edit-title').value);
+      event.setStart(document.getElementById('edit-start').value);
+      event.setEnd(document.getElementById('edit-end').value);
+      
+      document.body.removeChild(modal);
+    });
+  }
+
+  // Delete event function
+  window.deleteEvent = function(eventId) {
+    if (confirm('Are you sure you want to delete this event?')) {
+      let event = calendar.getEventById(eventId);
+      if (event) {
+        event.remove();
+      }
+      document.body.removeChild(document.querySelector('.fixed'));
+    }
+  };
+});
