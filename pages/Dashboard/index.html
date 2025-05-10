@@ -147,6 +147,7 @@
   width: 2.5rem;
   height: 2.5rem;
   flex-shrink: 0;
+  position: relative;
 }
 
 /* Collapsed state adjustments */
@@ -192,6 +193,9 @@
 
         .sidebar.sidebar-collapsed .logo-container {
           justify-content: center;
+          width: 2.5rem;
+          height: 2.5rem;
+          margin: 0 auto;
         }
         
         #main-content {
@@ -212,29 +216,17 @@
         transition: opacity 0.3s ease-in-out;
       }
 
-      /* Logo container specific styles */
-      .logo-container {
-        display: flex;
-        align-items: center;
-        justify-content: flex-start;
-        width: 100%;
-        padding: 0.25rem;
+      .logo-container img {
+        width: 2.5rem;
+        height: 2.5rem;
+        object-fit: contain;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
       }
 
-      .sidebar.sidebar-collapsed .logo-container {
-        justify-content: center;
-        width: 100%;
-        height: auto;
-        padding: 0.5rem;
-        margin-bottom: 0.5rem;
-      }
-      
-      /* Ensure the logo has better spacing when sidebar is collapsed */
-      .sidebar.sidebar-collapsed .logo-container img {
-        margin: 0 auto;
-      }
-
-/* User info section styles */
+      /* User info section styles */
 .user-info {
   display: flex;
   align-items: center;
@@ -322,6 +314,17 @@
 .sidebar.sidebar-collapsed .logout-button:hover {
   background-color: hsl(var(--accent));
 }
+
+/* Update the container spacing */
+.sidebar .flex.items-center.gap-3 {
+  gap: 0.75rem;
+  transition: gap 0.3s ease;
+}
+
+.sidebar.sidebar-collapsed .flex.items-center.gap-3 {
+  gap: 0;
+  justify-content: center;
+}
     </style>
     <link
       rel="stylesheet"
@@ -345,7 +348,7 @@
       >
         <div class="flex items-center justify-between gap-2 mb-8">
           <div class="flex items-center gap-3">
-            <div class="flex items-center justify-center w-10 h-15 logo-container">
+            <div class="flex items-center justify-center w-10 h-10 logo-container">
               <img src="https://raw.githubusercontent.com/23ovii/Planish/refs/heads/main/assets/img/favicon-nobg.png"
                alt="Planish Logo">
             </div>

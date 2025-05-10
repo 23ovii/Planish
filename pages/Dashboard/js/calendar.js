@@ -305,7 +305,7 @@ class Calendar {
   }
 
   // Add this new method for resize functionality
- addResizeHandlers(element, block) {
+addResizeHandlers(element, block) {
   const topHandle = element.querySelector('.resize-handle-top');
   const bottomHandle = element.querySelector('.resize-handle-bottom');
   let startY, startHeight, startTop, originalStart, originalEnd;
@@ -417,6 +417,55 @@ class Calendar {
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
   });
+
+  // RESIZE FUNCTIONALITY - BOTTOM HANDLE
+  bottomHandle.addEventListener('mousedown', (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    startY = e.clientY;
+    startHeight = parseInt(element.style.height, 10);
+    originalStart = new Date(block.start);
+    originalEnd = new Date(block.end);
+
+    const handleMouseMove = (e) => {
+      const dy = e.clientY - startY;
+      const minutesPerPixel = 60 / 50; // 50px per hour
+      const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15; // Round to nearest 15 min
+
+      const newEnd = new Date(originalEnd.getTime() + deltaMinutes * 60000);
+
+      // Validate: can't move before start time or after 8pm
+      if (newEnd <= originalStart || newEnd.getHours() > 20 || 
+          (newEnd.getHours() === 20 && newEnd.getMinutes() > 0)) {
+        return;
+      }
+
+      // Update element visually
+      const newHeight = startHeight + dy;
+      if (newHeight < 25) return; // Minimum height
+
+      element.style.height = `${newHeight}px`;
+
+      // Update time
+      block.end = newEnd;
+
+      // Update displayed time
+      const timeDisplay = element.querySelector('div:nth-child(2)');
+      if (timeDisplay) {
+        timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
+      }
+    };
+
+    const handleMouseUp = () => {
+      this.editTimeBlock(block.id, block);
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  });
+
 
   // RESIZE FUNCTIONALITY - BOTTOM HANDLE
   bottomHandle.addEventListener('mousedown', (e) => {
@@ -619,59 +668,61 @@ class Calendar {
 
   setupEventListeners() {
     try {
-      const prevWeekBtn = document.getElementById("prev-week");
-      const nextWeekBtn = document.getElementById("next-week");
-      const addEventBtn = document.getElementById("add-event");
-      const datePickerBtn = document.getElementById("date-picker-btn");
-      
-      // Referință la obiectul curent pentru a fi folosită în event listeners
-      const self = this;
-
-      if (prevWeekBtn) {
-        prevWeekBtn.addEventListener("click", function() {
-          self.handlePrevWeek();
-        });
-      }
-
-      if (nextWeekBtn) {
-        nextWeekBtn.addEventListener("click", function() {
-          self.handleNextWeek();
-        });
-      }
-
-      if (addEventBtn) {
-        addEventBtn.addEventListener("click", function() {
-          self.showAddEventModal();
-        });
-      }
-
-      if (datePickerBtn) {
-        datePickerBtn.addEventListener("click", function() {
-          self.showDatePicker();
-        });
-      }
-
-      // Adăugăm event listener pentru click pe coloanele zilelor
-      document.querySelectorAll('[id^="day-column-"]').forEach(column => {
-        column.addEventListener('click', function(e) {
-          if (e.target === column || e.target.classList.contains('border-t')) {
-            const dateStr = column.dataset.date;
-            if (dateStr) {
-              self.selectedDate = new Date(dateStr);
-              const selectedDateEl = document.getElementById("selected-date");
-              if (selectedDateEl) {
-                selectedDateEl.textContent = self.format(self.selectedDate, "PPP");
-              }
-              self.showAddEventModal();
-            }
-          }
-        });
+    const prevWeekBtn = document.getElementById("prev-week");
+    const nextWeekBtn = document.getElementById("next-week");
+    const addEventBtn = document.getElementById("add-event");
+    const datePickerBtn = document.getElementById("date-picker-btn");
+    
+    // Remove existing event listeners first
+    if (prevWeekBtn) {
+      prevWeekBtn.replaceWith(prevWeekBtn.cloneNode(true));
+      document.getElementById("prev-week").addEventListener("click", () => {
+        this.handlePrevWeek();
       });
-      
-      console.log("Event listeners configurați cu succes");
-    } catch (error) {
-      console.error("Eroare la configurarea event listeners:", error);
     }
+
+    if (nextWeekBtn) {
+      nextWeekBtn.replaceWith(nextWeekBtn.cloneNode(true));
+      document.getElementById("next-week").addEventListener("click", () => {
+        this.handleNextWeek();
+      });
+    }
+
+    if (addEventBtn) {
+      addEventBtn.replaceWith(addEventBtn.cloneNode(true));
+      document.getElementById("add-event").addEventListener("click", () => {
+        this.showAddEventModal();
+      });
+    }
+
+    if (datePickerBtn) {
+      datePickerBtn.replaceWith(datePickerBtn.cloneNode(true));
+      document.getElementById("date-picker-btn").addEventListener("click", () => {
+        this.showDatePicker();
+      });
+    }
+
+    // Adăugăm event listener pentru click pe coloanele zilelor
+    document.querySelectorAll('[id^="day-column-"]').forEach(column => {
+      column.addEventListener('click', (e) => {
+        if (e.target === column || e.target.classList.contains('border-t')) {
+          const dateStr = column.dataset.date;
+          if (dateStr) {
+            this.selectedDate = new Date(dateStr);
+            const selectedDateEl = document.getElementById("selected-date");
+            if (selectedDateEl) {
+              selectedDateEl.textContent = this.format(this.selectedDate, "PPP");
+            }
+            this.showAddEventModal();
+          }
+        }
+      });
+    });
+    
+    console.log("Event listeners configurați cu succes");
+  } catch (error) {
+    console.error("Eroare la configurarea event listeners:", error);
+  }
   }
 
   showDatePicker() {
@@ -801,13 +852,17 @@ class Calendar {
   }
 
   showAddEventModal() {
-    // Create modal for adding new event
+    // Remove any existing modal first
+    const existingModal = document.getElementById("add-event-modal");
+    if (existingModal) {
+        document.body.removeChild(existingModal);
+    }
+
     const modal = document.createElement("div");
-    modal.className =
-      "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+    modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
     modal.id = "add-event-modal";
 
-    // Setăm ora implicită la ora curentă rotunjită la ora completă
+    // Set default times
     const currentHour = new Date().getHours();
     const defaultStartTime = `${String(currentHour).padStart(2, '0')}:00`;
     const defaultEndTime = `${String(currentHour + 1).padStart(2, '0')}:00`;
@@ -818,15 +873,15 @@ class Calendar {
           <h3 class="text-lg font-medium">Adaugă eveniment nou</h3>
           <div class="text-sm text-gray-500">Data: ${this.format(this.selectedDate, "PPP")}</div>
         </div>
-        <div class="p-4">
+        <form id="add-event-form" class="p-4">
           <div class="space-y-4">
             <div>
               <label class="block text-sm font-medium mb-1">Titlu</label>
-              <input type="text" id="event-title" class="w-full p-2 border rounded-md" placeholder="Denumire eveniment">
+              <input type="text" id="event-title" class="w-full p-2 border rounded-md" required placeholder="Denumire eveniment">
             </div>
             <div>
               <label class="block text-sm font-medium mb-1">Categorie</label>
-              <select id="event-category" class="w-full p-2 border rounded-md">
+              <select id="event-category" class="w-full p-2 border rounded-md" required>
                 <option value="work">Muncă</option>
                 <option value="personal">Personal</option>
                 <option value="study">Studiu</option>
@@ -837,95 +892,109 @@ class Calendar {
             <div class="grid grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium mb-1">Ora de început</label>
-                <input type="time" id="event-start" class="w-full p-2 border rounded-md" value="${defaultStartTime}">
+                <input type="time" id="event-start" class="w-full p-2 border rounded-md" required value="${defaultStartTime}">
               </div>
               <div>
                 <label class="block text-sm font-medium mb-1">Ora de sfârșit</label>
-                <input type="time" id="event-end" class="w-full p-2 border rounded-md" value="${defaultEndTime}">
+                <input type="time" id="event-end" class="w-full p-2 border rounded-md" required value="${defaultEndTime}">
               </div>
             </div>
           </div>
-        </div>
-        <div class="p-4 border-t flex justify-end space-x-2">
-          <button id="cancel-event" class="px-4 py-2 border rounded-md">Anulează</button>
-          <button id="save-event" class="px-4 py-2 bg-blue-600 text-white rounded-md">Salvează</button>
-        </div>
+          <div class="p-4 border-t flex justify-end space-x-2">
+            <button type="button" id="cancel-event" class="px-4 py-2 border rounded-md">Anulează</button>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Salvează</button>
+          </div>
+        </form>
       </div>
     `;
 
+    const closeModal = () => {
+        const modalToRemove = document.getElementById("add-event-modal");
+        if (modalToRemove) {
+            document.body.removeChild(modalToRemove);
+        }
+    };
+
     document.body.appendChild(modal);
 
-    // Add event listeners to modal buttons using a reference to the current context
-    const self = this;
-    document.getElementById("cancel-event").addEventListener("click", function() {
-      document.body.removeChild(modal);
+    const form = document.getElementById("add-event-form");
+    const cancelBtn = document.getElementById("cancel-event");
+
+    // Handle form submission
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.handleAddTimeBlock();
+        closeModal();
     });
 
-    document.getElementById("save-event").addEventListener("click", function() {
-      self.handleAddTimeBlock();
-      document.body.removeChild(modal);
-    });
-  }
+    // Handle cancel button
+    cancelBtn.addEventListener('click', closeModal);
 
-  handleAddTimeBlock() {
+    // Close on outside click - use mousedown instead of click
+    modal.addEventListener('mousedown', (e) => {
+        if (e.target === modal) {
+            closeModal();
+        }
+    });
+}
+
+handleAddTimeBlock() {
     try {
-      const titleEl = document.getElementById("event-title");
-      const categoryEl = document.getElementById("event-category");
-      const startTimeEl = document.getElementById("event-start");
-      const endTimeEl = document.getElementById("event-end");
-      
-      if (!titleEl || !categoryEl || !startTimeEl || !endTimeEl) {
-        console.error("Nu s-au găsit elementele necesare");
-        return;
-      }
-      
-      const title = titleEl.value;
-      const category = categoryEl.value;
-      const startTime = startTimeEl.value;
-      const endTime = endTimeEl.value;
-      
-      if (!startTime || !endTime) {
-        console.error("Orele nu au fost completate corect");
-        return;
-      }
+        const titleEl = document.getElementById("event-title");
+        const categoryEl = document.getElementById("event-category");
+        const startTimeEl = document.getElementById("event-start");
+        const endTimeEl = document.getElementById("event-end");
+        
+        if (!titleEl || !categoryEl || !startTimeEl || !endTimeEl) {
+            console.error("Nu s-au găsit elementele necesare");
+            return;
+        }
+        
+        const title = titleEl.value.trim();
+        const category = categoryEl.value;
+        const startTime = startTimeEl.value;
+        const endTime = endTimeEl.value;
+        
+        if (!title || !startTime || !endTime) {
+            alert("Te rog completează toate câmpurile!");
+            return;
+        }
 
-      // Create start and end dates
-      const [startHours, startMinutes] = startTime.split(":").map(Number);
-      const [endHours, endMinutes] = endTime.split(":").map(Number);
+        // Create start and end dates
+        const [startHours, startMinutes] = startTime.split(":").map(Number);
+        const [endHours, endMinutes] = endTime.split(":").map(Number);
 
-      const startDate = new Date(this.selectedDate);
-      startDate.setHours(startHours, startMinutes, 0, 0);
+        const startDate = new Date(this.selectedDate);
+        startDate.setHours(startHours, startMinutes, 0, 0);
 
-      const endDate = new Date(this.selectedDate);
-      endDate.setHours(endHours, endMinutes, 0, 0);
+        const endDate = new Date(this.selectedDate);
+        endDate.setHours(endHours, endMinutes, 0, 0);
 
-      // Validare dată
-      if (endDate <= startDate) {
-        alert("Ora de sfârșit trebuie să fie după ora de început!");
-        return;
-      }
+        // Validare dată
+        if (endDate <= startDate) {
+            alert("Ora de sfârșit trebuie să fie după ora de început!");
+            return;
+        }
 
-      // Add new time block
-      const newBlock = {
-        id: Date.now().toString(),
-        title: title || "Eveniment nou",
-        start: startDate,
-        end: endDate,
-        category: category || "work",
-      };
+        // Add new time block
+        const newBlock = {
+            id: Date.now().toString(),
+            title: title,
+            start: startDate,
+            end: endDate,
+            category: category
+        };
 
-      this.timeBlocks.push(newBlock);
-      this.saveToLocalStorage(); // Salvăm în localStorage
-      this.render();
-      
-      console.log("Eveniment adăugat cu succes:", newBlock);
+        this.timeBlocks.push(newBlock);
+        this.saveToLocalStorage();
+        this.render();
+        
+        console.log("Eveniment adăugat cu succes:", newBlock);
     } catch (error) {
-      console.error("Eroare la adăugarea evenimentului:", error);
+        console.error("Eroare la adăugarea evenimentului:", error);
     }
-  }
-
-  // Add this new method to handle event editing
- showEditEventModal(event) {
+}
+  showEditEventModal(event) {
     console.log("Opening edit modal for event:", event);
     
     const modal = document.createElement("div");
