@@ -1,2 +1,17 @@
 reCAPTCHA for the contact page
 https://www.youtube.com/watch?v=LShF1c3aLvM&ab_channel=AsmrProg
+
+de adaugat in sectiunea about:
+- niste citate
+- recomandari de la experti
+
+dashboard
+de facut navbar-ul mobil
+
+calendar
+cand dai click pe un eveniment sa ii poti da edit!
+de facut calendarul responsive ( are loaded orele doar de la 8am pana la 7pm (de gandit cv sistem) )
+sa poti da drag si sa prelungesti evenimentele
+buguri:
+poti seta ora de sfarsit inainte de ora de inceput (start 08:00 end 05:00)
+poti adauga mai multe event-uri unele peste altele(de facut sa se poata pune unele langa altele)
