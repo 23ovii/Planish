@@ -233,6 +233,64 @@
       .sidebar.sidebar-collapsed .logo-container img {
         margin: 0 auto;
       }
+
+      /* User info section styles */
+.user-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-top: 1px solid hsl(var(--border));
+  margin-top: auto;
+}
+
+.avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 9999px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-details {
+  flex-grow: 1;
+  margin-left: 0.75rem;
+}
+
+.user-details span {
+  display: block;
+}
+
+#user-name {
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+#user-email {
+  font-size: 0.75rem;
+  color: hsl(var(--muted-foreground));
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.375rem;
+  transition: background-color 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: hsl(var(--muted));
+}
+
     </style>
     <link
       rel="stylesheet"
@@ -305,22 +363,28 @@
           </button>
         </nav>
 
-        <div class="mt-auto pt-4 border-t">
-          <div class="flex items-center gap-3">
-            <div
-              class="h-10 w-10 rounded-full bg-secondary flex items-center justify-center overflow-hidden"
-            >
-              <img
-                src="https://api.dicebear.com/7.x/avataaars/svg?seed=user123"
-                alt="User Avatar"
-                id="user-avatar"
-              />
-            </div>
-            <div class="sidebar-text">
-              <p class="text-sm font-medium" id="user-name">Loading...</p>
-              <p class="text-xs text-muted-foreground" id="user-email">Loading...</p>
-            </div>
+        <!-- User Info Section -->
+        <div class="user-info">
+          <div class="avatar">
+            <img
+              src="https://api.dicebear.com/7.x/avataaars/svg?seed=user123"
+              alt="User Avatar"
+              id="user-avatar"
+            />
           </div>
+          <div class="user-details">
+            <span class="text-sm font-medium" id="user-name">Guest User</span>
+            <span class="text-xs text-muted-foreground" id="user-email">guest@example.com</span>
+          </div>
+          <!-- Minimalist Logout Button -->
+          <button
+            id="logout-btn"
+            class="logout-button"
+            onclick="handleLogout()"
+            title="Log Out"
+          >
+            <i data-lucide="log-out" class="h-5 w-5"></i>
+          </button>
         </div>
       </div>
 
@@ -417,6 +481,15 @@
       </div>
     </div>
     
+    <!-- Toast Notification -->
+<div id="toast-notification" class="fixed bottom-4 right-4 transform translate-y-full opacity-0 transition-all duration-300">
+  <div class="flex items-center w-full max-w-xs p-4 mb-4 rounded-lg shadow bg-gray-800 text-gray-200">
+    <div class="inline-flex items-center justify-center flex-shrink-0 w-8 h-8 text-green-500">
+      <i data-lucide="log-out" class="w-5 h-5"></i>
+    </div>
+    <div class="ml-3 text-sm font-normal">Te-ai delogat cu succes!</div>
+  </div>
+</div>
     <script src="js/main.js"></script>
   </body>
 </html>

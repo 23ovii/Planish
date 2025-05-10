@@ -42,12 +42,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Load user data from localStorage
   function loadUserData() {
     // Get user data from localStorage
-    const userName = localStorage.getItem('user_name');
+    const userName = localStorage.getItem('user');
     const userEmail = localStorage.getItem('user_email');
-    
-    // Get avatar seed (or generate one from email)
-    const userAvatarSeed = localStorage.getItem('user_avatar_seed') || 
-                           (userEmail ? userEmail.split('@')[0] : 'user123');
     
     // Update DOM elements
     const userNameElement = document.getElementById('user-name');
@@ -58,13 +54,9 @@ document.addEventListener("DOMContentLoaded", function () {
     userNameElement.textContent = userName || 'Guest User';
     userEmailElement.textContent = userEmail || 'guest@example.com';
     
-    // Update avatar with user-specific seed
-    userAvatarElement.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${userAvatarSeed}`;
-    
     // If no user data is found and we're not on login page, redirect to login
     if (!userName && !userEmail && !window.location.href.includes('login.html')) {
-      // Uncomment the line below when login page is ready
-      // window.location.href = 'login.html';
+      window.location.href = '../login.html?error=not_authenticated';
       console.log('No user data found - would redirect to login page');
     }
   }
@@ -344,4 +336,26 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+  function handleLogout() {
+    // Show notification
+    const toast = document.getElementById('toast-notification');
+    toast.classList.remove('translate-y-full', 'opacity-0');
+    
+    // Clear user data from localStorage
+    localStorage.removeItem('user');
+    localStorage.removeItem('user_email');
+    
+    // Wait for animation and redirect
+    setTimeout(() => {
+      window.location.href = '../login.html?status=logged_out';
+    }, 1500); // Redirect after 1.5 seconds
+  }
+    const logoutButton = document.getElementById('logout-btn');
+    if (logoutButton) {
+      logoutButton.addEventListener('click', function(e) {
+        e.preventDefault(); // Prevent any default button behavior
+        handleLogout();
+      });
+    }
 });

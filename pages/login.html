@@ -107,6 +107,24 @@
     .register-link a:hover {
       text-decoration: underline;
     }
+
+    .error-message {
+      color: #ff4444;
+      background-color: rgba(255, 68, 68, 0.1);
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .notification {
+      margin-bottom: 16px;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: rgba(255, 255, 255, 0.1);
+      color: #c9d1d9;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -160,6 +178,45 @@
         window.location.href = 'Dashboard/index.html';
       } else {
         alert('Te rugăm să completezi toate câmpurile.');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      // Check for error parameter in URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const error = urlParams.get('error');
+      
+      if (error === 'not_authenticated') {
+        // Create error message element
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.style.color = '#ff4444';
+        errorDiv.style.backgroundColor = 'rgba(255, 68, 68, 0.1)';
+        errorDiv.style.padding = '10px';
+        errorDiv.style.borderRadius = '6px';
+        errorDiv.style.marginBottom = '20px';
+        errorDiv.style.textAlign = 'center';
+        errorDiv.textContent = 'Trebuie să te autentifici pentru a accesa această pagină';
+        
+        // Insert error message at the top of the login form
+        const loginForm = document.querySelector('.card');
+        loginForm.insertBefore(errorDiv, loginForm.firstChild);
+      }
+
+      const status = urlParams.get('status');
+      
+      if (status === 'logged_out') {
+        const notification = document.createElement('div');
+        notification.className = 'notification';
+        notification.textContent = 'Te-ai deconectat cu succes!';
+        
+        const loginCard = document.querySelector('.card');
+        loginCard.insertBefore(notification, loginCard.firstChild);
+        
+        // Remove notification after 5 seconds
+        setTimeout(() => {
+          notification.remove();
+        }, 5000);
       }
     });
   </script>
