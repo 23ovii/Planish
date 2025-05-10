@@ -1,4 +1,4 @@
-reCAPTCHA for the contact page
+reCAPTCHA for the contact/login/register page
 https://www.youtube.com/watch?v=LShF1c3aLvM&ab_channel=AsmrProg
 
 de adaugat in sectiunea about:
@@ -6,7 +6,7 @@ de adaugat in sectiunea about:
 - recomandari de la experti
 
 dashboard
-de facut navbar-ul mobil
+de facut navbar-ul mobil -- done
 
 calendar
 cand dai click pe un eveniment sa ii poti da edit!
