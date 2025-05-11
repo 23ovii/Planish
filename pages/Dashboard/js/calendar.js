@@ -157,152 +157,156 @@ class Calendar {
     this.render();
     this.setupEventListeners();
   }
-
-  render() {
-    const weekStart = this.startOfWeek(this.currentDate, {
-      weekStartsOn: 1,
-    });
-    const weekEnd = this.endOfWeek(this.currentDate, { weekStartsOn: 1 });
-    const daysOfWeek = this.eachDayOfInterval({
-      start: weekStart,
-      end: weekEnd,
-    });
-
-    const html = `
-      <div class="w-full h-full bg-white rounded-lg shadow">
-        <div class="flex flex-row items-center justify-between p-4 border-b">
-          <h2 class="text-xl font-bold">Calendar</h2>
-          <div class="flex items-center space-x-2">
-            <div class="relative">
-              <button id="date-picker-btn" class="px-3 py-1.5 border rounded-md text-sm flex items-center">
-                <span class="mr-2 h-4 w-4">📅</span>
-                <span id="selected-date">${this.format(this.selectedDate, "PPP")}</span>
-              </button>
-              <!-- Date picker will be added here dynamically -->
-            </div>
-
-            <div class="flex items-center space-x-2">
-              <button id="prev-week" class="p-1 border rounded-md">
-                <span class="h-4 w-4">←</span>
-              </button>
-              <div class="font-medium">
-                ${this.format(weekStart, "MMM d")} - ${this.format(weekEnd, "MMM d, yyyy")}
-              </div>
-              <button id="next-week" class="p-1 border rounded-md">
-                <span class="h-4 w-4">→</span>
-              </button>
-            </div>
-
-            <button id="add-event" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm flex items-center">
-              <span class="h-4 w-4 mr-1">+</span> Adaugă eveniment
-            </button>
+generateModernGrid(daysOfWeek) {
+  // Create time slots for the day (8 AM to 8 PM)
+  const timeSlots = Array.from({ length: 13 }, (_, i) => i + 8);
+  
+  // Build the HTML for the modern grid
+  const html = `
+    <div class="w-full bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+      <!-- Header with days -->
+      <div class="grid grid-cols-8 bg-white border-b">
+        <!-- Empty cell for time column -->
+        <div class="p-3 border-r"></div>
+        
+        <!-- Day headers -->
+        ${daysOfWeek.map(day => `
+          <div class="p-3 text-center border-r last:border-r-0 ${this.isSameDay(day, new Date()) ? 'bg-blue-50' : ''}">
+            <div class="text-sm font-medium">${this.format(day, "EEE")}</div>
+            <div class="text-2xl font-bold ${this.isSameDay(day, new Date()) ? 'text-blue-600' : ''}">${this.format(day, "d")}</div>
+            <div class="text-xs text-gray-500">${this.format(day, "MMM")}</div>
           </div>
+        `).join('')}
+      </div>
+      
+      <!-- Time grid -->
+      <div class="grid grid-cols-8">
+        <!-- Time column -->
+        <div class="border-r">
+          ${timeSlots.map(hour => `
+            <div class="h-16 relative border-b">
+              <span class="absolute -top-2 left-2 text-xs font-medium text-gray-500">
+                ${hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
+              </span>
+            </div>
+          `).join('')}
         </div>
         
-        <div class="p-4">
-          <div class="grid grid-cols-8 gap-2">
-            <!-- Time labels column -->
-            <div class="col-span-1">
-              <div class="h-10"></div> <!-- Empty cell for header alignment -->
-              <div class="relative h-[600px]">
-                ${Array.from({ length: 12 }, (_, i) => i + 8)
-                  .map(
-                    (hour) => `
-                  <div class="absolute w-full" style="top: ${(hour - 8) * 50}px">
-                    <div class="text-xs text-gray-500 -mt-2">
-                      ${hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
-                    </div>
-                    <div class="border-t border-gray-200 w-full"></div>
-                  </div>
-                `,
-                  )
-                  .join("")}
-              </div>
-            </div>
-
-            <!-- Days columns -->
-            ${daysOfWeek
-              .map(
-                (day, index) => `
-              <div class="col-span-1">
-                <div class="text-center py-2 font-medium border-b">
-                  <div>${this.format(day, "EEE")}</div>
-                  <div class="text-sm">${this.format(day, "d")}</div>
-                </div>
-                <div class="relative h-[600px] border-l first:border-l-0" id="day-column-${index}" data-date="${day.toISOString()}">
-                  ${Array.from({ length: 12 }, (_, i) => i + 8)
-                    .map(
-                      (hour) => `
-                    <div class="absolute w-full border-t border-gray-100" style="top: ${(hour - 8) * 50}px"></div>
-                  `,
-                    )
-                    .join("")}
-                  
-                  <!-- Time blocks will be added here dynamically -->
-                </div>
-              </div>
-            `,
-              )
-              .join("")}
+        <!-- Day columns -->
+        ${daysOfWeek.map((day, index) => `
+          <div class="relative border-r last:border-r-0" id="modern-day-column-${index}" data-date="${day.toISOString()}">
+            ${timeSlots.map(hour => `
+              <div class="h-16 border-b hover:bg-blue-50 transition-colors duration-150"></div>
+            `).join('')}
+            <!-- Time blocks will be rendered here dynamically -->
           </div>
+        `).join('')}
+      </div>
+    </div>
+  `;
+  
+  return html;
+}
+
+  render() {
+  const weekStart = this.startOfWeek(this.currentDate, { weekStartsOn: 1 });
+  const weekEnd = this.endOfWeek(this.currentDate, { weekStartsOn: 1 });
+  const daysOfWeek = this.eachDayOfInterval({
+    start: weekStart,
+    end: weekEnd,
+  });
+
+  const html = `
+    <div class="w-full h-full bg-white rounded-lg shadow">
+      <div class="flex flex-row items-center justify-between p-4 border-b">
+        <h2 class="text-xl font-bold">Calendar</h2>
+        <div class="flex items-center space-x-2">
+          <div class="relative">
+            <button id="date-picker-btn" class="px-3 py-1.5 border rounded-md text-sm flex items-center">
+              <span class="mr-2 h-4 w-4">📅</span>
+              <span id="selected-date">${this.format(this.selectedDate, "PPP")}</span>
+            </button>
+            <!-- Date picker will be added here dynamically -->
+          </div>
+
+          <div class="flex items-center space-x-2">
+            <button id="prev-week" class="p-1 border rounded-md">
+              <span class="h-4 w-4">←</span>
+            </button>
+            <div class="font-medium">
+              ${this.format(weekStart, "MMM d")} - ${this.format(weekEnd, "MMM d, yyyy")}
+            </div>
+            <button id="next-week" class="p-1 border rounded-md">
+              <span class="h-4 w-4">→</span>
+            </button>
+          </div>
+
+          <button id="add-event" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm flex items-center">
+            <span class="h-4 w-4 mr-1">+</span> Adaugă eveniment
+          </button>
         </div>
       </div>
-    `;
-
-    this.container.innerHTML = html;
-    this.renderTimeBlocks(daysOfWeek);
-    this.setupEventListeners();
-  }
-
-  renderTimeBlocks(daysOfWeek) {
-    this.timeBlocks.forEach((block) => {
-        daysOfWeek.forEach((day, index) => {
-            if (this.isSameDay(block.start, day)) {
-                const timeBlockEl = document.createElement("div");
-                timeBlockEl.className = `absolute rounded-md p-2 ${this.categoryColors[block.category] || "bg-gray-500"} text-white text-xs overflow-hidden cursor-move`;
-
-                timeBlockEl.innerHTML = `
-    <div class="font-medium">${block.title}</div>
-    <div>
-        ${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}
+      
+      <div class="p-4">
+        ${this.generateModernGrid(daysOfWeek)}
+      </div>
     </div>
-    <button class="absolute top-1 right-1 text-white edit-event cursor-pointer hover:text-gray-200" data-id="${block.id}">
-        <i data-lucide="edit-2" class="h-4 w-4"></i>
-    </button>
-    <div class="resize-handle-top absolute top-0 left-0 right-0 h-1 cursor-n-resize hover:bg-white/20"></div>
-    <div class="resize-handle-bottom absolute bottom-0 left-0 right-0 h-1 cursor-s-resize hover:bg-white/20"></div>
-`;
+  `;
 
-                // Set position and size
-                const position = this.getTimeBlockPosition(block);
-                Object.assign(timeBlockEl.style, position);
+  this.container.innerHTML = html;
+  this.renderTimeBlocks(daysOfWeek);
+  this.setupEventListeners();
+}
+ renderTimeBlocks(daysOfWeek) {
+  this.timeBlocks.forEach((block) => {
+    daysOfWeek.forEach((day, index) => {
+      if (this.isSameDay(block.start, day)) {
+        const timeBlockEl = document.createElement("div");
+        timeBlockEl.className = `absolute rounded-md p-2 ${this.categoryColors[block.category] || "bg-gray-500"} text-white text-xs overflow-hidden cursor-move shadow-md`;
 
-                // Add resize functionality
-                this.addResizeHandlers(timeBlockEl, block);
+        timeBlockEl.innerHTML = `
+          <div class="font-medium">${block.title}</div>
+          <div>
+            ${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}
+          </div>
+          <button class="absolute top-1 right-1 text-white edit-event cursor-pointer hover:text-gray-200" data-id="${block.id}">
+            <i data-lucide="edit-2" class="h-4 w-4"></i>
+          </button>
+          <div class="resize-handle-top absolute top-0 left-0 right-0 h-1 cursor-n-resize hover:bg-white/20"></div>
+          <div class="resize-handle-bottom absolute bottom-0 left-0 right-0 h-1 cursor-s-resize hover:bg-white/20"></div>
+        `;
 
-                // Add click handler for edit button
-                const editButton = timeBlockEl.querySelector('.edit-event');
-                if (editButton) {
-                    editButton.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        this.showEditEventModal(block);
-                    });
-                }
+        // Set position and size
+        const position = this.getTimeBlockPosition(block);
+        Object.assign(timeBlockEl.style, position);
 
-                const dayColumn = document.getElementById(`day-column-${index}`);
-                if (dayColumn) {
-                    dayColumn.appendChild(timeBlockEl);
-                }
+        // Add resize functionality
+        this.addResizeHandlers(timeBlockEl, block);
 
-                // Initialize Lucide icons
-                if (window.lucide) {
-                    window.lucide.createIcons();
-                }
-            }
-        });
+        // Add click handler for edit button
+        const editButton = timeBlockEl.querySelector('.edit-event');
+        if (editButton) {
+          editButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.showEditEventModal(block);
+          });
+        }
+
+        // Use the new ID format for the columns
+        const dayColumn = document.getElementById(`modern-day-column-${index}`);
+        if (dayColumn) {
+          dayColumn.appendChild(timeBlockEl);
+        }
+
+        // Initialize Lucide icons
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      }
     });
-  }
+  });
+}
 
   // Add this new method for resize functionality
 addResizeHandlers(element, block) {
@@ -311,15 +315,12 @@ addResizeHandlers(element, block) {
   let startY, startHeight, startTop, originalStart, originalEnd;
   let isDragging = false;
 
-  // DRAG FUNCTIONALITY
-  element.addEventListener('mousedown', (e) => {
-    // Don't start drag if clicking resize handles or buttons
-    if (e.target === topHandle || 
-        e.target === bottomHandle || 
-        e.target.closest('.edit-event')) {
+  // Function for handling drag operation
+  const setupDragHandler = (e) => {
+    if (e.target === topHandle || e.target === bottomHandle || e.target.closest('.edit-event')) {
       return;
     }
-
+    
     e.stopPropagation();
     isDragging = true;
     startY = e.clientY;
@@ -338,19 +339,16 @@ addResizeHandlers(element, block) {
       const newStart = new Date(originalStart.getTime() + deltaMinutes * 60000);
       const newEnd = new Date(newStart.getTime() + duration);
 
-      // Check if the new times are within our visible range (8am-8pm)
+      // Check boundaries
       if (newStart.getHours() < 8 || newEnd.getHours() > 20) return;
 
-      const hourHeight = 50;
-      const newTop = startTop + dy;
-      element.style.top = `${newTop}px`;
-
+      element.style.top = `${startTop + dy}px`;
       block.start = newStart;
       block.end = newEnd;
 
       const timeDisplay = element.querySelector('div:nth-child(2)');
       if (timeDisplay) {
-        timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
+        timeDisplay.textContent = `${this.dateUtils().format(block.start, "h:mm a")} - ${this.dateUtils().format(block.end, "h:mm a")}`;
       }
     };
 
@@ -365,258 +363,75 @@ addResizeHandlers(element, block) {
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  });
+  };
 
-  // RESIZE FUNCTIONALITY - TOP HANDLE
-  topHandle.addEventListener('mousedown', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    startY = e.clientY;
-    startHeight = parseInt(element.style.height, 10);
-    startTop = parseInt(element.style.top, 10);
-    originalStart = new Date(block.start);
-    originalEnd = new Date(block.end);
+  // Function for handling resize operations
+  const setupResizeHandler = (handle, isTop) => {
+    handle.addEventListener('mousedown', (e) => {
+      e.stopPropagation();
+      e.preventDefault();
+      startY = e.clientY;
+      startHeight = parseInt(element.style.height, 10);
+      startTop = parseInt(element.style.top, 10);
+      originalStart = new Date(block.start);
+      originalEnd = new Date(block.end);
 
-    const handleMouseMove = (e) => {
-      const dy = e.clientY - startY;
-      const minutesPerPixel = 60 / 50; // 50px per hour
-      const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15; // Round to nearest 15 min
+      const handleMouseMove = (e) => {
+        const dy = e.clientY - startY;
+        const minutesPerPixel = 60 / 50;
+        const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15;
 
-      const newStart = new Date(originalStart.getTime() + deltaMinutes * 60000);
+        if (isTop) {
+          // Handle top resize
+          const newStart = new Date(originalStart.getTime() + deltaMinutes * 60000);
+          
+          // Validate
+          if (newStart >= originalEnd || newStart.getHours() < 8) return;
+          
+          const newTop = (newStart.getHours() - 8) * 50 + (newStart.getMinutes() / 60) * 50;
+          const newHeight = startHeight + (startTop - newTop);
+          
+          element.style.top = `${newTop}px`;
+          element.style.height = `${newHeight}px`;
+          block.start = newStart;
+        } else {
+          // Handle bottom resize  
+          const newEnd = new Date(originalEnd.getTime() + deltaMinutes * 60000);
+          
+          // Validate
+          if (newEnd <= originalStart || newEnd.getHours() > 20 || 
+              (newEnd.getHours() === 20 && newEnd.getMinutes() > 0)) return;
+          
+          const newHeight = startHeight + dy;
+          if (newHeight < 25) return;
+          
+          element.style.height = `${newHeight}px`;
+          block.end = newEnd;
+        }
+        
+        // Update displayed time
+        const timeDisplay = element.querySelector('div:nth-child(2)');
+        if (timeDisplay) {
+          timeDisplay.textContent = `${this.dateUtils().format(block.start, "h:mm a")} - ${this.dateUtils().format(block.end, "h:mm a")}`;
+        }
+      };
 
-      // Validate: can't move past end time or before 8am
-      if (newStart >= originalEnd || newStart.getHours() < 8) {
-        return;
-      }
+      const handleMouseUp = () => {
+        this.editTimeBlock(block.id, block);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
 
-      // Update element visually
-      const hourHeight = 50;
-      const startHour = newStart.getHours() + newStart.getMinutes() / 60;
-      const newTop = (startHour - 8) * hourHeight;
-      const newHeight = startHeight + (startTop - newTop);
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    });
+  };
 
-      element.style.top = `${newTop}px`;
-      element.style.height = `${newHeight}px`;
-
-      // Update time
-      block.start = newStart;
-
-      // Update displayed time
-      const timeDisplay = element.querySelector('div:nth-child(2)');
-      if (timeDisplay) {
-        timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
-      }
-    };
-
-    const handleMouseUp = () => {
-      this.editTimeBlock(block.id, block);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  });
-
-  // RESIZE FUNCTIONALITY - BOTTOM HANDLE
-  bottomHandle.addEventListener('mousedown', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    startY = e.clientY;
-    startHeight = parseInt(element.style.height, 10);
-    originalStart = new Date(block.start);
-    originalEnd = new Date(block.end);
-
-    const handleMouseMove = (e) => {
-      const dy = e.clientY - startY;
-      const minutesPerPixel = 60 / 50; // 50px per hour
-      const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15; // Round to nearest 15 min
-
-      const newEnd = new Date(originalEnd.getTime() + deltaMinutes * 60000);
-
-      // Validate: can't move before start time or after 8pm
-      if (newEnd <= originalStart || newEnd.getHours() > 20 || 
-          (newEnd.getHours() === 20 && newEnd.getMinutes() > 0)) {
-        return;
-      }
-
-      // Update element visually
-      const newHeight = startHeight + dy;
-      if (newHeight < 25) return; // Minimum height
-
-      element.style.height = `${newHeight}px`;
-
-      // Update time
-      block.end = newEnd;
-
-      // Update displayed time
-      const timeDisplay = element.querySelector('div:nth-child(2)');
-      if (timeDisplay) {
-        timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
-      }
-    };
-
-    const handleMouseUp = () => {
-      this.editTimeBlock(block.id, block);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  });
-
-
-  // RESIZE FUNCTIONALITY - BOTTOM HANDLE
-  bottomHandle.addEventListener('mousedown', (e) => {
-    e.stopPropagation();
-    e.preventDefault();
-    startY = e.clientY;
-    startHeight = parseInt(element.style.height, 10);
-    originalStart = new Date(block.start);
-    originalEnd = new Date(block.end);
-
-    const handleMouseMove = (e) => {
-      const dy = e.clientY - startY;
-      const minutesPerPixel = 60 / 50; // 50px per hour
-      const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15; // Round to nearest 15 min
-
-      const newEnd = new Date(originalEnd.getTime() + deltaMinutes * 60000);
-
-      // Validate: can't move before start time or after 8pm
-      if (newEnd <= originalStart || newEnd.getHours() > 20 || 
-          (newEnd.getHours() === 20 && newEnd.getMinutes() > 0)) {
-        return;
-      }
-
-      // Update element visually
-      const newHeight = startHeight + dy;
-      if (newHeight < 25) return; // Minimum height
-
-      element.style.height = `${newHeight}px`;
-
-      // Update time
-      block.end = newEnd;
-
-      // Update displayed time
-      const timeDisplay = element.querySelector('div:nth-child(2)');
-      if (timeDisplay) {
-        timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
-      }
-    };
-
-    const handleMouseUp = () => {
-      this.editTimeBlock(block.id, block);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  });
-
-  // RESIZE FUNCTIONALITY - TOP HANDLE
-  topHandle.addEventListener('mousedown', (e) => {
-    e.stopPropagation();
-    startY = e.clientY;
-    startHeight = parseInt(element.style.height, 10);
-    startTop = parseInt(element.style.top, 10);
-    originalStart = new Date(block.start);
-    originalEnd = new Date(block.end);
-
-    const handleMouseMove = (e) => {
-      const dy = e.clientY - startY;
-      const minutesPerPixel = 60 / 50; // 50px per hour
-      const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15; // Round to nearest 15 min
-
-      const newStart = new Date(originalStart.getTime() + deltaMinutes * 60000);
-
-      // Validate: can't move past end time or before 8am
-      if (newStart >= originalEnd || newStart.getHours() < 8) {
-        return;
-      }
-
-      // Update element visually
-      const hourHeight = 50;
-      const startHour = newStart.getHours() + newStart.getMinutes() / 60;
-      const newTop = (startHour - 8) * hourHeight;
-      const newHeight = startHeight + (startTop - newTop);
-
-      element.style.top = `${newTop}px`;
-      element.style.height = `${newHeight}px`;
-
-      // Update time
-      block.start = newStart;
-
-      // Update displayed time
-      const timeDisplay = element.querySelector('div:nth-child(2)');
-      if (timeDisplay) {
-        timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
-      }
-    };
-
-    const handleMouseUp = () => {
-      this.editTimeBlock(block.id, block);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  });
-
-  // RESIZE FUNCTIONALITY - BOTTOM HANDLE
-  bottomHandle.addEventListener('mousedown', (e) => {
-    e.stopPropagation();
-    startY = e.clientY;
-    startHeight = parseInt(element.style.height, 10);
-    originalStart = new Date(block.start);
-    originalEnd = new Date(block.end);
-
-    const handleMouseMove = (e) => {
-      const dy = e.clientY - startY;
-      const minutesPerPixel = 60 / 50; // 50px per hour
-      const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15; // Round to nearest 15 min
-
-      const newEnd = new Date(originalEnd.getTime() + deltaMinutes * 60000);
-
-      // Validate: can't move before start time or after 8pm
-      if (newEnd <= originalStart || newEnd.getHours() > 20 || 
-          (newEnd.getHours() === 20 && newEnd.getMinutes() > 0)) {
-        return;
-      }
-
-      // Update element visually
-      const newHeight = startHeight + dy;
-      if (newHeight < 25) return; // Minimum height
-
-      element.style.height = `${newHeight}px`;
-
-      // Update time
-      block.end = newEnd;
-
-      // Update displayed time
-      const timeDisplay = element.querySelector('div:nth-child(2)');
-      if (timeDisplay) {
-        timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
-      }
-    };
-
-    const handleMouseUp = () => {
-      this.editTimeBlock(block.id, block);
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
-    };
-
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
-  });
+  // Set up the event handlers
+  element.addEventListener('mousedown', setupDragHandler);
+  setupResizeHandler(topHandle, true);  // top handle
+  setupResizeHandler(bottomHandle, false); // bottom handle
 }
-  deleteTimeBlock(id) {
-    this.timeBlocks = this.timeBlocks.filter(block => block.id !== id);
-    this.saveToLocalStorage();
-    this.render();
-  }
 
   editTimeBlock(id, updatedBlock) {
     // Găsim indexul blocului de timp cu ID-ul specificat
@@ -643,28 +458,156 @@ addResizeHandlers(element, block) {
       return false;
     }
   }
-
-  getTimeBlockPosition(block) {
-    const startHour = block.start.getHours();
-    const startMinutes = block.start.getMinutes();
-    const endHour = block.end.getHours();
-    const endMinutes = block.end.getMinutes();
-
-    // Only show events between 8 AM and 8 PM (our visible range)
-    if (startHour < 8 || startHour > 20) return null;
-
-    // Calculate position based on 50px per hour
-    const hourHeight = 50;
-    const top = (startHour - 8) * hourHeight + (startMinutes / 60) * hourHeight;
-    const height =
-      (endHour - startHour) * hourHeight +
-      ((endMinutes - startMinutes) / 60) * hourHeight;
-
-    return {
-      top: `${top}px`,
-      height: `${height}px`,
-    };
+deleteTimeBlock(id) {
+  // Find the index of the time block with the specified ID
+  const index = this.timeBlocks.findIndex(block => block.id === id);
+  
+  if (index !== -1) {
+    // Remove the time block from the array
+    this.timeBlocks.splice(index, 1);
+    
+    // Save changes to localStorage
+    this.saveToLocalStorage();
+    
+    // Re-render calendar to reflect the changes
+    this.render();
+    
+    console.log("Event deleted successfully:", id);
+    return true;
+  } else {
+    console.error("Could not find event with ID:", id);
+    return false;
   }
+}
+showDeleteConfirmationDialog(eventId) {
+  // Elimină orice dialog existent
+  const existingDialog = document.getElementById('confirm-delete-dialog');
+  if (existingDialog) {
+    document.body.removeChild(existingDialog);
+  }
+  
+  // Creăm un dialog ultra-optimizat
+  const confirmDialog = document.createElement('div');
+  // Simplificăm clasele și setăm direct stilurile pentru mai multă eficiență
+  confirmDialog.id = 'confirm-delete-dialog';
+  confirmDialog.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 60;
+    opacity: 0;
+    transition: opacity 150ms ease-out;
+  `;
+  
+  // Simplificăm HTML-ul și eliminăm efectele de animație complexe
+  confirmDialog.innerHTML = `
+    <div style="
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      width: 100%;
+      max-width: 20rem;
+      transform: translateY(0);
+      opacity: 0;
+      transition: opacity 150ms ease-out;
+    ">
+      <h3 style="font-size: 1.125rem; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">Confirmare ștergere</h3>
+      <p style="color: #4b5563; margin-bottom: 1.5rem;">Ești sigur că vrei să ștergi acest eveniment?</p>
+      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
+        <button id="cancel-delete" style="
+          padding: 0.5rem 1rem;
+          border: 1px solid #d1d5db;
+          border-radius: 0.375rem;
+          background-color: white;
+          color: #374151;
+          cursor: pointer;
+          transition: background-color 150ms ease-out, transform 150ms ease-out;
+        " onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.transform='translateY(-1px)';" 
+           onmouseout="this.style.backgroundColor='white'; this.style.transform='translateY(0)';">Anulează</button>
+        <button id="confirm-delete" style="
+          padding: 0.5rem 1rem;
+          border-radius: 0.375rem;
+          background-color: #ef4444;
+          color: white;
+          border: none;
+          cursor: pointer;
+          transition: background-color 150ms ease-out, transform 150ms ease-out;
+        " onmouseover="this.style.backgroundColor='#dc2626'; this.style.transform='translateY(-1px)';" 
+           onmouseout="this.style.backgroundColor='#ef4444'; this.style.transform='translateY(0)';">Șterge</button>
+      </div>
+    </div>
+  `;
+  
+  // Adăugăm la DOM
+  document.body.appendChild(confirmDialog);
+  
+  // Folosim direct setTimeout mic pentru a activa opacitatea
+  setTimeout(() => {
+    confirmDialog.style.opacity = '1';
+    confirmDialog.querySelector('div').style.opacity = '1';
+  }, 10);
+  
+  // Funcția de închidere simplificată
+  const closeDialog = () => {
+    const dialog = document.getElementById('confirm-delete-dialog');
+    if (dialog) {
+      dialog.style.opacity = '0';
+      // Durată scurtă de așteptare înainte de eliminare
+      setTimeout(() => {
+        if (dialog.parentNode) {
+          dialog.parentNode.removeChild(dialog);
+        }
+      }, 150);
+    }
+  };
+  
+  // Funcție pentru confirmare
+  const handleConfirmDelete = () => {
+    this.deleteTimeBlock(eventId);
+    closeDialog();
+  };
+  
+  // Adăugăm event listeners simple
+  document.getElementById('cancel-delete').addEventListener('click', closeDialog);
+  document.getElementById('confirm-delete').addEventListener('click', handleConfirmDelete);
+  
+  // Click în afara dialogului închide dialogul
+  confirmDialog.addEventListener('click', (e) => {
+    if (e.target === confirmDialog) {
+      closeDialog();
+    }
+  });
+}
+  getTimeBlockPosition(block) {
+  const startHour = block.start.getHours();
+  const startMinutes = block.start.getMinutes();
+  const endHour = block.end.getHours();
+  const endMinutes = block.end.getMinutes();
+
+  // Only show events between 8 AM and 8 PM (our visible range)
+  if (startHour < 8 || startHour > 20) return null;
+
+  // Calculate position based on 64px per hour (h-16 = 64px)
+  const hourHeight = 64;
+  const top = (startHour - 8) * hourHeight + (startMinutes / 60) * hourHeight;
+  const height =
+    (endHour - startHour) * hourHeight +
+    ((endMinutes - startMinutes) / 60) * hourHeight;
+
+  return {
+    top: `${top}px`,
+    height: `${height}px`,
+    left: '2px',
+    right: '2px',
+  };
+}
 
   setupEventListeners() {
     try {
@@ -718,6 +661,21 @@ addResizeHandlers(element, block) {
         }
       });
     });
+    document.querySelectorAll('[id^="modern-day-column-"]').forEach(column => {
+  column.addEventListener('click', (e) => {
+    if (e.target === column || e.target.classList.contains('border-b')) {
+      const dateStr = column.dataset.date;
+      if (dateStr) {
+        this.selectedDate = new Date(dateStr);
+        const selectedDateEl = document.getElementById("selected-date");
+        if (selectedDateEl) {
+          selectedDateEl.textContent = this.format(this.selectedDate, "PPP");
+        }
+        this.showAddEventModal();
+      }
+    }
+  });
+});
     
     console.log("Event listeners configurați cu succes");
   } catch (error) {
@@ -851,93 +809,272 @@ addResizeHandlers(element, block) {
     this.render();
   }
 
-  showAddEventModal() {
-    // Remove any existing modal first
-    const existingModal = document.getElementById("add-event-modal");
-    if (existingModal) {
-        document.body.removeChild(existingModal);
-    }
-
-    const modal = document.createElement("div");
-    modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
-    modal.id = "add-event-modal";
-
-    // Set default times
-    const currentHour = new Date().getHours();
-    const defaultStartTime = `${String(currentHour).padStart(2, '0')}:00`;
-    const defaultEndTime = `${String(currentHour + 1).padStart(2, '0')}:00`;
-
-    modal.innerHTML = `
-      <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
-        <div class="p-4 border-b">
-          <h3 class="text-lg font-medium">Adaugă eveniment nou</h3>
-          <div class="text-sm text-gray-500">Data: ${this.format(this.selectedDate, "PPP")}</div>
-        </div>
-        <form id="add-event-form" class="p-4">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Titlu</label>
-              <input type="text" id="event-title" class="w-full p-2 border rounded-md" required placeholder="Denumire eveniment">
-            </div>
-            <div>
-              <label class="block text-sm font-medium mb-1">Categorie</label>
-              <select id="event-category" class="w-full p-2 border rounded-md" required>
-                <option value="work">Muncă</option>
-                <option value="personal">Personal</option>
-                <option value="study">Studiu</option>
-                <option value="health">Sănătate</option>
-                <option value="other">Altele</option>
-              </select>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-1">Ora de început</label>
-                <input type="time" id="event-start" class="w-full p-2 border rounded-md" required value="${defaultStartTime}">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">Ora de sfârșit</label>
-                <input type="time" id="event-end" class="w-full p-2 border rounded-md" required value="${defaultEndTime}">
-              </div>
-            </div>
-          </div>
-          <div class="p-4 border-t flex justify-end space-x-2">
-            <button type="button" id="cancel-event" class="px-4 py-2 border rounded-md">Anulează</button>
-            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Salvează</button>
-          </div>
-        </form>
+showAddEventModal() {
+  // Verifică dacă există deja un modal și îl elimină
+  const existingModal = document.getElementById('add-event-modal');
+  if (existingModal) {
+    document.body.removeChild(existingModal);
+  }
+  
+  // Setăm orele default
+  const currentHour = new Date().getHours();
+  const defaultStartTime = `${String(currentHour).padStart(2, '0')}:00`;
+  const defaultEndTime = `${String(currentHour + 1).padStart(2, '0')}:00`;
+  
+  // Formatăm data selectată pentru input type="date"
+  const formattedDate = this.formatDateForInput(this.selectedDate);
+  
+  // Creăm modalul optimizat
+  const modal = document.createElement('div');
+  modal.id = 'add-event-modal';
+  modal.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 50;
+    opacity: 0;
+    transition: opacity 150ms ease-out;
+  `;
+  
+  modal.innerHTML = `
+    <div id="modal-content" style="
+      background-color: white;
+      border-radius: 0.5rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 28rem;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 150ms ease-out, transform 150ms ease-out;
+    ">
+      <div style="
+        padding: 1.25rem;
+        border-bottom: 1px solid #e5e7eb;
+        background: linear-gradient(to right, #eff6ff, #eef2ff);
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+      ">
+        <h3 style="font-size: 1.125rem; font-weight: bold; color: #1f2937; margin: 0 0 0.25rem 0;">Adaugă eveniment nou</h3>
       </div>
-    `;
-
-    const closeModal = () => {
-        const modalToRemove = document.getElementById("add-event-modal");
-        if (modalToRemove) {
-            document.body.removeChild(modalToRemove);
+      
+      <form id="add-event-form" style="padding: 1.25rem;">
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <div>
+            <label style="
+              display: block;
+              font-size: 0.875rem;
+              font-weight: 500;
+              color: #374151;
+              margin-bottom: 0.25rem;
+            ">Titlu</label>
+            <input type="text" id="event-title" required placeholder="Denumire eveniment" style="
+              width: 100%;
+              padding: 0.5rem;
+              border: 1px solid #d1d5db;
+              border-radius: 0.375rem;
+              transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+            " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+              onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+          </div>
+          
+          <div>
+            <label style="
+              display: block;
+              font-size: 0.875rem;
+              font-weight: 500;
+              color: #374151;
+              margin-bottom: 0.25rem;
+            ">Data</label>
+            <input type="date" id="event-date" required value="${formattedDate}" style="
+              width: 100%;
+              padding: 0.5rem;
+              border: 1px solid #d1d5db;
+              border-radius: 0.375rem;
+              transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+            " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+              onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+          </div>
+          
+          <div>
+            <label style="
+              display: block;
+              font-size: 0.875rem;
+              font-weight: 500;
+              color: #374151;
+              margin-bottom: 0.25rem;
+            ">Categorie</label>
+            <select id="event-category" required style="
+              width: 100%;
+              padding: 0.5rem;
+              border: 1px solid #d1d5db;
+              border-radius: 0.375rem;
+              transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+            " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+              onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+              <option value="work">Muncă</option>
+              <option value="personal">Personal</option>
+              <option value="study">Studiu</option>
+              <option value="health">Sănătate</option>
+              <option value="other">Altele</option>
+            </select>
+          </div>
+          
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div>
+              <label style="
+                display: block;
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: #374151;
+                margin-bottom: 0.25rem;
+              ">Ora de început</label>
+              <input type="time" id="event-start" required value="${defaultStartTime}" style="
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+              " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+            </div>
+            <div>
+              <label style="
+                display: block;
+                font-size: 0.875rem;
+                font-weight: 500;
+                color: #374151;
+                margin-bottom: 0.25rem;
+              ">Ora de sfârșit</label>
+              <input type="time" id="event-end" required value="${defaultEndTime}" style="
+                width: 100%;
+                padding: 0.5rem;
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+              " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+            </div>
+          </div>
+        </div>
+        
+        <div style="
+          padding-top: 1.25rem;
+          margin-top: 1rem;
+          border-top: 1px solid #e5e7eb;
+          display: flex;
+          justify-content: flex-end;
+          gap: 0.5rem;
+        ">
+          <button type="button" id="cancel-event" style="
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.375rem;
+            color: #374151;
+            cursor: pointer;
+            transition: background-color 150ms ease-out, transform 150ms ease-out;
+          " onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.transform='translateY(-1px)';" 
+            onmouseout="this.style.backgroundColor=''; this.style.transform='';">Anulează</button>
+          
+          <button type="submit" style="
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            background: linear-gradient(to right, #2563eb, #4f46e5);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: filter 150ms ease-out, transform 150ms ease-out;
+          " onmouseover="this.style.filter='brightness(1.1)'; this.style.transform='translateY(-1px)';" 
+            onmouseout="this.style.filter=''; this.style.transform='';">Salvează</button>
+        </div>
+      </form>
+    </div>
+  `;
+  
+  // Adăugăm modalul la DOM
+  document.body.appendChild(modal);
+  
+  // Activăm animația de apariție
+  setTimeout(() => {
+    modal.style.opacity = '1';
+    const modalContent = document.getElementById('modal-content');
+    if (modalContent) {
+      modalContent.style.opacity = '1';
+      modalContent.style.transform = 'translateY(0)';
+    }
+  }, 10);
+  
+  // Funcția pentru închiderea modalului
+  const closeModal = () => {
+    const modal = document.getElementById('add-event-modal');
+    if (modal) {
+      modal.style.opacity = '0';
+      const modalContent = document.getElementById('modal-content');
+      if (modalContent) {
+        modalContent.style.opacity = '0';
+        modalContent.style.transform = 'translateY(8px)';
+      }
+      
+      setTimeout(() => {
+        if (modal.parentNode) {
+          modal.parentNode.removeChild(modal);
         }
-    };
-
-    document.body.appendChild(modal);
-
-    const form = document.getElementById("add-event-form");
-    const cancelBtn = document.getElementById("cancel-event");
-
-    // Handle form submission
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        this.handleAddTimeBlock();
-        closeModal();
+      }, 150);
+    }
+  };
+  
+  // Event handler pentru submit form
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    const title = document.getElementById('event-title').value;
+    const dateInput = document.getElementById('event-date').value;
+    const eventDate = new Date(dateInput);
+    const category = document.getElementById('event-category').value;
+    const startTime = document.getElementById('event-start').value;
+    const endTime = document.getElementById('event-end').value;
+    
+    // Aici adaugi logica ta pentru salvarea evenimentului
+    this.handleAddTimeBlock({
+      title,
+      category,
+      startTime,
+      endTime,
+      date: eventDate
     });
-
-    // Handle cancel button
-    cancelBtn.addEventListener('click', closeModal);
-
-    // Close on outside click - use mousedown instead of click
-    modal.addEventListener('mousedown', (e) => {
-        if (e.target === modal) {
-            closeModal();
-        }
-    });
+    
+    closeModal();
+  };
+  
+  // Adăugăm event listeners
+  document.getElementById('cancel-event').addEventListener('click', closeModal);
+  document.getElementById('add-event-form').addEventListener('submit', handleSubmit);
+  
+  // Închiderea modalului când se face click în afara lui
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      closeModal();
+    }
+  });
+  
+  // Focus pe câmpul de titlu pentru o experiență mai bună
+  setTimeout(() => {
+    document.getElementById('event-title').focus();
+  }, 200);
 }
 
+// Adaugă această funcție pentru a formata data pentru input type="date"
+formatDateForInput(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
 handleAddTimeBlock() {
     try {
         const titleEl = document.getElementById("event-title");
@@ -1126,10 +1263,8 @@ handleAddTimeBlock() {
         if (deleteButton) {
             deleteButton.addEventListener('click', function() {
                 console.log("Delete button clicked");
-                if (confirm('Ești sigur că vrei să ștergi acest eveniment?')) {
-                    self.deleteTimeBlock(event.id);
-                    document.body.removeChild(modal);
-                }
+                document.body.removeChild(modal); // Închide mai întâi modalul de editare
+                self.showDeleteConfirmationDialog(event.id);
             });
         }
         
@@ -1161,94 +1296,3 @@ function initCalendar(containerId) {
     console.error("Eroare la inițializarea calendarului:", error);
   }
 }
-
-document.addEventListener('DOMContentLoaded', function() {
-  const calendarEl = document.getElementById('calendar-content');
-  
-  // Initialize FullCalendar
-  const calendar = new FullCalendar.Calendar(calendarEl, {
-    initialView: 'dayGridMonth',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'dayGridMonth,timeGridWeek,timeGridDay'
-    },
-    editable: true,
-    selectable: true,
-    events: [], // Your events will go here
-    eventClick: function(info) {
-      showEditModal(info.event);
-    }
-  });
-
-  calendar.render();
-
-  function showEditModal(event) {
-    const modal = document.createElement('div');
-    modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
-    modal.innerHTML = `
-      <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-full max-w-md">
-        <h3 class="text-lg font-semibold mb-4">Edit Event</h3>
-        <form id="edit-event-form">
-          <div class="space-y-4">
-            <div>
-              <label class="block text-sm font-medium mb-1">Title</label>
-              <input type="text" id="edit-title" class="w-full p-2 border rounded" value="${event.title}">
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div>
-                <label class="block text-sm font-medium mb-1">Start</label>
-                <input type="datetime-local" id="edit-start" class="w-full p-2 border rounded" 
-                  value="${event.start ? event.start.toISOString().slice(0, 16) : ''}">
-              </div>
-              <div>
-                <label class="block text-sm font-medium mb-1">End</label>
-                <input type="datetime-local" id="edit-end" class="w-full p-2 border rounded"
-                  value="${event.end ? event.end.toISOString().slice(0, 16) : ''}">
-              </div>
-            </div>
-            <div class="flex justify-end space-x-2 pt-4">
-              <button type="button" class="px-4 py-2 text-red-500 hover:bg-red-50 rounded" onclick="deleteEvent('${event.id}')">
-                Delete
-              </button>
-              <button type="submit" class="px-4 py-2 bg-primary text-white rounded hover:bg-primary/90">
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </form>
-      </div>
-    `;
-
-    document.body.appendChild(modal);
-
-    // Close modal when clicking outside
-    modal.addEventListener('click', function(e) {
-      if (e.target === modal) {
-        document.body.removeChild(modal);
-      }
-    });
-
-    // Handle form submission
-    document.getElementById('edit-event-form').addEventListener('submit', function(e) {
-      e.preventDefault();
-      
-      event.setProp('title', document.getElementById('edit-title').value);
-      event.setStart(document.getElementById('edit-start').value);
-      event.setEnd(document.getElementById('edit-end').value);
-      
-      document.body.removeChild(modal);
-    });
-  }
-
-  // Delete event function
-  window.deleteEvent = function(eventId) {
-    if (confirm('Are you sure you want to delete this event?')) {
-      let event = calendar.getEventById(eventId);
-      if (event) {
-        event.remove();
-      }
-      document.body.removeChild(document.querySelector('.fixed'));
-    }
-  };
-});
