@@ -157,6 +157,7 @@ class Calendar {
     this.render();
     this.setupEventListeners();
   }
+  
 generateModernGrid(daysOfWeek) {
   // Create time slots for the day (8 AM to 8 PM)
   const timeSlots = Array.from({ length: 13 }, (_, i) => i + 8);
@@ -207,6 +208,7 @@ generateModernGrid(daysOfWeek) {
   
   return html;
 }
+
 
   render() {
   const weekStart = this.startOfWeek(this.currentDate, { weekStartsOn: 1 });
@@ -306,6 +308,7 @@ generateModernGrid(daysOfWeek) {
       }
     });
   });
+    this.handleOverlappingEvents();
 }
 
   // Add this new method for resize functionality
@@ -661,7 +664,9 @@ showDeleteConfirmationDialog(eventId) {
         }
       });
     });
-    document.querySelectorAll('[id^="modern-day-column-"]').forEach(column => {
+    
+    
+document.querySelectorAll('[id^="modern-day-column-"]').forEach(column => {
   column.addEventListener('click', (e) => {
     if (e.target === column || e.target.classList.contains('border-b')) {
       const dateStr = column.dataset.date;
@@ -671,6 +676,39 @@ showDeleteConfirmationDialog(eventId) {
         if (selectedDateEl) {
           selectedDateEl.textContent = this.format(this.selectedDate, "PPP");
         }
+        
+        // Calculăm ora pe baza poziției click-ului
+        const columnRect = column.getBoundingClientRect();
+        const clickPositionY = e.clientY - columnRect.top;
+        const hourHeight = 64; // Înălțimea unui bloc de o oră (h-16 = 64px)
+        
+        // Calculăm ora de început (8 AM este poziția de start)
+        const hourOffset = clickPositionY / hourHeight;
+        const startHour = Math.floor(8 + hourOffset);
+        const startMinutes = Math.round((hourOffset - Math.floor(hourOffset)) * 60 / 15) * 15;
+        
+        // Ora de sfârșit (o oră mai târziu)
+        let endHour = startHour;
+        let endMinutes = startMinutes + 60;
+        
+        // Ajustăm dacă depășim 60 de minute
+        if (endMinutes >= 60) {
+          endHour = startHour + 1;
+          endMinutes = endMinutes - 60;
+        }
+        
+        // Verificăm ca orele să fie în intervalul valid (8-20)
+        const validStartHour = Math.max(8, Math.min(20, startHour));
+        const validEndHour = Math.max(8, Math.min(20, endHour));
+        
+        // Formatul pentru input type="time"
+        const startTime = `${String(validStartHour).padStart(2, '0')}:${String(startMinutes).padStart(2, '0')}`;
+        const endTime = `${String(validEndHour).padStart(2, '0')}:${String(endMinutes).padStart(2, '0')}`;
+        
+        // Stocăm temporar orele pentru a le folosi în modal
+        this.tempStartTime = startTime;
+        this.tempEndTime = endTime;
+        
         this.showAddEventModal();
       }
     }
@@ -817,9 +855,12 @@ showAddEventModal() {
   }
   
   // Setăm orele default
-  const currentHour = new Date().getHours();
-  const defaultStartTime = `${String(currentHour).padStart(2, '0')}:00`;
-  const defaultEndTime = `${String(currentHour + 1).padStart(2, '0')}:00`;
+  const defaultStartTime = this.tempStartTime || `${String(new Date().getHours()).padStart(2, '0')}:00`;
+  const defaultEndTime = this.tempEndTime || `${String(new Date().getHours() + 1).padStart(2, '0')}:00`;
+
+// Resetăm valorile temporare după ce le-am folosit
+this.tempStartTime = null;
+this.tempEndTime = null;
   
   // Formatăm data selectată pentru input type="date"
   const formattedDate = this.formatDateForInput(this.selectedDate);
@@ -1281,6 +1322,38 @@ handleAddTimeBlock() {
     }
     
     console.log("Edit modal setup complete");
+}
+handleOverlappingEvents() {
+  try {
+    // Selectăm toate evenimentele din calendar
+    let events = document.querySelectorAll('.absolute.rounded-md[class*="bg-"]');
+    
+    // Fallback la selecție alternativă dacă e nevoie
+    if (events.length === 0) {
+      events = document.querySelectorAll('[class*="bg-blue-500"], [class*="bg-green-500"], [class*="bg-purple-500"], [class*="bg-red-500"], [class*="bg-gray-500"]');
+    }
+    
+    // Aplicăm stilurile pentru fiecare eveniment
+    events.forEach((event, index) => {
+      // Adăugăm efectele vizuale de bază
+      event.style.zIndex = 10 + index;
+      
+      // Gestionăm evenimentele de mouse
+      event.onmouseenter = function() {
+        this.style.zIndex = 999;
+        this.style.boxShadow = '0 0 10px rgba(0,0,0,0.3)';
+        this.style.transform = 'scale(1.02)';
+      };
+      
+      event.onmouseleave = function() {
+        this.style.zIndex = 10 + Array.from(events).indexOf(this);
+        this.style.boxShadow = '';
+        this.style.transform = '';
+      };
+    });
+  } catch (error) {
+    console.error("Eroare:", error);
+  }
 }
 }
 
