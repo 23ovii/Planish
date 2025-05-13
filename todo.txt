@@ -10,9 +10,6 @@ dashboard
 de facut navbar-ul mobil -- done
 
 calendar
-cand dai click pe un eveniment sa ii poti da edit! -- done
-de facut calendarul responsive ( are loaded orele doar de la 8am pana la 7pm (de gandit cv sistem) )
-sa poti da drag si sa prelungesti evenimentele -- done
-buguri:
-poti seta ora de sfarsit inainte de ora de inceput (start 08:00 end 05:00) -- done
-poti adauga mai multe event-uri unele peste altele(de facut sa se poata pune unele langa altele)
+improvments: 
+de facut calendarul responsive ( are loaded orele doar de la 8am pana la 9pm (de gandit cv sistem) ) - idk, might do
+poti adauga mai multe event-uri unele peste altele(de facut sa se poata pune unele langa altele) -- TO DO!
