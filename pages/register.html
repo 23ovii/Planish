@@ -133,8 +133,14 @@
         <label for="confirm-password">Confirmă parola</label>
         <input type="password" id="confirm-password" name="confirm-password" required>
       </div>
-      <button type="submit" class="btn" href="./login.html>Creează cont</button>
+      <button type="submit" class="btn" id="registerBtn">Creează cont</button>
     </form>
+    <script>
+      document.getElementById('registerBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        window.location.href = './login.html';
+      });
+    </script>
     <div class="login-link">
       Ai deja cont? <a href="./login.html">Autentifică-te</a>
     </div>
