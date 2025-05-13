@@ -1173,10 +1173,16 @@ handleAddTimeBlock() {
     }
 }
   showEditEventModal(event) {
-    console.log("Opening edit modal for event:", event);
-    
-    const modal = document.createElement("div");
-    modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+      console.log("Opening edit modal for event:", event);
+      
+      // Trigger mouseleave on all events to reset their visual state
+      document.querySelectorAll('.absolute.rounded-md[class*="bg-"]').forEach(eventEl => {
+          const mouseLeaveEvent = new MouseEvent('mouseleave');
+          eventEl.dispatchEvent(mouseLeaveEvent);
+      });
+      
+      const modal = document.createElement("div");
+      modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
 
     const startTime = `${String(event.start.getHours()).padStart(2, '0')}:${String(event.start.getMinutes()).padStart(2, '0')}`;
     const endTime = `${String(event.end.getHours()).padStart(2, '0')}:${String(event.end.getMinutes()).padStart(2, '0')}`;
