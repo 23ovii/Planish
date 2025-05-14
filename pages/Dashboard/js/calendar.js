@@ -164,18 +164,18 @@ generateModernGrid(daysOfWeek) {
   
   // Build the HTML for the modern grid
   const html = `
-    <div class="w-full bg-gray-50 rounded-lg shadow-lg overflow-hidden">
+    <div class="w-full bg-gray-50 dark:bg-[#1e2837] rounded-lg shadow-lg overflow-hidden">
       <!-- Header with days -->
-      <div class="grid grid-cols-8 bg-white border-b">
+      <div class="grid grid-cols-8 bg-white dark:bg-[#1e2837] border-b dark:border-gray-700/50">
         <!-- Empty cell for time column -->
-        <div class="p-3 border-r"></div>
+        <div class="p-3 border-r dark:border-gray-700/50"></div>
         
         <!-- Day headers -->
         ${daysOfWeek.map(day => `
-          <div class="p-3 text-center border-r last:border-r-0 ${this.isSameDay(day, new Date()) ? 'bg-blue-50' : ''}">
-            <div class="text-sm font-medium">${this.format(day, "EEE")}</div>
-            <div class="text-2xl font-bold ${this.isSameDay(day, new Date()) ? 'text-blue-600' : ''}">${this.format(day, "d")}</div>
-            <div class="text-xs text-gray-500">${this.format(day, "MMM")}</div>
+          <div class="p-3 text-center border-r dark:border-gray-700/50 last:border-r-0 ${this.isSameDay(day, new Date()) ? 'bg-purple-50 dark:bg-[#233045]' : ''}">
+            <div class="text-sm font-medium dark:text-gray-300">${this.format(day, "EEE")}</div>
+            <div class="text-2xl font-bold ${this.isSameDay(day, new Date()) ? 'text-[#7a65db] dark:text-[#7a65db]' : 'dark:text-white'}">${this.format(day, "d")}</div>
+            <div class="text-xs text-gray-500 dark:text-gray-400">${this.format(day, "MMM")}</div>
           </div>
         `).join('')}
       </div>
@@ -183,10 +183,10 @@ generateModernGrid(daysOfWeek) {
       <!-- Time grid -->
       <div class="grid grid-cols-8">
         <!-- Time column -->
-        <div class="border-r">
+        <div class="border-r dark:border-gray-700/50">
           ${timeSlots.map(hour => `
-            <div class="h-16 relative border-b">
-              <span class="absolute -top-2 left-2 text-xs font-medium text-gray-500">
+            <div class="h-16 relative border-b dark:border-gray-700/50">
+              <span class="absolute -top-2 left-2 text-xs font-medium text-gray-500 dark:text-gray-400">
                 ${hour === 0 ? "12 AM" : hour < 12 ? `${hour} AM` : hour === 12 ? "12 PM" : `${hour - 12} PM`}
               </span>
             </div>
@@ -195,9 +195,9 @@ generateModernGrid(daysOfWeek) {
         
         <!-- Day columns -->
         ${daysOfWeek.map((day, index) => `
-          <div class="relative border-r last:border-r-0" id="modern-day-column-${index}" data-date="${day.toISOString()}">
+          <div class="relative border-r dark:border-gray-700/50 last:border-r-0" id="modern-day-column-${index}" data-date="${day.toISOString()}">
             ${timeSlots.map(hour => `
-              <div class="h-16 border-b hover:bg-blue-50 transition-colors duration-150"></div>
+              <div class="h-16 border-b dark:border-gray-700/50 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors duration-150"></div>
             `).join('')}
             <!-- Time blocks will be rendered here dynamically -->
           </div>
@@ -219,31 +219,23 @@ generateModernGrid(daysOfWeek) {
   });
 
   const html = `
-    <div class="w-full h-full bg-white rounded-lg shadow">
-      <div class="flex flex-row items-center justify-between p-4 border-b">
-        <h2 class="text-xl font-bold">Calendar</h2>
+    <div class="w-full h-full bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20">
+      <div class="flex flex-row items-center justify-between p-4 border-b dark:border-gray-700">
+        <h2 class="text-xl font-bold dark:text-white">Calendar</h2>
         <div class="flex items-center space-x-2">
-          <div class="relative">
-            <button id="date-picker-btn" class="px-3 py-1.5 border rounded-md text-sm flex items-center">
-              <span class="mr-2 h-4 w-4">📅</span>
-              <span id="selected-date">${this.format(this.selectedDate, "PPP")}</span>
-            </button>
-            <!-- Date picker will be added here dynamically -->
-          </div>
-
           <div class="flex items-center space-x-2">
-            <button id="prev-week" class="p-1 border rounded-md">
+            <button id="prev-week" class="p-1 border dark:border-gray-600 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
               <span class="h-4 w-4">←</span>
             </button>
-            <div class="font-medium">
+            <div class="font-medium dark:text-gray-300">
               ${this.format(weekStart, "MMM d")} - ${this.format(weekEnd, "MMM d, yyyy")}
             </div>
-            <button id="next-week" class="p-1 border rounded-md">
+            <button id="next-week" class="p-1 border dark:border-gray-600 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
               <span class="h-4 w-4">→</span>
             </button>
           </div>
 
-          <button id="add-event" class="px-3 py-1.5 bg-blue-600 text-white rounded-md text-sm flex items-center">
+          <button id="add-event" class="px-3 py-1.5 bg-[#7a65db] hover:bg-[#7a56db] dark:bg-[#7a65db] dark:hover:bg-[#7a56db] text-white rounded-md text-sm flex items-center">
             <span class="h-4 w-4 mr-1">+</span> Adaugă eveniment
           </button>
         </div>
@@ -318,8 +310,16 @@ addResizeHandlers(element, block) {
   let startY, startHeight, startTop, originalStart, originalEnd;
   let isDragging = false;
 
-  // Function for handling drag operation
-  const setupDragHandler = (e) => {
+  // Funcție comună pentru actualizarea afișării timpului
+  const updateTimeDisplay = () => {
+    const timeDisplay = element.querySelector('div:nth-child(2)');
+    if (timeDisplay) {
+      timeDisplay.textContent = `${this.format(block.start, "h:mm a")} - ${this.format(block.end, "h:mm a")}`;
+    }
+  };
+
+  // Funcție pentru gestionarea tragerii
+  element.addEventListener('mousedown', (e) => {
     if (e.target === topHandle || e.target === bottomHandle || e.target.closest('.edit-event')) {
       return;
     }
@@ -342,17 +342,14 @@ addResizeHandlers(element, block) {
       const newStart = new Date(originalStart.getTime() + deltaMinutes * 60000);
       const newEnd = new Date(newStart.getTime() + duration);
 
-      // Check boundaries
+      // Verifică limitele
       if (newStart.getHours() < 8 || newEnd.getHours() > 20) return;
 
       element.style.top = `${startTop + dy}px`;
       block.start = newStart;
       block.end = newEnd;
-
-      const timeDisplay = element.querySelector('div:nth-child(2)');
-      if (timeDisplay) {
-        timeDisplay.textContent = `${this.dateUtils().format(block.start, "h:mm a")} - ${this.dateUtils().format(block.end, "h:mm a")}`;
-      }
+      
+      updateTimeDisplay();
     };
 
     const handleMouseUp = () => {
@@ -366,9 +363,9 @@ addResizeHandlers(element, block) {
 
     document.addEventListener('mousemove', handleMouseMove);
     document.addEventListener('mouseup', handleMouseUp);
-  };
+  });
 
-  // Function for handling resize operations
+  // Funcție pentru gestionarea redimensionării
   const setupResizeHandler = (handle, isTop) => {
     handle.addEventListener('mousedown', (e) => {
       e.stopPropagation();
@@ -385,10 +382,10 @@ addResizeHandlers(element, block) {
         const deltaMinutes = Math.round(dy * minutesPerPixel / 15) * 15;
 
         if (isTop) {
-          // Handle top resize
+          // Redimensionare de sus
           const newStart = new Date(originalStart.getTime() + deltaMinutes * 60000);
           
-          // Validate
+          // Validare
           if (newStart >= originalEnd || newStart.getHours() < 8) return;
           
           const newTop = (newStart.getHours() - 8) * 50 + (newStart.getMinutes() / 60) * 50;
@@ -398,10 +395,10 @@ addResizeHandlers(element, block) {
           element.style.height = `${newHeight}px`;
           block.start = newStart;
         } else {
-          // Handle bottom resize  
+          // Redimensionare de jos 
           const newEnd = new Date(originalEnd.getTime() + deltaMinutes * 60000);
           
-          // Validate
+          // Validare
           if (newEnd <= originalStart || newEnd.getHours() > 20 || 
               (newEnd.getHours() === 20 && newEnd.getMinutes() > 0)) return;
           
@@ -412,11 +409,7 @@ addResizeHandlers(element, block) {
           block.end = newEnd;
         }
         
-        // Update displayed time
-        const timeDisplay = element.querySelector('div:nth-child(2)');
-        if (timeDisplay) {
-          timeDisplay.textContent = `${this.dateUtils().format(block.start, "h:mm a")} - ${this.dateUtils().format(block.end, "h:mm a")}`;
-        }
+        updateTimeDisplay();
       };
 
       const handleMouseUp = () => {
@@ -430,10 +423,9 @@ addResizeHandlers(element, block) {
     });
   };
 
-  // Set up the event handlers
-  element.addEventListener('mousedown', setupDragHandler);
-  setupResizeHandler(topHandle, true);  // top handle
-  setupResizeHandler(bottomHandle, false); // bottom handle
+  // Configurare pentru mânerele de redimensionare
+  setupResizeHandler(topHandle, true);
+  setupResizeHandler(bottomHandle, false);
 }
 
   editTimeBlock(id, updatedBlock) {
@@ -858,9 +850,9 @@ showAddEventModal() {
   const defaultStartTime = this.tempStartTime || `${String(new Date().getHours()).padStart(2, '0')}:00`;
   const defaultEndTime = this.tempEndTime || `${String(new Date().getHours() + 1).padStart(2, '0')}:00`;
 
-// Resetăm valorile temporare după ce le-am folosit
-this.tempStartTime = null;
-this.tempEndTime = null;
+  // Resetăm valorile temporare după ce le-am folosit
+  this.tempStartTime = null;
+  this.tempEndTime = null;
   
   // Formatăm data selectată pentru input type="date"
   const formattedDate = this.formatDateForInput(this.selectedDate);
@@ -966,6 +958,7 @@ this.tempEndTime = null;
             </select>
           </div>
           
+          <!-- Update the time input fields in the modal HTML -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div>
               <label style="
@@ -975,13 +968,20 @@ this.tempEndTime = null;
                 color: #374151;
                 margin-bottom: 0.25rem;
               ">Ora de început</label>
-              <input type="time" id="event-start" required value="${defaultStartTime}" style="
-                width: 100%;
-                padding: 0.5rem;
-                border: 1px solid #d1d5db;
-                border-radius: 0.375rem;
-                transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
-              " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+              <input type="time" 
+                id="event-start" 
+                required 
+                value="${defaultStartTime}" 
+                min="08:00"
+                max="21:00"
+                style="
+                  width: 100%;
+                  padding: 0.5rem;
+                  border: 1px solid #d1d5db;
+                  border-radius: 0.375rem;
+                  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+                " 
+                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
                 onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
             </div>
             <div>
@@ -992,13 +992,20 @@ this.tempEndTime = null;
                 color: #374151;
                 margin-bottom: 0.25rem;
               ">Ora de sfârșit</label>
-              <input type="time" id="event-end" required value="${defaultEndTime}" style="
-                width: 100%;
-                padding: 0.5rem;
-                border: 1px solid #d1d5db;
-                border-radius: 0.375rem;
-                transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
-              " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+              <input type="time" 
+                id="event-end" 
+                required 
+                value="${defaultEndTime}"
+                min="08:00"
+                max="21:00"
+                style="
+                  width: 100%;
+                  padding: 0.5rem;
+                  border: 1px solid #d1d5db;
+                  border-radius: 0.375rem;
+                  transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+                " 
+                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
                 onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
             </div>
           </div>
@@ -1138,17 +1145,24 @@ handleAddTimeBlock() {
             return;
         }
 
-        // Create start and end dates
+        // Parse times
         const [startHours, startMinutes] = startTime.split(":").map(Number);
         const [endHours, endMinutes] = endTime.split(":").map(Number);
 
+        // Validate time range
+        if (startHours < 8 || (endHours >= 21 && endMinutes > 0) || endHours > 21) {
+            alert("Programul este disponibil doar între orele 8:00 și 21:00!");
+            return;
+        }
+
+        // Create dates
         const startDate = new Date(this.selectedDate);
         startDate.setHours(startHours, startMinutes, 0, 0);
 
         const endDate = new Date(this.selectedDate);
         endDate.setHours(endHours, endMinutes, 0, 0);
 
-        // Validare dată
+        // Validate end time is after start time
         if (endDate <= startDate) {
             alert("Ora de sfârșit trebuie să fie după ora de început!");
             return;
@@ -1170,6 +1184,7 @@ handleAddTimeBlock() {
         console.log("Eveniment adăugat cu succes:", newBlock);
     } catch (error) {
         console.error("Eroare la adăugarea evenimentului:", error);
+        alert("A apărut o eroare la adăugarea evenimentului!");
     }
 }
   showEditEventModal(event) {
@@ -1212,11 +1227,27 @@ handleAddTimeBlock() {
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium mb-1">Ora de început</label>
-                            <input type="time" id="edit-start" class="w-full p-2 border rounded-md" value="${startTime}">
+                            <input 
+                                type="time" 
+                                id="edit-start" 
+                                class="w-full p-2 border rounded-md" 
+                                value="${startTime}"
+                                min="08:00"
+                                max="21:00"
+                                required
+                            >
                         </div>
                         <div>
                             <label class="block text-sm font-medium mb-1">Ora de sfârșit</label>
-                            <input type="time" id="edit-end" class="w-full p-2 border rounded-md" value="${endTime}">
+                            <input 
+                                type="time" 
+                                id="edit-end" 
+                                class="w-full p-2 border rounded-md" 
+                                value="${endTime}"
+                                min="08:00"
+                                max="21:00"
+                                required
+                            >
                         </div>
                     </div>
                 </div>
@@ -1231,134 +1262,111 @@ handleAddTimeBlock() {
 
     document.body.appendChild(modal);
 
-    // Stashing the 'this' reference
-    const self = this;
-    
-    // Set up event listeners with error handling
-    try {
-        const saveButton = document.getElementById('save-edit');
-        console.log("Save button element:", saveButton);
-        
-        if (saveButton) {
-            saveButton.addEventListener('click', function(e) {
-                try {
-                    console.log("Save button clicked");
-                    e.preventDefault();
-                    
-                    const titleInput = document.getElementById('edit-title');
-                    const categoryInput = document.getElementById('edit-category');
-                    const startInput = document.getElementById('edit-start');
-                    const endInput = document.getElementById('edit-end');
-                    
-                    console.log("Form values:", {
-                        title: titleInput.value,
-                        category: categoryInput.value,
-                        start: startInput.value,
-                        end: endInput.value
-                    });
-                    
-                    // Parse the time inputs
-                    const [startHours, startMinutes] = startInput.value.split(':').map(Number);
-                    const [endHours, endMinutes] = endInput.value.split(':').map(Number);
-                    
-                    console.log("Parsed times:", {startHours, startMinutes, endHours, endMinutes});
-                    
-                    // Create new Date objects
-                    const updatedStart = new Date(event.start);
-                    updatedStart.setHours(startHours, startMinutes, 0, 0);
-                    
-                    const updatedEnd = new Date(event.end);
-                    updatedEnd.setHours(endHours, endMinutes, 0, 0);
-                    
-                    console.log("New dates:", {updatedStart, updatedEnd});
-                    
-                    // Create the updated event object
-                    const updatedEvent = {
-                        id: event.id,
-                        title: titleInput.value,
-                        category: categoryInput.value,
-                        start: updatedStart,
-                        end: updatedEnd
-                    };
-                    
-                    console.log("Updated event:", updatedEvent);
-                    
-                    // Update the event
-                    self.editTimeBlock(event.id, updatedEvent);
-                    
-                    // Remove the modal
-                    document.body.removeChild(modal);
-                    
-                    console.log("Edit completed and modal closed");
-                } catch (error) {
-                    console.error("Error in save event handler:", error);
+    // Add event listeners for all buttons
+    document.getElementById('cancel-edit').addEventListener('click', () => {
+        document.body.removeChild(modal);
+    });
+
+    document.getElementById('delete-event').addEventListener('click', () => {
+        // Show delete confirmation dialog
+        this.showDeleteConfirmationDialog(event.id);
+        // Remove the edit modal
+        document.body.removeChild(modal);
+    });
+
+    const saveButton = document.getElementById('save-edit');
+    if (saveButton) {
+        saveButton.addEventListener('click', (e) => {
+            try {
+                e.preventDefault();
+                
+                const titleInput = document.getElementById('edit-title');
+                const categoryInput = document.getElementById('edit-category');
+                const startInput = document.getElementById('edit-start');
+                const endInput = document.getElementById('edit-end');
+                
+                // Validate inputs
+                if (!titleInput.value.trim()) {
+                    alert("Te rog completează titlul!");
+                    return;
                 }
-            });
-        } else {
-            console.error("Could not find save button element!");
-        }
-        
-        const cancelButton = document.getElementById('cancel-edit');
-        if (cancelButton) {
-            cancelButton.addEventListener('click', function() {
-                console.log("Cancel button clicked");
+
+                // Parse times for validation
+                const [startHours, startMinutes] = startInput.value.split(':').map(Number);
+                const [endHours, endMinutes] = endInput.value.split(':').map(Number);
+
+                // Validate time range
+                if (startHours < 8 || (endHours >= 21 && endMinutes > 0) || endHours > 21) {
+                    alert("Programul este disponibil doar între orele 8:00 și 21:00!");
+                    return;
+                }
+
+                // Create new Date objects
+                const updatedStart = new Date(event.start);
+                updatedStart.setHours(startHours, startMinutes, 0, 0);
+                
+                const updatedEnd = new Date(event.end);
+                updatedEnd.setHours(endHours, endMinutes, 0, 0);
+
+                // Validate end time is after start time
+                if (updatedEnd <= updatedStart) {
+                    alert("Ora de sfârșit trebuie să fie după ora de început!");
+                    return;
+                }
+
+                // Create the updated event object
+                const updatedEvent = {
+                    id: event.id,
+                    title: titleInput.value,
+                    category: categoryInput.value,
+                    start: updatedStart,
+                    end: updatedEnd
+                };
+                
+                // Update the event
+                this.editTimeBlock(event.id, updatedEvent);
+                
+                // Remove the modal
                 document.body.removeChild(modal);
-            });
-        }
-        
-        const deleteButton = document.getElementById('delete-event');
-        if (deleteButton) {
-            deleteButton.addEventListener('click', function() {
-                console.log("Delete button clicked");
-                document.body.removeChild(modal); // Închide mai întâi modalul de editare
-                self.showDeleteConfirmationDialog(event.id);
-            });
-        }
-        
-        // Close on outside click
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                console.log("Outside modal clicked, closing");
-                document.body.removeChild(modal);
+                
+            } catch (error) {
+                console.error("Error in save event handler:", error);
+                alert("A apărut o eroare la salvarea evenimentului!");
             }
         });
-        
-    } catch (error) {
-        console.error("Error setting up event listeners:", error);
     }
-    
-    console.log("Edit modal setup complete");
+
+    // Add click outside to close
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            document.body.removeChild(modal);
+        }
+    });
 }
 handleOverlappingEvents() {
   try {
-    // Selectăm toate evenimentele din calendar
-    let events = document.querySelectorAll('.absolute.rounded-md[class*="bg-"]');
+    // Selectează toate evenimentele din calendar
+    const events = document.querySelectorAll('.absolute.rounded-md[class*="bg-"]');
     
-    // Fallback la selecție alternativă dacă e nevoie
-    if (events.length === 0) {
-      events = document.querySelectorAll('[class*="bg-blue-500"], [class*="bg-green-500"], [class*="bg-purple-500"], [class*="bg-red-500"], [class*="bg-gray-500"]');
-    }
-    
-    // Aplicăm stilurile pentru fiecare eveniment
+    // Aplică stilurile pentru fiecare eveniment
     events.forEach((event, index) => {
-      // Adăugăm efectele vizuale de bază
       event.style.zIndex = 10 + index;
       
-      // Gestionăm evenimentele de mouse
-      event.onmouseenter = function() {
+      // Adaugă evenimentele mouse pentru efecte vizuale
+      event.addEventListener('mouseenter', function() {
         this.style.zIndex = 999;
         this.style.boxShadow = '0 0 10px rgba(0,0,0,0.3)';
         this.style.transform = 'scale(1.02)';
-      };
+      });
       
-      event.onmouseleave = function() {
+      event.addEventListener('mouseleave', function() {
         this.style.zIndex = 10 + Array.from(events).indexOf(this);
         this.style.boxShadow = '';
         this.style.transform = '';
-      };
+      });
     });
   } catch (error) {
-    console.error("Eroare:", error);
+    console.error("Eroare la gestionarea evenimentelor suprapuse:", error);
   }
 }
 }
