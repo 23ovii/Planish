@@ -93,6 +93,10 @@ class Calendar {
       hours = hours % 12;
       hours = hours ? hours : 12; // the hour '0' should be '12'
       return `${hours}:${minutes} ${ampm}`;
+    } else if (formatStr === "HH:mm") {
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${hours}:${minutes}`;
     }
     return date.toLocaleDateString();
   }
@@ -237,6 +241,9 @@ generateModernGrid(daysOfWeek) {
 
           <button id="add-event" class="px-3 py-1.5 bg-[#7a65db] hover:bg-[#7a56db] dark:bg-[#7a65db] dark:hover:bg-[#7a56db] text-white rounded-md text-sm flex items-center">
             <span class="h-4 w-4 mr-1">+</span> Adaugă eveniment
+          </button>
+          <button id="export-week" class="px-3 py-1.5 ml-2 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-md text-sm flex items-center">
+            <span class="h-4 w-4 mr-1">↓</span> Exportă săptămâna
           </button>
         </div>
       </div>
@@ -503,9 +510,9 @@ showDeleteConfirmationDialog(eventId) {
   // Simplificăm HTML-ul și eliminăm efectele de animație complexe
   confirmDialog.innerHTML = `
     <div style="
-      background-color: white;
+      background-color: #1e1e1e;
       border-radius: 0.5rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
       padding: 1.5rem;
       width: 100%;
       max-width: 20rem;
@@ -513,24 +520,24 @@ showDeleteConfirmationDialog(eventId) {
       opacity: 0;
       transition: opacity 150ms ease-out;
     ">
-      <h3 style="font-size: 1.125rem; font-weight: bold; color: #1f2937; margin-bottom: 1rem;">Confirmare ștergere</h3>
-      <p style="color: #4b5563; margin-bottom: 1.5rem;">Ești sigur că vrei să ștergi acest eveniment?</p>
+      <h3 style="font-size: 1.125rem; font-weight: bold; color: #e2e2e2; margin-bottom: 1rem;">Confirmare ștergere</h3>
+      <p style="color: #b0b0b0; margin-bottom: 1.5rem;">Ești sigur că vrei să ștergi acest eveniment?</p>
       <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
         <button id="cancel-delete" style="
           padding: 0.5rem 1rem;
-          border: 1px solid #d1d5db;
+          border: 1px solid #3a3a3a;
           border-radius: 0.375rem;
-          background-color: white;
-          color: #374151;
+          background-color: #2a2a2a;
+          color: #e2e2e2;
           cursor: pointer;
           transition: background-color 150ms ease-out, transform 150ms ease-out;
-        " onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.transform='translateY(-1px)';" 
-           onmouseout="this.style.backgroundColor='white'; this.style.transform='translateY(0)';">Anulează</button>
+        " onmouseover="this.style.backgroundColor='#3a3a3a'; this.style.transform='translateY(-1px)';" 
+           onmouseout="this.style.backgroundColor='#2a2a2a'; this.style.transform='translateY(0)';">Anulează</button>
         <button id="confirm-delete" style="
           padding: 0.5rem 1rem;
           border-radius: 0.375rem;
           background-color: #ef4444;
-          color: white;
+          color: #ffffff;
           border: none;
           cursor: pointer;
           transition: background-color 150ms ease-out, transform 150ms ease-out;
@@ -857,16 +864,21 @@ showAddEventModal() {
   // Formatăm data selectată pentru input type="date"
   const formattedDate = this.formatDateForInput(this.selectedDate);
   
+  // Detectăm dacă este activ dark mode
+  const isDarkMode = document.documentElement.classList.contains('dark') || 
+                     window.matchMedia('(prefers-color-scheme: dark)').matches;
+  
   // Creăm modalul optimizat
   const modal = document.createElement('div');
   modal.id = 'add-event-modal';
+  modal.className = isDarkMode ? 'dark' : '';
   modal.style.cssText = `
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, ${isDarkMode ? '0.7' : '0.5'});
     display: flex;
     align-items: center;
     justify-content: center;
@@ -876,24 +888,30 @@ showAddEventModal() {
   `;
   
   modal.innerHTML = `
-    <div id="modal-content" style="
-      background-color: white;
+    <div id="modal-content" class="${isDarkMode ? 'dark-mode' : ''}" style="
+      background-color: ${isDarkMode ? '#1a1f2e' : 'white'};
       border-radius: 0.5rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      box-shadow: ${isDarkMode ? '0 10px 25px -5px rgba(0, 0, 0, 0.5)' : '0 10px 25px -5px rgba(0, 0, 0, 0.2)'};
       width: 100%;
       max-width: 28rem;
       opacity: 0;
       transform: translateY(8px);
       transition: opacity 150ms ease-out, transform 150ms ease-out;
+      color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};
     ">
       <div style="
         padding: 1.25rem;
-        border-bottom: 1px solid #e5e7eb;
-        background: linear-gradient(to right, #eff6ff, #eef2ff);
+        border-bottom: 1px solid ${isDarkMode ? '#2d3748' : '#e5e7eb'};
+        background: ${isDarkMode ? 'linear-gradient(to right, #1e293b, #1e2837)' : 'linear-gradient(to right, #eff6ff, #eef2ff)'};
         border-top-left-radius: 0.5rem;
         border-top-right-radius: 0.5rem;
       ">
-        <h3 style="font-size: 1.125rem; font-weight: bold; color: #1f2937; margin: 0 0 0.25rem 0;">Adaugă eveniment nou</h3>
+        <h3 style="
+          font-size: 1.125rem; 
+          font-weight: bold; 
+          color: ${isDarkMode ? '#f3f4f6' : '#1f2937'}; 
+          margin: 0 0 0.25rem 0;
+        ">Adaugă eveniment nou</h3>
       </div>
       
       <form id="add-event-form" style="padding: 1.25rem;">
@@ -903,17 +921,20 @@ showAddEventModal() {
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: #374151;
+              color: ${isDarkMode ? '#d1d5db' : '#374151'};
               margin-bottom: 0.25rem;
             ">Titlu</label>
             <input type="text" id="event-title" required placeholder="Denumire eveniment" style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid #d1d5db;
+              border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
               border-radius: 0.375rem;
+              background-color: ${isDarkMode ? '#111827' : 'white'};
+              color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
-            " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-              onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+            " 
+            onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
           </div>
           
           <div>
@@ -921,17 +942,20 @@ showAddEventModal() {
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: #374151;
+              color: ${isDarkMode ? '#d1d5db' : '#374151'};
               margin-bottom: 0.25rem;
             ">Data</label>
             <input type="date" id="event-date" required value="${formattedDate}" style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid #d1d5db;
+              border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
               border-radius: 0.375rem;
+              background-color: ${isDarkMode ? '#111827' : 'white'};
+              color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
-            " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-              onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+            "
+            onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
           </div>
           
           <div>
@@ -939,33 +963,35 @@ showAddEventModal() {
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: #374151;
+              color: ${isDarkMode ? '#d1d5db' : '#374151'};
               margin-bottom: 0.25rem;
             ">Categorie</label>
             <select id="event-category" required style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid #d1d5db;
+              border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
               border-radius: 0.375rem;
+              background-color: ${isDarkMode ? '#111827' : 'white'};
+              color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
-            " onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-              onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
-              <option value="work">Muncă</option>
-              <option value="personal">Personal</option>
-              <option value="study">Studiu</option>
-              <option value="health">Sănătate</option>
-              <option value="other">Altele</option>
+            "
+            onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
+              <option value="work" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Muncă</option>
+              <option value="personal" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Personal</option>
+              <option value="study" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Studiu</option>
+              <option value="health" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Sănătate</option>
+              <option value="other" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Altele</option>
             </select>
           </div>
           
-          <!-- Update the time input fields in the modal HTML -->
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div>
               <label style="
                 display: block;
                 font-size: 0.875rem;
                 font-weight: 500;
-                color: #374151;
+                color: ${isDarkMode ? '#d1d5db' : '#374151'};
                 margin-bottom: 0.25rem;
               ">Ora de început</label>
               <input type="time" 
@@ -977,19 +1003,21 @@ showAddEventModal() {
                 style="
                   width: 100%;
                   padding: 0.5rem;
-                  border: 1px solid #d1d5db;
+                  border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
                   border-radius: 0.375rem;
+                  background-color: ${isDarkMode ? '#111827' : 'white'};
+                  color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
                   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
                 " 
-                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+                onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
             </div>
             <div>
               <label style="
                 display: block;
                 font-size: 0.875rem;
                 font-weight: 500;
-                color: #374151;
+                color: ${isDarkMode ? '#d1d5db' : '#374151'};
                 margin-bottom: 0.25rem;
               ">Ora de sfârșit</label>
               <input type="time" 
@@ -1001,12 +1029,14 @@ showAddEventModal() {
                 style="
                   width: 100%;
                   padding: 0.5rem;
-                  border: 1px solid #d1d5db;
+                  border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
                   border-radius: 0.375rem;
+                  background-color: ${isDarkMode ? '#111827' : 'white'};
+                  color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
                   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
                 " 
-                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+                onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
             </div>
           </div>
         </div>
@@ -1014,35 +1044,58 @@ showAddEventModal() {
         <div style="
           padding-top: 1.25rem;
           margin-top: 1rem;
-          border-top: 1px solid #e5e7eb;
+          border-top: 1px solid ${isDarkMode ? '#2d3748' : '#e5e7eb'};
           display: flex;
           justify-content: flex-end;
           gap: 0.5rem;
         ">
           <button type="button" id="cancel-event" style="
             padding: 0.5rem 1rem;
-            border: 1px solid #d1d5db;
+            border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
             border-radius: 0.375rem;
-            color: #374151;
+            background-color: ${isDarkMode ? '#1f2937' : 'white'};
+            color: ${isDarkMode ? '#d1d5db' : '#374151'};
             cursor: pointer;
             transition: background-color 150ms ease-out, transform 150ms ease-out;
-          " onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.transform='translateY(-1px)';" 
-            onmouseout="this.style.backgroundColor=''; this.style.transform='';">Anulează</button>
+          " 
+          onmouseover="this.style.backgroundColor='${isDarkMode ? '#111827' : '#f3f4f6'}'; this.style.transform='translateY(-1px)';" 
+          onmouseout="this.style.backgroundColor='${isDarkMode ? '#1f2937' : ''}'; this.style.transform='';">Anulează</button>
           
           <button type="submit" style="
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
-            background: linear-gradient(to right, #2563eb, #4f46e5);
+            background: ${isDarkMode ? 'linear-gradient(to right, #7a65db, #8b5cf6)' : 'linear-gradient(to right, #2563eb, #4f46e5)'};
             color: white;
             border: none;
             cursor: pointer;
             transition: filter 150ms ease-out, transform 150ms ease-out;
-          " onmouseover="this.style.filter='brightness(1.1)'; this.style.transform='translateY(-1px)';" 
-            onmouseout="this.style.filter=''; this.style.transform='';">Salvează</button>
+          " 
+          onmouseover="this.style.filter='brightness(1.1)'; this.style.transform='translateY(-1px)';" 
+          onmouseout="this.style.filter=''; this.style.transform='';">Salvează</button>
         </div>
       </form>
     </div>
   `;
+  
+  // Adăugăm stiluri speciale pentru dark mode
+  const styleElement = document.createElement('style');
+  styleElement.textContent = `
+    .dark-mode input::-webkit-calendar-picker-indicator {
+      filter: invert(1);
+    }
+    
+    .dark-mode select option {
+      background-color: #111827;
+      color: #f3f4f6;
+    }
+    
+    .dark-mode ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+  `;
+  
+  document.head.appendChild(styleElement);
   
   // Adăugăm modalul la DOM
   document.body.appendChild(modal);
@@ -1068,8 +1121,17 @@ showAddEventModal() {
         modalContent.style.transform = 'translateY(8px)';
       }
       
+      // Găsim și eliminăm doar stilurile specifice modalului
+      const styleElements = document.querySelectorAll('style');
+      styleElements.forEach(style => {
+          if (style.innerHTML.includes('.dark-mode')) {
+              style.remove();
+          }
+      });
+      
       setTimeout(() => {
-        if (modal.parentNode) {
+        // Eliminăm modalul doar dacă încă există în DOM
+        if (modal && modal.parentNode) {
           modal.parentNode.removeChild(modal);
         }
       }, 150);
@@ -1087,16 +1149,15 @@ showAddEventModal() {
     const startTime = document.getElementById('event-start').value;
     const endTime = document.getElementById('event-end').value;
     
-    // Aici adaugi logica ta pentru salvarea evenimentului
     this.handleAddTimeBlock({
-      title,
-      category,
-      startTime,
-      endTime,
-      date: eventDate
+        title,
+        category,
+        startTime,
+        endTime,
+        date: eventDate
     });
     
-    closeModal();
+    closeModal(); // Folosește aceeași funcție de închidere
   };
   
   // Adăugăm event listeners
@@ -1123,7 +1184,7 @@ formatDateForInput(date) {
   const day = String(date.getDate()).padStart(2, '0');
   return `${year}-${month}-${day}`;
 }
-handleAddTimeBlock() {
+handleAddTimeBlock({title, category, startTime, endTime, date}) {
     try {
         const titleEl = document.getElementById("event-title");
         const categoryEl = document.getElementById("event-category");
@@ -1187,7 +1248,7 @@ handleAddTimeBlock() {
         alert("A apărut o eroare la adăugarea evenimentului!");
     }
 }
-  showEditEventModal(event) {
+showEditEventModal(event) {
       console.log("Opening edit modal for event:", event);
       
       // Trigger mouseleave on all events to reset their visual state
@@ -1203,20 +1264,20 @@ handleAddTimeBlock() {
     const endTime = `${String(event.end.getHours()).padStart(2, '0')}:${String(event.end.getMinutes()).padStart(2, '0')}`;
 
     modal.innerHTML = `
-        <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
-            <div class="p-4 border-b">
-                <h3 class="text-lg font-medium">Editează eveniment</h3>
-                <div class="text-sm text-gray-500">Data: ${this.format(event.start, "PPP")}</div>
+        <div class="bg-white dark:bg-[#1e2837] rounded-lg shadow-lg w-full max-w-md">
+            <div class="p-4 border-b dark:border-gray-700/50">
+                <h3 class="text-lg font-medium dark:text-white">Editează eveniment</h3>
+                <div class="text-sm text-gray-500 dark:text-gray-400">Data: ${this.format(event.start, "PPP")}</div>
             </div>
             <div class="p-4">
                 <div class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium mb-1">Titlu</label>
-                        <input type="text" id="edit-title" class="w-full p-2 border rounded-md" value="${event.title}">
+                        <label class="block text-sm font-medium mb-1 dark:text-gray-300">Titlu</label>
+                        <input type="text" id="edit-title" class="w-full p-2 border rounded-md dark:bg-[#233045] dark:border-gray-700/50 dark:text-white focus:ring-[#7a65db] focus:border-[#7a65db]" value="${event.title}">
                     </div>
                     <div>
-                        <label class="block text-sm font-medium mb-1">Categorie</label>
-                        <select id="edit-category" class="w-full p-2 border rounded-md">
+                        <label class="block text-sm font-medium mb-1 dark:text-gray-300">Categorie</label>
+                        <select id="edit-category" class="w-full p-2 border rounded-md dark:bg-[#233045] dark:border-gray-700/50 dark:text-white focus:ring-[#7a65db] focus:border-[#7a65db]">
                             <option value="work" ${event.category === 'work' ? 'selected' : ''}>Muncă</option>
                             <option value="personal" ${event.category === 'personal' ? 'selected' : ''}>Personal</option>
                             <option value="study" ${event.category === 'study' ? 'selected' : ''}>Studiu</option>
@@ -1226,11 +1287,11 @@ handleAddTimeBlock() {
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-sm font-medium mb-1">Ora de început</label>
+                            <label class="block text-sm font-medium mb-1 dark:text-gray-300">Ora de început</label>
                             <input 
                                 type="time" 
                                 id="edit-start" 
-                                class="w-full p-2 border rounded-md" 
+                                class="w-full p-2 border rounded-md dark:bg-[#233045] dark:border-gray-700/50 dark:text-white focus:ring-[#7a65db] focus:border-[#7a65db]" 
                                 value="${startTime}"
                                 min="08:00"
                                 max="21:00"
@@ -1238,11 +1299,11 @@ handleAddTimeBlock() {
                             >
                         </div>
                         <div>
-                            <label class="block text-sm font-medium mb-1">Ora de sfârșit</label>
+                            <label class="block text-sm font-medium mb-1 dark:text-gray-300">Ora de sfârșit</label>
                             <input 
                                 type="time" 
                                 id="edit-end" 
-                                class="w-full p-2 border rounded-md" 
+                                class="w-full p-2 border rounded-md dark:bg-[#233045] dark:border-gray-700/50 dark:text-white focus:ring-[#7a65db] focus:border-[#7a65db]" 
                                 value="${endTime}"
                                 min="08:00"
                                 max="21:00"
@@ -1252,10 +1313,10 @@ handleAddTimeBlock() {
                     </div>
                 </div>
             </div>
-            <div class="p-4 border-t flex justify-end space-x-2">
-                <button type="button" id="cancel-edit" class="px-4 py-2 border rounded-md">Anulează</button>
-                <button type="button" id="delete-event" class="px-4 py-2 border rounded-md text-red-500">Șterge</button>
-                <button type="button" id="save-edit" class="px-4 py-2 bg-blue-600 text-white rounded-md">Salvează</button>
+            <div class="p-4 border-t dark:border-gray-700/50 flex justify-end space-x-2">
+                <button type="button" id="cancel-edit" class="px-4 py-2 border rounded-md dark:border-gray-700/50 dark:bg-[#233045] dark:text-gray-300 dark:hover:bg-[#1a2535]">Anulează</button>
+                <button type="button" id="delete-event" class="px-4 py-2 border rounded-md dark:border-gray-700/50 dark:bg-[#233045] text-red-500 dark:text-red-400 dark:hover:bg-[#1a2535]">Șterge</button>
+                <button type="button" id="save-edit" class="px-4 py-2 bg-blue-600 dark:bg-[#7a65db] hover:bg-blue-700 dark:hover:bg-[#6a55cb] text-white rounded-md">Salvează</button>
             </div>
         </div>
     `;
@@ -1368,6 +1429,47 @@ handleOverlappingEvents() {
   } catch (error) {
     console.error("Eroare la gestionarea evenimentelor suprapuse:", error);
   }
+}
+
+// Add this method to the Calendar class
+exportWeekData() {
+    try {
+        const weekStart = this.startOfWeek(this.currentDate, { weekStartsOn: 1 });
+        const weekEnd = this.endOfWeek(this.currentDate, { weekStartsOn: 1 });
+
+        const weekEvents = this.timeBlocks.filter(event => {
+            const eventDate = new Date(event.start);
+            return eventDate >= weekStart && eventDate <= weekEnd;
+        });
+
+        const exportData = {
+            weekRange: `${this.format(weekStart, "dd/MM/yyyy")} - ${this.format(weekEnd, "dd/MM/yyyy")}`,
+            events: weekEvents.map(event => ({
+                title: event.title,
+                category: event.category,
+                date: this.format(event.start, "dd/MM/yyyy"),
+                startTime: this.format(event.start, "HH:mm"),
+                endTime: this.format(event.end, "HH:mm")
+            }))
+        };
+
+        const fileName = `calendar-${this.format(weekStart, "dd-MM-yyyy")}.json`;
+        const jsonString = JSON.stringify(exportData, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = fileName;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+
+    } catch (error) {
+        console.error("Eroare la exportul datelor:", error);
+        alert("A apărut o eroare la exportul datelor!");
+    }
 }
 }
 
