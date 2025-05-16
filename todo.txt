@@ -6,8 +6,12 @@ de adaugat in sectiunea about:
 - niste citate
 - recomandari de la experti
 
+analytics
+todo:
+cand adaugi un eveniment si intri pe pagina analytics sa nu fie necesar refresh pt a vedea statistica
+
 dashboard
-de facut navbar-ul mobil -- done
+de tradus / modificat toate textele paginii.
 
 calendar
 improvments: 
