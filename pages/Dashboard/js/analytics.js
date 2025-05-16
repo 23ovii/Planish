@@ -8,194 +8,260 @@ function initAnalytics(containerId) {
   let view = "daily";
   let selectedCategory = "all";
 
-  // Mock data for time usage
-  const dailyData = [
-    { category: "Work", hours: 6, color: "#4f46e5" },
-    { category: "Study", hours: 2, color: "#10b981" },
-    { category: "Exercise", hours: 1, color: "#f59e0b" },
-    { category: "Leisure", hours: 3, color: "#ec4899" },
-    { category: "Sleep", hours: 8, color: "#6366f1" },
-    { category: "Other", hours: 4, color: "#8b5cf6" },
-  ];
+  // Funcție pentru a încărca datele din localStorage
+  function loadCalendarData() {
+    try {
+        const data = localStorage.getItem('calendarEvents');
+        if (!data) {
+            console.log('Nu există date în localStorage');
+            return [];
+        }
+        
+        let events = JSON.parse(data).map(event => ({
+            ...event,
+            start: new Date(event.start),
+            end: new Date(event.end)
+        }));
 
-  const weeklyData = [
-    { category: "Work", hours: 30, color: "#4f46e5" },
-    { category: "Study", hours: 10, color: "#10b981" },
-    { category: "Exercise", hours: 5, color: "#f59e0b" },
-    { category: "Leisure", hours: 15, color: "#ec4899" },
-    { category: "Sleep", hours: 56, color: "#6366f1" },
-    { category: "Other", hours: 20, color: "#8b5cf6" },
-  ];
+        // Filter by category if needed
+        if (selectedCategory !== 'all') {
+            events = events.filter(event => event.category === selectedCategory);
+        }
+
+        // Filter by view (daily/weekly)
+        const today = new Date();
+        if (view === 'daily') {
+            events = events.filter(event => isSameDay(new Date(event.start), today));
+        } else {
+            const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
+            const weekEnd = new Date(today.setDate(today.getDate() + 6));
+            events = events.filter(event => {
+                const eventDate = new Date(event.start);
+                return eventDate >= weekStart && eventDate <= weekEnd;
+            });
+        }
+
+        return events;
+    } catch (e) {
+        console.error("Eroare la încărcarea datelor din localStorage:", e);
+        return [];
+    }
+  }
+
+  // Funcție pentru a calcula orele pentru fiecare categorie
+  function calculateHoursByCategory(events, isDaily = true) {
+    const today = new Date();
+    const categories = {};
+    
+    events.forEach(event => {
+      const eventDate = new Date(event.start);
+      
+      // Filtrăm evenimentele în funcție de vizualizare (zilnică/săptămânală)
+      if (isDaily && !isSameDay(eventDate, today)) return;
+      if (!isDaily && !isThisWeek(eventDate)) return;
+
+      const duration = (new Date(event.end) - new Date(event.start)) / (1000 * 60 * 60); // durata în ore
+      
+      if (!categories[event.category]) {
+        categories[event.category] = {
+          hours: 0,
+          color: getCategoryColor(event.category)
+        };
+      }
+      
+      categories[event.category].hours += duration;
+    });
+
+    return Object.entries(categories).map(([category, data]) => ({
+      category,
+      hours: Math.round(data.hours * 10) / 10, // rotunjim la o zecimală
+      color: data.color
+    }));
+  }
+
+  // Funcție helper pentru a verifica dacă două date sunt în aceeași zi
+  function isSameDay(date1, date2) {
+    return date1.getDate() === date2.getDate() &&
+           date1.getMonth() === date2.getMonth() &&
+           date1.getFullYear() === date2.getFullYear();
+  }
+
+  // Funcție helper pentru a verifica dacă o dată este în această săptămână
+  function isThisWeek(date) {
+    const now = new Date();
+    const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+    const weekEnd = new Date(now.setDate(now.getDate() - now.getDay() + 6));
+    return date >= weekStart && date <= weekEnd;
+  }
+
+  // Funcție pentru a obține culoarea categoriei
+  function getCategoryColor(category) {
+    const colors = {
+      work: "#4f46e5",
+      personal: "#10b981",
+      study: "#8b5cf6",
+      health: "#ef4444",
+      other: "#6366f1"
+    };
+    return colors[category] || "#6366f1";
+  }
 
   // Render the analytics UI
   function render() {
-    const currentData = view === "daily" ? dailyData : weeklyData;
-    const filteredData =
-      selectedCategory === "all"
-        ? currentData
-        : currentData.filter((item) => item.category === selectedCategory);
+    const events = loadCalendarData();
+    const currentData = calculateHoursByCategory(events, view === "daily");
+    
+    const filteredData = selectedCategory === "all" 
+      ? currentData 
+      : currentData.filter(item => item.category === selectedCategory);
 
     const totalHours = filteredData.reduce((sum, item) => sum + item.hours, 0);
 
     // Create the analytics UI
     container.innerHTML = `
-      <div class="bg-background p-6 rounded-lg w-full h-full">
-        <div class="flex flex-col space-y-6">
+      <div class="bg-background p-8 rounded-xl shadow-lg dark:bg-gray-800">
+        <div class="flex flex-col space-y-8">
+          <!-- Modern Header Section -->
           <div class="flex justify-between items-center">
-            <h2 class="text-2xl font-bold">Time Usage Analytics</h2>
-            <div class="flex space-x-4">
-              <!-- View Tabs -->
-              <div class="inline-flex h-10 items-center justify-center rounded-md bg-muted p-1 text-muted-foreground">
-                <button id="daily-tab" class="${view === "daily" ? "bg-background text-foreground" : ""} inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                  <i data-lucide="activity" class="mr-2 h-4 w-4"></i>
+            <div>
+              <h2 class="text-3xl font-bold text-[#7a65db] ">Analytics Dashboard</h2>
+              <p class="text-gray-500 dark:text-gray-400 mt-1">Track your time usage and productivity</p>
+            </div>
+            
+            <div class="flex items-center gap-4">
+              <!-- Modern View Tabs -->
+              <div class="bg-gray-100 dark:bg-gray-700 p-1 rounded-xl">
+                <button id="daily-tab" 
+                  class="${view === "daily" 
+                    ? "bg-white dark:bg-gray-600 shadow-sm" 
+                    : "text-gray-500 dark:text-gray-400"} 
+                  px-4 py-2 rounded-lg transition-all duration-200">
+                  <i data-lucide="activity" class="inline-block w-4 h-4 mr-2"></i>
                   Daily
                 </button>
-                <button id="weekly-tab" class="${view === "weekly" ? "bg-background text-foreground" : ""} inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50">
-                  <i data-lucide="calendar" class="mr-2 h-4 w-4"></i>
+                <button id="weekly-tab"
+                  class="${view === "weekly" 
+                    ? "bg-white dark:bg-gray-600 shadow-sm" 
+                    : "text-gray-500 dark:text-gray-400"} 
+                  px-4 py-2 rounded-lg transition-all duration-200">
+                  <i data-lucide="calendar" class="inline-block w-4 h-4 mr-2"></i>
                   Weekly
                 </button>
               </div>
 
-              <!-- Category Filter -->
-              <div class="relative inline-block w-[180px]">
-                <button id="category-select" class="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+              <!-- Modern Category Dropdown -->
+              <div class="relative">
+                <button id="category-select" 
+                  class="flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 hover:border-purple-500 dark:hover:border-purple-500 transition-all duration-200">
                   <span>${selectedCategory === "all" ? "All Categories" : selectedCategory}</span>
-                  <i data-lucide="chevron-down" class="h-4 w-4 opacity-50"></i>
+                  <i data-lucide="chevron-down" class="w-4 h-4 opacity-50"></i>
                 </button>
-                <div id="category-dropdown" class="absolute z-10 mt-1 hidden max-h-60 w-full overflow-auto rounded-md border bg-popover text-popover-foreground shadow-md">
-                  <div class="p-1">
-                    <button class="category-option relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground" data-value="all">
-                      <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-                        ${selectedCategory === "all" ? '<i data-lucide="check" class="h-4 w-4"></i>' : ""}
-                      </span>
-                      <span>All Categories</span>
-                    </button>
-                    ${currentData
-                      .map(
-                        (item) => `
-                      <button class="category-option relative flex w-full cursor-default select-none items-center rounded-sm py-1.5 pl-8 pr-2 text-sm outline-none hover:bg-accent hover:text-accent-foreground" data-value="${item.category}">
-                        <span class="absolute left-2 flex h-3.5 w-3.5 items-center justify-center">
-                          ${selectedCategory === item.category ? '<i data-lucide="check" class="h-4 w-4"></i>' : ""}
-                        </span>
-                        <span>${item.category}</span>
-                      </button>
-                    `,
-                      )
-                      .join("")}
-                  </div>
+                <div id="category-dropdown" 
+                  class="absolute z-10 mt-2 hidden w-full py-2 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600 shadow-xl">
+                  <!-- Category options will be populated here -->
                 </div>
               </div>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Pie Chart Card -->
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
-              <div class="flex flex-col space-y-1.5 p-6">
-                <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2">
-                  <i data-lucide="pie-chart" class="h-5 w-5"></i>
-                  Time Distribution
-                </h3>
+          <!-- Modern Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Modern Pie Chart Card -->
+            <div class="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-600">
+              <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-white">Time Distribution</h3>
+                <span class="text-sm font-medium px-3 py-1 bg-gray-100 dark:bg-gray-600 rounded-full">
+                  ${totalHours.toFixed(1)} total hours
+                </span>
               </div>
-              <div class="p-6 pt-0 flex justify-center">
-                <div class="relative w-64 h-64">
-                  <!-- SVG Pie Chart -->
-                  <svg viewBox="0 0 100 100" class="w-full h-full">
-                    ${generatePieChartPaths(filteredData)}
-                  </svg>
-                  <div class="absolute inset-0 flex items-center justify-center flex-col">
-                    <span class="text-3xl font-bold">${totalHours}</span>
-                    <span class="text-sm text-muted-foreground">hours</span>
-                  </div>
-                </div>
+              <div class="relative w-full aspect-square max-w-[300px] mx-auto">
+                <svg viewBox="0 0 100 100" class="w-full h-full">
+                  ${generatePieChartPaths(filteredData)}
+                </svg>
               </div>
             </div>
 
-            <!-- Bar Chart Card -->
-            <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
-              <div class="flex flex-col space-y-1.5 p-6">
-                <h3 class="text-lg font-semibold leading-none tracking-tight flex items-center gap-2">
-                  <i data-lucide="bar-chart-3" class="h-5 w-5"></i>
-                  Time by Category
-                </h3>
-              </div>
-              <div class="p-6 pt-0">
-                <div class="space-y-4">
-                  ${filteredData
-                    .map(
-                      (item) => `
-                    <div class="space-y-1">
-                      <div class="flex justify-between items-center">
-                        <span class="text-sm font-medium">${item.category}</span>
-                        <span class="text-sm text-muted-foreground">${item.hours} hours</span>
+            <!-- Modern Bar Chart Card -->
+            <div class="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-600">
+              <h3 class="text-lg font-semibold mb-6 text-gray-800 dark:text-white">Category Breakdown</h3>
+              <div class="space-y-6">
+                ${filteredData.map(item => `
+                  <div class="space-y-2">
+                    <div class="flex justify-between items-center">
+                      <div class="flex items-center gap-2">
+                        <span class="w-3 h-3 rounded-full" style="background-color: ${item.color}"></span>
+                        <span class="font-medium text-gray-700 dark:text-gray-300">${item.category}</span>
                       </div>
-                      <div class="h-2 bg-secondary rounded-full overflow-hidden">
-                        <div class="h-full rounded-full" style="width: ${(item.hours / totalHours) * 100}%; background-color: ${item.color};"></div>
+                      <span class="font-medium text-gray-900 dark:text-white">
+                        ${item.hours.toFixed(1)}h
+                        <span class="text-sm text-gray-500 dark:text-gray-400 ml-1">
+                          (${((item.hours / totalHours) * 100).toFixed(0)}%)
+                        </span>
+                      </span>
+                    </div>
+                    <div class="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                      <div class="h-full rounded-full transition-all duration-500 ease-out hover:brightness-110"
+                        style="width: ${(item.hours / totalHours) * 100}%; background-color: ${item.color}">
                       </div>
                     </div>
-                  `,
-                    )
-                    .join("")}
-                </div>
+                  </div>
+                `).join('')}
               </div>
             </div>
           </div>
 
-          <!-- Productivity Trends Card -->
-          <div class="rounded-lg border bg-card text-card-foreground shadow-sm">
-            <div class="flex flex-col space-y-1.5 p-6">
-              <h3 class="text-lg font-semibold leading-none tracking-tight">Productivity Trends</h3>
-            </div>
-            <div class="p-6 pt-0">
-              <div class="h-[200px] flex items-center justify-center border-2 border-dashed border-muted-foreground/20 rounded-lg">
-                <p class="text-muted-foreground">Productivity trend chart will be displayed here</p>
-              </div>
+          <!-- Modern Productivity Card -->
+          <div class="bg-white dark:bg-gray-700 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-600">
+            <h3 class="text-lg font-semibold mb-6">Time Usage Insights</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              ${generateInsightCards(filteredData, totalHours)}
             </div>
           </div>
         </div>
       </div>
     `;
 
-    // Initialize Lucide icons
+    // Add this helper function for generating insight cards
+    function generateInsightCards(data, total) {
+      const mostUsedCategory = data.sort((a, b) => b.hours - a.hours)[0];
+      const averageHours = total / data.length;
+      
+      return `
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-600">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/20">
+              <i data-lucide="clock" class="w-5 h-5 text-purple-600 dark:text-purple-400"></i>
+            </div>
+            <h4 class="font-medium">Total Time</h4>
+          </div>
+          <p class="text-2xl font-bold">${total.toFixed(1)}h</p>
+        </div>
+        
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-600">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/20">
+              <i data-lucide="target" class="w-5 h-5 text-blue-600 dark:text-blue-400"></i>
+            </div>
+            <h4 class="font-medium">Most Used</h4>
+          </div>
+          <p class="text-2xl font-bold capitalize">${mostUsedCategory?.category || 'N/A'}</p>
+        </div>
+        
+        <div class="p-4 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-600">
+          <div class="flex items-center gap-3 mb-2">
+            <div class="p-2 rounded-lg bg-green-100 dark:bg-green-900/20">
+              <i data-lucide="trending-up" class="w-5 h-5 text-green-600 dark:text-green-400"></i>
+            </div>
+            <h4 class="font-medium">Average</h4>
+          </div>
+          <p class="text-2xl font-bold">${averageHours.toFixed(1)}h</p>
+        </div>
+      `;
+    }
+
+    // Initialize icons and listeners as before
     lucide.createIcons();
-
-    // Add event listeners
-    document.getElementById("daily-tab").addEventListener("click", () => {
-      view = "daily";
-      render();
-    });
-
-    document.getElementById("weekly-tab").addEventListener("click", () => {
-      view = "weekly";
-      render();
-    });
-
-    // Category dropdown toggle
-    const categorySelect = document.getElementById("category-select");
-    const categoryDropdown = document.getElementById("category-dropdown");
-
-    categorySelect.addEventListener("click", () => {
-      categoryDropdown.classList.toggle("hidden");
-    });
-
-    // Close dropdown when clicking outside
-    document.addEventListener("click", (event) => {
-      if (
-        !categorySelect.contains(event.target) &&
-        !categoryDropdown.contains(event.target)
-      ) {
-        categoryDropdown.classList.add("hidden");
-      }
-    });
-
-    // Category options
-    document.querySelectorAll(".category-option").forEach((option) => {
-      option.addEventListener("click", () => {
-        selectedCategory = option.dataset.value;
-        categoryDropdown.classList.add("hidden");
-        render();
-      });
-    });
+    setupEventListeners();
   }
 
   // Helper function to generate pie chart SVG paths
@@ -206,42 +272,108 @@ function initAnalytics(containerId) {
     let paths = "";
     let startAngle = 0;
 
-    data.forEach((item) => {
-      const sliceAngle = (item.hours / total) * 360;
-      const endAngle = startAngle + sliceAngle;
+    data.forEach(item => {
+        const sliceAngle = (item.hours / total) * 360;
+        const endAngle = startAngle + sliceAngle;
 
-      // Convert angles to radians and calculate coordinates
-      const startRad = ((startAngle - 90) * Math.PI) / 180;
-      const endRad = ((endAngle - 90) * Math.PI) / 180;
+        const startRad = ((startAngle - 90) * Math.PI) / 180;
+        const endRad = ((endAngle - 90) * Math.PI) / 180;
 
-      const x1 = 50 + 40 * Math.cos(startRad);
-      const y1 = 50 + 40 * Math.sin(startRad);
-      const x2 = 50 + 40 * Math.cos(endRad);
-      const y2 = 50 + 40 * Math.sin(endRad);
+        const x1 = 50 + 35 * Math.cos(startRad);
+        const y1 = 50 + 35 * Math.sin(startRad);
+        const x2 = 50 + 35 * Math.cos(endRad);
+        const y2 = 50 + 35 * Math.sin(endRad);
 
-      // Determine if the arc should be drawn as a large arc
-      const largeArcFlag = sliceAngle > 180 ? 1 : 0;
+        const path = `M 50 50 L ${x1} ${y1} A 35 35 0 ${sliceAngle > 180 ? 1 : 0} 1 ${x2} ${y2} Z`;
 
-      // Create the SVG path for the slice
-      const path = [
-        `M 50 50`,
-        `L ${x1} ${y1}`,
-        `A 40 40 0 ${largeArcFlag} 1 ${x2} ${y2}`,
-        `Z`,
-      ].join(" ");
-
-      paths += `<path d="${path}" fill="${item.color}" stroke="#ffffff" stroke-width="0.5"></path>`;
-
-      startAngle = endAngle;
+        paths += `<path d="${path}" fill="${item.color}" class="transition-all duration-300 hover:opacity-90"/>`;
+        
+        startAngle = endAngle;
     });
 
     return paths;
   }
 
-  // Initial render
+  // Funcție pentru setarea event listener-elor
+  function setupEventListeners() {
+    // Daily/Weekly toggle buttons
+    const dailyTab = document.getElementById('daily-tab');
+    const weeklyTab = document.getElementById('weekly-tab');
+
+    if (dailyTab) {
+        dailyTab.addEventListener('click', () => {
+            dailyTab.classList.add('bg-white', 'dark:bg-gray-600', 'shadow-sm');
+            weeklyTab.classList.remove('bg-white', 'dark:bg-gray-600', 'shadow-sm');
+            view = "daily";
+            render();
+        });
+    }
+
+    if (weeklyTab) {
+        weeklyTab.addEventListener('click', () => {
+            weeklyTab.classList.add('bg-white', 'dark:bg-gray-600', 'shadow-sm');
+            dailyTab.classList.remove('bg-white', 'dark:bg-gray-600', 'shadow-sm');
+            view = "weekly";
+            render();
+        });
+    }
+
+    // Category dropdown
+    const categorySelect = document.getElementById('category-select');
+    const categoryDropdown = document.getElementById('category-dropdown');
+
+    if (categorySelect && categoryDropdown) {
+        // Populate dropdown with categories
+        const categories = [
+            { id: 'all', label: 'All Categories' },
+            { id: 'work', label: 'Work' },
+            { id: 'personal', label: 'Personal' },
+            { id: 'study', label: 'Study' },
+            { id: 'health', label: 'Health' },
+            { id: 'other', label: 'Other' }
+        ];
+
+        categoryDropdown.innerHTML = categories.map(cat => `
+            <button 
+                class="w-full px-4 py-2 text-left hover:bg-gray-100 dark:hover:bg-gray-600 
+                       ${selectedCategory === cat.id ? 'bg-purple-50 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400' : ''}"
+                data-category="${cat.id}">
+                ${cat.label}
+            </button>
+        `).join('');
+
+        // Toggle dropdown
+        categorySelect.addEventListener('click', (e) => {
+            e.stopPropagation();
+            categoryDropdown.classList.toggle('hidden');
+        });
+
+        // Handle category selection
+        categoryDropdown.querySelectorAll('button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const category = e.target.dataset.category;
+                selectedCategory = category;
+                categorySelect.querySelector('span').textContent = 
+                    category === 'all' ? 'All Categories' : 
+                    category.charAt(0).toUpperCase() + category.slice(1);
+                categoryDropdown.classList.add('hidden');
+                render();
+            });
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!categorySelect.contains(e.target) && !categoryDropdown.contains(e.target)) {
+                categoryDropdown.classList.add('hidden');
+            }
+        });
+    }
+  }
+
+  // Prima randare
   render();
 
-  // Return the instance for potential future reference
+  // Returnăm instanța
   return {
     updateView: (newView) => {
       view = newView;
@@ -251,5 +383,8 @@ function initAnalytics(containerId) {
       selectedCategory = newCategory;
       render();
     },
+    refresh: () => {
+      render();
+    }
   };
 }
