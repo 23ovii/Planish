@@ -33,8 +33,14 @@ function initAnalytics(containerId) {
         if (view === 'daily') {
             events = events.filter(event => isSameDay(new Date(event.start), today));
         } else {
-            const weekStart = new Date(today.setDate(today.getDate() - today.getDay()));
-            const weekEnd = new Date(today.setDate(today.getDate() + 6));
+            const weekStart = new Date(today);
+            weekStart.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1));
+            weekStart.setHours(0, 0, 0, 0);
+            
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            weekEnd.setHours(23, 59, 59, 999);
+
             events = events.filter(event => {
                 const eventDate = new Date(event.start);
                 return eventDate >= weekStart && eventDate <= weekEnd;
@@ -88,10 +94,17 @@ function initAnalytics(containerId) {
 
   // Funcție helper pentru a verifica dacă o dată este în această săptămână
   function isThisWeek(date) {
-    const now = new Date();
-    const weekStart = new Date(now.setDate(now.getDate() - now.getDay()));
-    const weekEnd = new Date(now.setDate(now.getDate() - now.getDay() + 6));
-    return date >= weekStart && date <= weekEnd;
+    const today = new Date();
+    const weekStart = new Date(today);
+    weekStart.setDate(today.getDate() - today.getDay() + (today.getDay() === 0 ? -6 : 1)); // Începe lunea
+    weekStart.setHours(0, 0, 0, 0);
+
+    const weekEnd = new Date(weekStart);
+    weekEnd.setDate(weekStart.getDate() + 6);
+    weekEnd.setHours(23, 59, 59, 999);
+
+    const checkDate = new Date(date);
+    return checkDate >= weekStart && checkDate <= weekEnd;
   }
 
   // Funcție pentru a obține culoarea categoriei
@@ -195,13 +208,13 @@ function initAnalytics(containerId) {
                       <span class="font-medium text-gray-900 dark:text-white">
                         ${item.hours.toFixed(1)}h
                         <span class="text-sm text-gray-500 dark:text-gray-400 ml-1">
-                          (${((item.hours / totalHours) * 100).toFixed(0)}%)
+                          (${filteredData.length === 1 ? '100' : ((item.hours / totalHours) * 100).toFixed(0)}%)
                         </span>
                       </span>
                     </div>
                     <div class="h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                       <div class="h-full rounded-full transition-all duration-500 ease-out hover:brightness-110"
-                        style="width: ${(item.hours / totalHours) * 100}%; background-color: ${item.color}">
+                        style="width: ${filteredData.length === 1 ? '100' : (item.hours / totalHours) * 100}%; background-color: ${item.color}">
                       </div>
                     </div>
                   </div>
@@ -267,6 +280,15 @@ function initAnalytics(containerId) {
   // Helper function to generate pie chart SVG paths
   function generatePieChartPaths(data) {
     if (data.length === 0) return "";
+
+    // If only one category, show full circle
+    if (data.length === 1) {
+        return `
+            <path d="M 50 50 m -35 0 a 35 35 0 1 0 70 0 a 35 35 0 1 0 -70 0" 
+                  fill="${data[0].color}" 
+                  class="transition-all duration-300 hover:opacity-90"/>
+        `;
+    }
 
     const total = data.reduce((sum, item) => sum + item.hours, 0);
     let paths = "";
