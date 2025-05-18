@@ -498,14 +498,42 @@ async function handleDeleteTask(taskId) {
     document.getElementById("task-importance").value = "low";
     document.getElementById("task-due-date").value = "";
 
-    // Show dialog
-    document.getElementById("add-task-dialog").classList.remove("hidden");
-  }
+    const dialog = document.getElementById("add-task-dialog");
+    const dialogContent = dialog.querySelector('div');
+
+    // Show dialog and set initial state
+    dialog.classList.remove("hidden");
+    dialog.classList.add("opacity-0");
+    dialogContent.classList.add("transform", "scale-95", "opacity-0");
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+        dialog.classList.remove("opacity-0");
+        dialog.classList.add("opacity-100", "transition-opacity", "duration-200");
+        dialogContent.classList.remove("scale-95", "opacity-0");
+        dialogContent.classList.add("scale-100", "opacity-100", "transition-all", "duration-200");
+    });
+}
 
   // Hide add task dialog
   function hideAddTaskDialog() {
-    document.getElementById("add-task-dialog").classList.add("hidden");
-  }
+    const dialog = document.getElementById("add-task-dialog");
+    const dialogContent = dialog.querySelector('div');
+
+    // Trigger closing animation
+    dialog.classList.remove("opacity-100");
+    dialog.classList.add("opacity-0");
+    dialogContent.classList.remove("scale-100", "opacity-100");
+    dialogContent.classList.add("scale-95", "opacity-0");
+
+    // Hide dialog after animation
+    setTimeout(() => {
+        dialog.classList.add("hidden");
+        // Reset classes
+        dialog.classList.remove("opacity-0", "transition-opacity", "duration-200");
+        dialogContent.classList.remove("scale-95", "opacity-0", "transition-all", "duration-200");
+    }, 200);
+}
 
   // Show edit task dialog
   function showEditTaskDialog(taskId) {
@@ -515,23 +543,49 @@ async function handleDeleteTask(taskId) {
 
     // Fill form
     document.getElementById("edit-task-title").value = editingTask.title;
-    document.getElementById("edit-task-description").value =
-      editingTask.description;
+    document.getElementById("edit-task-description").value = editingTask.description;
     document.getElementById("edit-task-urgency").value = editingTask.urgency;
-    document.getElementById("edit-task-importance").value =
-      editingTask.importance;
+    document.getElementById("edit-task-importance").value = editingTask.importance;
     document.getElementById("edit-task-due-date").value = editingTask.dueDate;
     document.getElementById("edit-task-status").value = editingTask.status;
 
-    // Show dialog
-    document.getElementById("edit-task-dialog").classList.remove("hidden");
-  }
+    const dialog = document.getElementById("edit-task-dialog");
+    const dialogContent = dialog.querySelector('div');
+
+    // Show dialog and set initial state
+    dialog.classList.remove("hidden");
+    dialog.classList.add("opacity-0");
+    dialogContent.classList.add("transform", "scale-95", "opacity-0");
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+        dialog.classList.remove("opacity-0");
+        dialog.classList.add("opacity-100", "transition-opacity", "duration-200");
+        dialogContent.classList.remove("scale-95", "opacity-0");
+        dialogContent.classList.add("scale-100", "opacity-100", "transition-all", "duration-200");
+    });
+}
 
   // Hide edit task dialog
   function hideEditTaskDialog() {
-    document.getElementById("edit-task-dialog").classList.add("hidden");
-    editingTask = null;
-  }
+    const dialog = document.getElementById("edit-task-dialog");
+    const dialogContent = dialog.querySelector('div');
+
+    // Trigger closing animation
+    dialog.classList.remove("opacity-100");
+    dialog.classList.add("opacity-0");
+    dialogContent.classList.remove("scale-100", "opacity-100");
+    dialogContent.classList.add("scale-95", "opacity-0");
+
+    // Hide dialog after animation
+    setTimeout(() => {
+        dialog.classList.add("hidden");
+        // Reset classes
+        dialog.classList.remove("opacity-0", "transition-opacity", "duration-200");
+        dialogContent.classList.remove("scale-95", "opacity-0", "transition-all", "duration-200");
+        editingTask = null;
+    }, 200);
+}
 
   // Handle add task
   function handleAddTask() {
