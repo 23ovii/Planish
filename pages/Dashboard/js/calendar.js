@@ -481,112 +481,122 @@ deleteTimeBlock(id) {
     return false;
   }
 }
-showDeleteConfirmationDialog(eventId) {
-  // Elimină orice dialog existent
-  const existingDialog = document.getElementById('confirm-delete-dialog');
-  if (existingDialog) {
-    document.body.removeChild(existingDialog);
-  }
-  
-  // Creăm un dialog ultra-optimizat
-  const confirmDialog = document.createElement('div');
-  // Simplificăm clasele și setăm direct stilurile pentru mai multă eficiență
-  confirmDialog.id = 'confirm-delete-dialog';
-  confirmDialog.style.cssText = `
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 60;
-    opacity: 0;
-    transition: opacity 150ms ease-out;
-  `;
-  
-  // Simplificăm HTML-ul și eliminăm efectele de animație complexe
-  confirmDialog.innerHTML = `
-    <div style="
-      background-color: #1e1e1e;
-      border-radius: 0.5rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-      padding: 1.5rem;
-      width: 100%;
-      max-width: 20rem;
-      transform: translateY(0);
-      opacity: 0;
-      transition: opacity 150ms ease-out;
-    ">
-      <h3 style="font-size: 1.125rem; font-weight: bold; color: #e2e2e2; margin-bottom: 1rem;">Confirmare ștergere</h3>
-      <p style="color: #b0b0b0; margin-bottom: 1.5rem;">Ești sigur că vrei să ștergi acest eveniment?</p>
-      <div style="display: flex; justify-content: flex-end; gap: 0.75rem;">
-        <button id="cancel-delete" style="
-          padding: 0.5rem 1rem;
-          border: 1px solid #3a3a3a;
-          border-radius: 0.375rem;
-          background-color: #2a2a2a;
-          color: #e2e2e2;
-          cursor: pointer;
-          transition: background-color 150ms ease-out, transform 150ms ease-out;
-        " onmouseover="this.style.backgroundColor='#3a3a3a'; this.style.transform='translateY(-1px)';" 
-           onmouseout="this.style.backgroundColor='#2a2a2a'; this.style.transform='translateY(0)';">Anulează</button>
-        <button id="confirm-delete" style="
-          padding: 0.5rem 1rem;
-          border-radius: 0.375rem;
-          background-color: #ef4444;
-          color: #ffffff;
-          border: none;
-          cursor: pointer;
-          transition: background-color 150ms ease-out, transform 150ms ease-out;
-        " onmouseover="this.style.backgroundColor='#dc2626'; this.style.transform='translateY(-1px)';" 
-           onmouseout="this.style.backgroundColor='#ef4444'; this.style.transform='translateY(0)';">Șterge</button>
-      </div>
-    </div>
-  `;
-  
-  // Adăugăm la DOM
-  document.body.appendChild(confirmDialog);
-  
-  // Folosim direct setTimeout mic pentru a activa opacitatea
-  setTimeout(() => {
-    confirmDialog.style.opacity = '1';
-    confirmDialog.querySelector('div').style.opacity = '1';
-  }, 10);
-  
-  // Funcția de închidere simplificată
-  const closeDialog = () => {
-    const dialog = document.getElementById('confirm-delete-dialog');
-    if (dialog) {
-      dialog.style.opacity = '0';
-      // Durată scurtă de așteptare înainte de eliminare
-      setTimeout(() => {
-        if (dialog.parentNode) {
-          dialog.parentNode.removeChild(dialog);
-        }
-      }, 150);
+async showDeleteConfirmationDialog(eventId) {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    const event = this.timeBlocks.find(e => e.id === eventId);
+    
+    if (!event) {
+        console.error("Event not found:", eventId);
+        return false;
     }
-  };
-  
-  // Funcție pentru confirmare
-  const handleConfirmDelete = () => {
-    this.deleteTimeBlock(eventId);
-    closeDialog();
-  };
-  
-  // Adăugăm event listeners simple
-  document.getElementById('cancel-delete').addEventListener('click', closeDialog);
-  document.getElementById('confirm-delete').addEventListener('click', handleConfirmDelete);
-  
-  // Click în afara dialogului închide dialogul
-  confirmDialog.addEventListener('click', (e) => {
-    if (e.target === confirmDialog) {
-      closeDialog();
-    }
-  });
+    
+    const dialogOverlay = document.createElement('div');
+    dialogOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    dialogOverlay.id = 'delete-confirm-dialog';
+    
+    dialogOverlay.innerHTML = `
+        <div class="transform transition-all duration-300 scale-95 opacity-0">
+            <div class="${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl p-6 max-w-sm mx-4 relative">
+                <div class="flex items-center mb-4">
+                    <div class="rounded-full ${isDarkMode ? 'bg-red-900' : 'bg-red-100'} p-2 mr-3">
+                        <svg class="w-6 h-6 ${isDarkMode ? 'text-red-500' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}">Confirmare ștergere</h3>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="${isDarkMode ? 'text-gray-300' : 'text-gray-600'}">
+                        Ești sigur că vrei să ștergi acest eveniment?<br>
+                        <span class="font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}">"${event.title}"</span>
+                    </p>
+                    <div class="mt-2 text-sm ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}">
+                        ${this.format(event.start, "HH:mm")} - ${this.format(event.end, "HH:mm")}
+                    </div>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button id="cancel-delete" 
+                        class="${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'} 
+                        px-4 py-2 rounded-md transition-colors duration-200">
+                        Anulează
+                    </button>
+                    <button id="confirm-delete" 
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors duration-200">
+                        Șterge
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(dialogOverlay);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        const dialog = dialogOverlay.querySelector('div');
+        dialog.classList.remove('scale-95', 'opacity-0');
+        dialog.classList.add('scale-100', 'opacity-100');
+    });
+
+    return new Promise((resolve) => {
+        const handleCancel = () => {
+            this.animateAndRemoveDialog(dialogOverlay);
+            resolve(false);
+        };
+
+        const handleConfirm = () => {
+            this.animateAndRemoveDialog(dialogOverlay);
+            resolve(true);
+        };
+
+        const handleOutsideClick = (e) => {
+            if (e.target === dialogOverlay) {
+                handleCancel();
+            }
+        };
+
+        // Add event listeners
+        dialogOverlay.querySelector('#cancel-delete').addEventListener('click', handleCancel);
+        dialogOverlay.querySelector('#confirm-delete').addEventListener('click', handleConfirm);
+        dialogOverlay.addEventListener('click', handleOutsideClick);
+    });
 }
+
+animateAndRemoveDialog(dialog) {
+        const dialogContent = dialog.querySelector('div');
+        dialogContent.classList.remove('scale-100', 'opacity-100');
+        dialogContent.classList.add('scale-95', 'opacity-0');
+        
+        setTimeout(() => {
+            if (dialog && dialog.parentNode) {
+                dialog.remove();
+            }
+        }, 200);
+    }
+
+    // Update deleteTimeBlock to use class methods
+    async deleteTimeBlock(id) {
+        try {
+            const shouldDelete = await this.showDeleteConfirmationDialog(id);
+            if (!shouldDelete) return false;
+
+            const index = this.timeBlocks.findIndex(block => block.id === id);
+            if (index === -1) {
+                console.error("Could not find event with ID:", id);
+                return false;
+            }
+
+            this.timeBlocks.splice(index, 1);
+            this.saveToLocalStorage();
+            this.render();
+            return true;
+        } catch (error) {
+            console.error("Error deleting time block:", error);
+            return false;
+        }
+    }
   getTimeBlockPosition(block) {
   const startHour = block.start.getHours();
   const startMinutes = block.start.getMinutes();
