@@ -363,6 +363,103 @@ function initTaskMatrix(containerId) {
     return taskElement;
   }
 
+  // Add this function after createTaskElement
+  function showDeleteConfirmDialog(taskId, taskTitle) {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    
+    // Create the dialog
+    const dialogOverlay = document.createElement('div');
+    dialogOverlay.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50';
+    dialogOverlay.id = 'delete-confirm-dialog';
+    
+    dialogOverlay.innerHTML = `
+        <div class="transform transition-all duration-300 scale-95 opacity-0">
+            <div class="${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-xl p-6 max-w-sm mx-4 relative">
+                <div class="flex items-center mb-4">
+                    <div class="rounded-full ${isDarkMode ? 'bg-red-900' : 'bg-red-100'} p-2 mr-3">
+                        <svg class="w-6 h-6 ${isDarkMode ? 'text-red-500' : 'text-red-600'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : 'text-gray-900'}">Confirm Delete</h3>
+                </div>
+                
+                <div class="mb-6">
+                    <p class="${isDarkMode ? 'text-gray-300' : 'text-gray-600'}">
+                        Are you sure you want to delete this task?<br>
+                        <span class="font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}">"${taskTitle}"</span>
+                    </p>
+                </div>
+                
+                <div class="flex justify-end space-x-3">
+                    <button id="cancel-delete" 
+                        class="${isDarkMode ? 'bg-gray-700 hover:bg-gray-600 text-gray-300' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'} 
+                        px-4 py-2 rounded-md transition-colors duration-200">
+                        Cancel
+                    </button>
+                    <button id="confirm-delete" 
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition-colors duration-200">
+                        Delete
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // Add to DOM
+    document.body.appendChild(dialogOverlay);
+
+    // Animate in
+    requestAnimationFrame(() => {
+        const dialog = dialogOverlay.querySelector('div');
+        dialog.classList.remove('scale-95', 'opacity-0');
+        dialog.classList.add('scale-100', 'opacity-100');
+    });
+
+    // Handle click events
+    return new Promise((resolve) => {
+        dialogOverlay.querySelector('#cancel-delete').addEventListener('click', () => {
+            animateAndRemoveDialog(dialogOverlay, false);
+            resolve(false);
+        });
+
+        dialogOverlay.querySelector('#confirm-delete').addEventListener('click', () => {
+            animateAndRemoveDialog(dialogOverlay, true);
+            resolve(true);
+        });
+
+        // Close on backdrop click
+        dialogOverlay.addEventListener('click', (e) => {
+            if (e.target === dialogOverlay) {
+                animateAndRemoveDialog(dialogOverlay, false);
+                resolve(false);
+            }
+        });
+    });
+}
+
+function animateAndRemoveDialog(dialog, result) {
+    const dialogContent = dialog.querySelector('div');
+    dialogContent.classList.remove('scale-100', 'opacity-100');
+    dialogContent.classList.add('scale-95', 'opacity-0');
+    
+    setTimeout(() => {
+        dialog.remove();
+    }, 200);
+}
+
+// Modify handleDeleteTask to use the new dialog
+async function handleDeleteTask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    const shouldDelete = await showDeleteConfirmDialog(taskId, task.title);
+    
+    if (shouldDelete) {
+        tasks = tasks.filter((task) => task.id !== taskId);
+        saveTasksToLocalStorage();
+        render();
+    }
+}
+
   // Set up event listeners
   function setupEventListeners() {
     // Add task button
@@ -546,14 +643,14 @@ function initTaskMatrix(containerId) {
   }
 
   // Handle delete task
-  function handleDeleteTask(taskId) {
-    if (confirm("Are you sure you want to delete this task?")) {
-      tasks = tasks.filter((task) => task.id !== taskId);
-      
-      // Save to localStorage
-      saveTasksToLocalStorage();
-      
-      render();
+  async function handleDeleteTask(taskId) {
+    const task = tasks.find(t => t.id === taskId);
+    const shouldDelete = await showDeleteConfirmDialog(taskId, task.title);
+    
+    if (shouldDelete) {
+        tasks = tasks.filter((task) => task.id !== taskId);
+        saveTasksToLocalStorage();
+        render();
     }
   }
 
