@@ -896,29 +896,29 @@ showAddEventModal() {
     transition: opacity 150ms ease-out;
   `;
   
-  modal.innerHTML = `
-    <div id="modal-content" class="${isDarkMode ? 'dark-mode' : ''}" style="
-      background-color: ${isDarkMode ? '#1a1f2e' : 'white'};
+modal.innerHTML = `
+    <div id="modal-content" style="
+      background-color: white;
       border-radius: 0.5rem;
-      box-shadow: ${isDarkMode ? '0 10px 25px -5px rgba(0, 0, 0, 0.5)' : '0 10px 25px -5px rgba(0, 0, 0, 0.2)'};
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
       width: 100%;
       max-width: 28rem;
       opacity: 0;
       transform: translateY(8px);
       transition: opacity 150ms ease-out, transform 150ms ease-out;
-      color: ${isDarkMode ? '#e2e8f0' : '#1f2937'};
+      color: #1f2937;
     ">
       <div style="
         padding: 1.25rem;
-        border-bottom: 1px solid ${isDarkMode ? '#2d3748' : '#e5e7eb'};
-        background: ${isDarkMode ? 'linear-gradient(to right, #1e293b, #1e2837)' : 'linear-gradient(to right, #eff6ff, #eef2ff)'};
+        border-bottom: 1px solid #e5e7eb;
+        background: linear-gradient(to right, #eff6ff, #eef2ff);
         border-top-left-radius: 0.5rem;
         border-top-right-radius: 0.5rem;
       ">
         <h3 style="
           font-size: 1.125rem; 
           font-weight: bold; 
-          color: ${isDarkMode ? '#f3f4f6' : '#1f2937'}; 
+          color: #1f2937; 
           margin: 0 0 0.25rem 0;
         ">Adaugă eveniment nou</h3>
       </div>
@@ -930,20 +930,20 @@ showAddEventModal() {
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: ${isDarkMode ? '#d1d5db' : '#374151'};
+              color: #374151;
               margin-bottom: 0.25rem;
             ">Titlu</label>
             <input type="text" id="event-title" required placeholder="Denumire eveniment" style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
+              border: 1px solid #d1d5db;
               border-radius: 0.375rem;
-              background-color: ${isDarkMode ? '#111827' : 'white'};
-              color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
+              background-color: white;
+              color: #1f2937;
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
             " 
-            onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
-            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
+            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
           </div>
           
           <div>
@@ -951,20 +951,20 @@ showAddEventModal() {
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: ${isDarkMode ? '#d1d5db' : '#374151'};
+              color: #374151;
               margin-bottom: 0.25rem;
             ">Data</label>
             <input type="date" id="event-date" required value="${formattedDate}" style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
+              border: 1px solid #d1d5db;
               border-radius: 0.375rem;
-              background-color: ${isDarkMode ? '#111827' : 'white'};
-              color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
+              background-color: white;
+              color: #1f2937;
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
             "
-            onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
-            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
+            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
           </div>
           
           <div>
@@ -972,25 +972,25 @@ showAddEventModal() {
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: ${isDarkMode ? '#d1d5db' : '#374151'};
+              color: #374151;
               margin-bottom: 0.25rem;
             ">Categorie</label>
             <select id="event-category" required style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
+              border: 1px solid #d1d5db;
               border-radius: 0.375rem;
-              background-color: ${isDarkMode ? '#111827' : 'white'};
-              color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
+              background-color: white;
+              color: #1f2937;
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
             "
-            onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
-            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
-              <option value="work" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Muncă</option>
-              <option value="personal" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Personal</option>
-              <option value="study" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Studiu</option>
-              <option value="health" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Sănătate</option>
-              <option value="other" style="background-color: ${isDarkMode ? '#111827' : 'white'};">Altele</option>
+            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+              <option value="work" style="background-color: white;">Muncă</option>
+              <option value="personal" style="background-color: white;">Personal</option>
+              <option value="study" style="background-color: white;">Studiu</option>
+              <option value="health" style="background-color: white;">Sănătate</option>
+              <option value="other" style="background-color: white;">Altele</option>
             </select>
           </div>
           
@@ -1000,7 +1000,7 @@ showAddEventModal() {
                 display: block;
                 font-size: 0.875rem;
                 font-weight: 500;
-                color: ${isDarkMode ? '#d1d5db' : '#374151'};
+                color: #374151;
                 margin-bottom: 0.25rem;
               ">Ora de început</label>
               <input type="time" 
@@ -1012,21 +1012,21 @@ showAddEventModal() {
                 style="
                   width: 100%;
                   padding: 0.5rem;
-                  border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
+                  border: 1px solid #d1d5db;
                   border-radius: 0.375rem;
-                  background-color: ${isDarkMode ? '#111827' : 'white'};
-                  color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
+                  background-color: white;
+                  color: #1f2937;
                   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
                 " 
-                onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
-                onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
+                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
             </div>
             <div>
               <label style="
                 display: block;
                 font-size: 0.875rem;
                 font-weight: 500;
-                color: ${isDarkMode ? '#d1d5db' : '#374151'};
+                color: #374151;
                 margin-bottom: 0.25rem;
               ">Ora de sfârșit</label>
               <input type="time" 
@@ -1038,14 +1038,14 @@ showAddEventModal() {
                 style="
                   width: 100%;
                   padding: 0.5rem;
-                  border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
+                  border: 1px solid #d1d5db;
                   border-radius: 0.375rem;
-                  background-color: ${isDarkMode ? '#111827' : 'white'};
-                  color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};
+                  background-color: white;
+                  color: #1f2937;
                   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
                 " 
-                onfocus="this.style.boxShadow='0 0 0 2px ${isDarkMode ? 'rgba(139, 92, 246, 0.3)' : 'rgba(59, 130, 246, 0.3)'}'; this.style.borderColor='${isDarkMode ? '#8b5cf6' : '#3b82f6'}';" 
-                onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
+                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
             </div>
           </div>
         </div>
@@ -1053,27 +1053,27 @@ showAddEventModal() {
         <div style="
           padding-top: 1.25rem;
           margin-top: 1rem;
-          border-top: 1px solid ${isDarkMode ? '#2d3748' : '#e5e7eb'};
+          border-top: 1px solid #e5e7eb;
           display: flex;
           justify-content: flex-end;
           gap: 0.5rem;
         ">
           <button type="button" id="cancel-event" style="
             padding: 0.5rem 1rem;
-            border: 1px solid ${isDarkMode ? '#4b5563' : '#d1d5db'};
+            border: 1px solid #d1d5db;
             border-radius: 0.375rem;
-            background-color: ${isDarkMode ? '#1f2937' : 'white'};
-            color: ${isDarkMode ? '#d1d5db' : '#374151'};
+            background-color: white;
+            color: #374151;
             cursor: pointer;
             transition: background-color 150ms ease-out, transform 150ms ease-out;
           " 
-          onmouseover="this.style.backgroundColor='${isDarkMode ? '#111827' : '#f3f4f6'}'; this.style.transform='translateY(-1px)';" 
-          onmouseout="this.style.backgroundColor='${isDarkMode ? '#1f2937' : ''}'; this.style.transform='';">Anulează</button>
+          onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.transform='translateY(-1px)';" 
+          onmouseout="this.style.backgroundColor=''; this.style.transform='';">Anulează</button>
           
           <button type="submit" style="
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
-            background: ${isDarkMode ? 'linear-gradient(to right, #7a65db, #8b5cf6)' : 'linear-gradient(to right, #2563eb, #4f46e5)'};
+            background: linear-gradient(to right, #2563eb, #4f46e5);
             color: white;
             border: none;
             cursor: pointer;
@@ -1268,12 +1268,15 @@ showEditEventModal(event) {
       
       const modal = document.createElement("div");
       modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
+      // Set initial opacity for smooth fade-in
+      modal.style.opacity = "0";
+      modal.style.transition = "opacity 150ms ease-out";
 
     const startTime = `${String(event.start.getHours()).padStart(2, '0')}:${String(event.start.getMinutes()).padStart(2, '0')}`;
     const endTime = `${String(event.end.getHours()).padStart(2, '0')}:${String(event.end.getMinutes()).padStart(2, '0')}`;
 
     modal.innerHTML = `
-        <div class="bg-white dark:bg-[#1e2837] rounded-lg shadow-lg w-full max-w-md">
+        <div class="bg-white dark:bg-[#1e2837] rounded-lg shadow-lg w-full max-w-md transform translate-y-4 transition-transform duration-150 ease-out" id="modal-content">
             <div class="p-4 border-b dark:border-gray-700/50">
                 <h3 class="text-lg font-medium dark:text-white">Editează eveniment</h3>
                 <div class="text-sm text-gray-500 dark:text-gray-400">Data: ${this.format(event.start, "PPP")}</div>
@@ -1331,17 +1334,39 @@ showEditEventModal(event) {
     `;
 
     document.body.appendChild(modal);
+    
+    // Activate the smooth animation after a short delay
+    setTimeout(() => {
+        modal.style.opacity = "1";
+        const modalContent = document.getElementById('modal-content');
+        if (modalContent) {
+            modalContent.style.transform = "translateY(0)";
+        }
+    }, 10);
 
     // Add event listeners for all buttons
     document.getElementById('cancel-edit').addEventListener('click', () => {
-        document.body.removeChild(modal);
+        // Add smooth close animation
+        modal.style.opacity = "0";
+        const modalContent = document.getElementById('modal-content');
+        if (modalContent) {
+            modalContent.style.transform = "translateY(4px)";
+        }
+        
+        // Remove the modal after animation completes
+        setTimeout(() => {
+            document.body.removeChild(modal);
+        }, 150);
     });
 
     document.getElementById('delete-event').addEventListener('click', () => {
         // Show delete confirmation dialog
         this.showDeleteConfirmationDialog(event.id);
-        // Remove the edit modal
-        document.body.removeChild(modal);
+        // Remove the edit modal with animation
+        modal.style.opacity = "0";
+        setTimeout(() => {
+            document.body.removeChild(modal);
+        }, 150);
     });
 
     const saveButton = document.getElementById('save-edit');
@@ -1396,8 +1421,16 @@ showEditEventModal(event) {
                 // Update the event
                 this.editTimeBlock(event.id, updatedEvent);
                 
-                // Remove the modal
-                document.body.removeChild(modal);
+                // Remove the modal with animation
+                modal.style.opacity = "0";
+                const modalContent = document.getElementById('modal-content');
+                if (modalContent) {
+                    modalContent.style.transform = "translateY(4px)";
+                }
+                
+                setTimeout(() => {
+                    document.body.removeChild(modal);
+                }, 150);
                 
             } catch (error) {
                 console.error("Error in save event handler:", error);
@@ -1406,10 +1439,18 @@ showEditEventModal(event) {
         });
     }
 
-    // Add click outside to close
+    // Add click outside to close with animation
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
-            document.body.removeChild(modal);
+            modal.style.opacity = "0";
+            const modalContent = document.getElementById('modal-content');
+            if (modalContent) {
+                modalContent.style.transform = "translateY(4px)";
+            }
+            
+            setTimeout(() => {
+                document.body.removeChild(modal);
+            }, 150);
         }
     });
 }
