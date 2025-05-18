@@ -874,8 +874,7 @@ showAddEventModal() {
   const formattedDate = this.formatDateForInput(this.selectedDate);
   
   // Detectăm dacă este activ dark mode
-  const isDarkMode = document.documentElement.classList.contains('dark') || 
-                     window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDarkMode = document.documentElement.classList.contains('dark');
   
   // Creăm modalul optimizat
   const modal = document.createElement('div');
@@ -896,33 +895,69 @@ showAddEventModal() {
     transition: opacity 150ms ease-out;
   `;
   
-modal.innerHTML = `
+  // Înlocuiește stilurile actuale cu acestea:
+  const styles = {
+    dark: {
+      modalBg: '#1f2937',
+      headerBg: '#1a1f2e',
+      borderColor: '#374151',
+      inputBg: '#1f2937',
+      inputBorder: '#4b5563',
+      textColor: '#f3f4f6',
+      labelColor: '#d1d5db',
+      shadowColor: '0.4',
+      buttonPrimaryBg: '#7a65db',
+      buttonSecondaryBg: '#374151',
+      buttonSecondaryText: '#d1d5db',
+      buttonSecondaryBorder: '#4b5563'
+    },
+    light: {
+      modalBg: '#ffffff',
+      headerBg: '#f8fafc',
+      borderColor: '#e5e7eb',
+      inputBg: '#ffffff',
+      inputBorder: '#e2e8f0',
+      textColor: '#1f2937',
+      labelColor: '#6b7280',
+      shadowColor: '0.1',
+      buttonPrimaryBg: '#3b82f6',
+      buttonSecondaryBg: '#ffffff',
+      buttonSecondaryText: '#4b5563',
+      buttonSecondaryBorder: '#e2e8f0'
+    }
+  };
+
+  // Apoi, modifică tema pentru a fi aplicată corect
+  const theme = isDarkMode ? styles.dark : styles.light;
+
+  modal.innerHTML = `
     <div id="modal-content" style="
-      background-color: white;
+      background-color: ${theme.modalBg};
       border-radius: 0.5rem;
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, ${theme.shadowColor});
       width: 100%;
       max-width: 28rem;
       opacity: 0;
       transform: translateY(8px);
       transition: opacity 150ms ease-out, transform 150ms ease-out;
-      color: #1f2937;
+      color: ${theme.textColor};
     ">
       <div style="
         padding: 1.25rem;
-        border-bottom: 1px solid #e5e7eb;
-        background: linear-gradient(to right, #eff6ff, #eef2ff);
+        border-bottom: 1px solid ${theme.borderColor};
+        background: ${theme.headerBg};
         border-top-left-radius: 0.5rem;
         border-top-right-radius: 0.5rem;
       ">
         <h3 style="
           font-size: 1.125rem; 
           font-weight: bold; 
-          color: #1f2937; 
+          color: ${theme.textColor}; 
           margin: 0 0 0.25rem 0;
         ">Adaugă eveniment nou</h3>
       </div>
       
+      <!-- Aplică același pattern pentru inputuri -->
       <form id="add-event-form" style="padding: 1.25rem;">
         <div style="display: flex; flex-direction: column; gap: 1rem;">
           <div>
@@ -930,20 +965,18 @@ modal.innerHTML = `
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: #374151;
+              color: ${theme.labelColor};
               margin-bottom: 0.25rem;
             ">Titlu</label>
             <input type="text" id="event-title" required placeholder="Denumire eveniment" style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid #d1d5db;
+              border: 1px solid ${theme.inputBorder};
               border-radius: 0.375rem;
-              background-color: white;
-              color: #1f2937;
+              background-color: ${theme.inputBg};
+              color: ${theme.textColor};
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
-            " 
-            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-            onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+            ">
           </div>
           
           <div>
@@ -951,20 +984,20 @@ modal.innerHTML = `
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: #374151;
+              color: ${theme.labelColor};
               margin-bottom: 0.25rem;
             ">Data</label>
             <input type="date" id="event-date" required value="${formattedDate}" style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid #d1d5db;
+              border: 1px solid ${theme.inputBorder};
               border-radius: 0.375rem;
-              background-color: white;
-              color: #1f2937;
+              background-color: ${theme.inputBg};
+              color: ${theme.textColor};
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
             "
-            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-            onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, ${isDarkMode ? '0.5' : '0.3'})'; this.style.borderColor='#3b82f6';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
           </div>
           
           <div>
@@ -972,25 +1005,25 @@ modal.innerHTML = `
               display: block;
               font-size: 0.875rem;
               font-weight: 500;
-              color: #374151;
+              color: ${theme.labelColor};
               margin-bottom: 0.25rem;
             ">Categorie</label>
             <select id="event-category" required style="
               width: 100%;
               padding: 0.5rem;
-              border: 1px solid #d1d5db;
+              border: 1px solid ${theme.inputBorder};
               border-radius: 0.375rem;
-              background-color: white;
-              color: #1f2937;
+              background-color: ${theme.inputBg};
+              color: ${theme.textColor};
               transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
             "
-            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-            onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
-              <option value="work" style="background-color: white;">Muncă</option>
-              <option value="personal" style="background-color: white;">Personal</option>
-              <option value="study" style="background-color: white;">Studiu</option>
-              <option value="health" style="background-color: white;">Sănătate</option>
-              <option value="other" style="background-color: white;">Altele</option>
+            onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, ${isDarkMode ? '0.5' : '0.3'})'; this.style.borderColor='#3b82f6';" 
+            onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
+              <option value="work" style="background-color: ${isDarkMode ? '#374151' : 'white'}; color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};">Muncă</option>
+              <option value="personal" style="background-color: ${isDarkMode ? '#374151' : 'white'}; color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};">Personal</option>
+              <option value="study" style="background-color: ${isDarkMode ? '#374151' : 'white'}; color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};">Studiu</option>
+              <option value="health" style="background-color: ${isDarkMode ? '#374151' : 'white'}; color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};">Sănătate</option>
+              <option value="other" style="background-color: ${isDarkMode ? '#374151' : 'white'}; color: ${isDarkMode ? '#f3f4f6' : '#1f2937'};">Altele</option>
             </select>
           </div>
           
@@ -1000,7 +1033,7 @@ modal.innerHTML = `
                 display: block;
                 font-size: 0.875rem;
                 font-weight: 500;
-                color: #374151;
+                color: ${theme.labelColor};
                 margin-bottom: 0.25rem;
               ">Ora de început</label>
               <input type="time" 
@@ -1012,21 +1045,21 @@ modal.innerHTML = `
                 style="
                   width: 100%;
                   padding: 0.5rem;
-                  border: 1px solid #d1d5db;
+                  border: 1px solid ${theme.inputBorder};
                   border-radius: 0.375rem;
-                  background-color: white;
-                  color: #1f2937;
+                  background-color: ${theme.inputBg};
+                  color: ${theme.textColor};
                   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
                 " 
-                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, ${isDarkMode ? '0.5' : '0.3'})'; this.style.borderColor='#3b82f6';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
             </div>
             <div>
               <label style="
                 display: block;
                 font-size: 0.875rem;
                 font-weight: 500;
-                color: #374151;
+                color: ${theme.labelColor};
                 margin-bottom: 0.25rem;
               ">Ora de sfârșit</label>
               <input type="time" 
@@ -1038,49 +1071,46 @@ modal.innerHTML = `
                 style="
                   width: 100%;
                   padding: 0.5rem;
-                  border: 1px solid #d1d5db;
+                  border: 1px solid ${theme.inputBorder};
                   border-radius: 0.375rem;
-                  background-color: white;
-                  color: #1f2937;
+                  background-color: ${theme.inputBg};
+                  color: ${theme.textColor};
                   transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
                 " 
-                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, 0.3)'; this.style.borderColor='#3b82f6';" 
-                onblur="this.style.boxShadow=''; this.style.borderColor='#d1d5db';">
+                onfocus="this.style.boxShadow='0 0 0 2px rgba(59, 130, 246, ${isDarkMode ? '0.5' : '0.3'})'; this.style.borderColor='#3b82f6';" 
+                onblur="this.style.boxShadow=''; this.style.borderColor='${isDarkMode ? '#4b5563' : '#d1d5db'}';">
             </div>
           </div>
         </div>
         
+        <!-- Butoane -->
         <div style="
           padding-top: 1.25rem;
           margin-top: 1rem;
-          border-top: 1px solid #e5e7eb;
+          border-top: 1px solid ${theme.borderColor};
           display: flex;
           justify-content: flex-end;
           gap: 0.5rem;
         ">
           <button type="button" id="cancel-event" style="
             padding: 0.5rem 1rem;
-            border: 1px solid #d1d5db;
+            border: 1px solid ${theme.buttonSecondaryBorder};
             border-radius: 0.375rem;
-            background-color: white;
-            color: #374151;
+            background-color: ${theme.buttonSecondaryBg};
+            color: ${theme.buttonSecondaryText};
             cursor: pointer;
-            transition: background-color 150ms ease-out, transform 150ms ease-out;
-          " 
-          onmouseover="this.style.backgroundColor='#f3f4f6'; this.style.transform='translateY(-1px)';" 
-          onmouseout="this.style.backgroundColor=''; this.style.transform='';">Anulează</button>
+            transition: all 150ms ease-out;
+          ">Anulează</button>
           
           <button type="submit" style="
             padding: 0.5rem 1rem;
             border-radius: 0.375rem;
-            background: linear-gradient(to right, #2563eb, #4f46e5);
+            background: ${theme.buttonPrimaryBg};
             color: white;
             border: none;
             cursor: pointer;
-            transition: filter 150ms ease-out, transform 150ms ease-out;
-          " 
-          onmouseover="this.style.filter='brightness(1.1)'; this.style.transform='translateY(-1px)';" 
-          onmouseout="this.style.filter=''; this.style.transform='';">Salvează</button>
+            transition: all 150ms ease-out;
+          ">Salvează</button>
         </div>
       </form>
     </div>
@@ -1260,6 +1290,9 @@ handleAddTimeBlock({title, category, startTime, endTime, date}) {
 showEditEventModal(event) {
       console.log("Opening edit modal for event:", event);
       
+      // Adaugă detectarea pentru dark mode
+      const isDarkMode = document.documentElement.classList.contains('dark');
+      
       // Trigger mouseleave on all events to reset their visual state
       document.querySelectorAll('.absolute.rounded-md[class*="bg-"]').forEach(eventEl => {
           const mouseLeaveEvent = new MouseEvent('mouseleave');
@@ -1268,12 +1301,45 @@ showEditEventModal(event) {
       
       const modal = document.createElement("div");
       modal.className = "fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50";
-      // Set initial opacity for smooth fade-in
       modal.style.opacity = "0";
       modal.style.transition = "opacity 150ms ease-out";
 
     const startTime = `${String(event.start.getHours()).padStart(2, '0')}:${String(event.start.getMinutes()).padStart(2, '0')}`;
     const endTime = `${String(event.end.getHours()).padStart(2, '0')}:${String(event.end.getMinutes()).padStart(2, '0')}`;
+
+    // Înlocuiește stilurile actuale cu acestea:
+    const styles = {
+      dark: {
+        modalBg: '#1f2937',
+        headerBg: 'linear-gradient(to right, #1e3a8a, #312e81)',
+        borderColor: '#374151',
+        inputBg: '#374151',
+        inputBorder: '#4b5563',
+        textColor: '#f3f4f6',
+        labelColor: '#d1d5db',
+        shadowColor: '0.4',
+        buttonPrimaryBg: 'linear-gradient(to right, #1d4ed8, #4338ca)',
+        buttonSecondaryBg: '#374151',
+        buttonSecondaryText: '#d1d5db',
+        buttonSecondaryBorder: '#4b5563'
+      },
+      light: {
+        modalBg: '#ffffff',
+        headerBg: 'linear-gradient(to right, #f0f9ff, #e0f2fe)',
+        borderColor: '#e5e7eb',
+        inputBg: '#ffffff',
+        inputBorder: '#d1d5db',
+        textColor: '#1f2937',
+        labelColor: '#374151',
+        shadowColor: '0.2',
+        buttonPrimaryBg: 'linear-gradient(to right, #2563eb, #4f46e5)',
+        buttonSecondaryBg: '#ffffff',
+        buttonSecondaryText: '#374151',
+        buttonSecondaryBorder: '#d1d5db'
+      }
+    };
+
+    const theme = isDarkMode ? styles.dark : styles.light;
 
     modal.innerHTML = `
         <div class="bg-white dark:bg-[#1e2837] rounded-lg shadow-lg w-full max-w-md transform translate-y-4 transition-transform duration-150 ease-out" id="modal-content">
