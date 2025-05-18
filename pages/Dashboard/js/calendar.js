@@ -242,8 +242,8 @@ generateModernGrid(daysOfWeek) {
           <button id="add-event" class="px-3 py-1.5 bg-[#7a65db] hover:bg-[#7a56db] dark:bg-[#7a65db] dark:hover:bg-[#7a56db] text-white rounded-md text-sm flex items-center">
             <span class="h-4 w-4 mr-1">+</span> Adaugă eveniment
           </button>
-          <button id="export-week" class="px-3 py-1.5 ml-2 bg-green-600 hover:bg-green-700 dark:bg-green-600 dark:hover:bg-green-700 text-white rounded-md text-sm flex items-center">
-            <span class="h-4 w-4 mr-1">↓</span> Exportă săptămâna
+          <button id="export-week" class="px-3 py-1.5 text-black-900 dark:text-gray-300 hover:text-[#7a65db] flex items-center">
+            <i data-lucide="download" class="w-4 h-4 mr-2"></i>
           </button>
         </div>
       </div>
@@ -616,7 +616,16 @@ showDeleteConfirmationDialog(eventId) {
     const prevWeekBtn = document.getElementById("prev-week");
     const nextWeekBtn = document.getElementById("next-week");
     const addEventBtn = document.getElementById("add-event");
+    const exportWeekBtn = document.getElementById("export-week");
     const datePickerBtn = document.getElementById("date-picker-btn");
+    
+    // Add event listener for export button
+    if (exportWeekBtn) {
+      exportWeekBtn.replaceWith(exportWeekBtn.cloneNode(true));
+      document.getElementById("export-week").addEventListener("click", () => {
+        this.exportWeekData();
+      });
+    }
     
     // Remove existing event listeners first
     if (prevWeekBtn) {
