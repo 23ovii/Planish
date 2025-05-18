@@ -47,11 +47,13 @@ function initTaskMatrix(containerId) {
 
   // Render the task matrix UI
   function render() {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    
     container.innerHTML = `
-      <div class="bg-background p-6 rounded-lg">
+      <div class="${isDarkMode ? 'bg-gray-900' : 'bg-background'} p-6 rounded-lg">
         <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold">Task Prioritization Matrix</h2>
-          <button id="add-task-btn" class="bg-primary text-white px-4 py-2 rounded-md flex items-center">
+          <h2 class="text-2xl font-bold ${isDarkMode ? 'text-white' : ''}">Task Prioritization Matrix</h2>
+          <button id="add-task-btn" class="${isDarkMode ? 'bg-[#7a65db]' : 'bg-primary'} text-white px-4 py-2 rounded-md flex items-center">
             <i data-lucide="plus-circle" class="mr-2" style="width: 18px; height: 18px;"></i>
             Add Task
           </button>
@@ -59,12 +61,12 @@ function initTaskMatrix(containerId) {
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Quadrant 1: Urgent & Important -->
-          <div class="border border-red-500 border-t-4 rounded-lg bg-white">
-            <div class="p-4 border-b">
-              <h3 class="text-lg font-medium">Urgent & Important</h3>
+          <div class="border border-red-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
+            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
+              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Urgent & Important</h3>
             </div>
             <div class="p-4">
-              <p class="text-sm text-muted-foreground mb-4">
+              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
                 Do these tasks immediately
               </p>
               <div id="q1-tasks" class="space-y-2">
@@ -74,12 +76,12 @@ function initTaskMatrix(containerId) {
           </div>
 
           <!-- Quadrant 2: Not Urgent & Important -->
-          <div class="border border-blue-500 border-t-4 rounded-lg bg-white">
-            <div class="p-4 border-b">
-              <h3 class="text-lg font-medium">Important, Not Urgent</h3>
+          <div class="border border-blue-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
+            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
+              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Important, Not Urgent</h3>
             </div>
             <div class="p-4">
-              <p class="text-sm text-muted-foreground mb-4">
+              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
                 Schedule time for these tasks
               </p>
               <div id="q2-tasks" class="space-y-2">
@@ -89,12 +91,12 @@ function initTaskMatrix(containerId) {
           </div>
 
           <!-- Quadrant 3: Urgent & Not Important -->
-          <div class="border border-yellow-500 border-t-4 rounded-lg bg-white">
-            <div class="p-4 border-b">
-              <h3 class="text-lg font-medium">Urgent, Not Important</h3>
+          <div class="border border-yellow-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
+            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
+              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Urgent, Not Important</h3>
             </div>
             <div class="p-4">
-              <p class="text-sm text-muted-foreground mb-4">
+              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
                 Delegate these tasks if possible
               </p>
               <div id="q3-tasks" class="space-y-2">
@@ -104,12 +106,12 @@ function initTaskMatrix(containerId) {
           </div>
 
           <!-- Quadrant 4: Not Urgent & Not Important -->
-          <div class="border border-gray-500 border-t-4 rounded-lg bg-white">
-            <div class="p-4 border-b">
-              <h3 class="text-lg font-medium">Not Urgent, Not Important</h3>
+          <div class="border border-gray-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
+            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
+              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Not Urgent, Not Important</h3>
             </div>
             <div class="p-4">
-              <p class="text-sm text-muted-foreground mb-4">
+              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
                 Eliminate these tasks when possible
               </p>
               <div id="q4-tasks" class="space-y-2">
@@ -122,89 +124,97 @@ function initTaskMatrix(containerId) {
 
       <!-- Add Task Dialog -->
       <div id="add-task-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-          <h3 class="text-lg font-medium mb-4">Add New Task</h3>
+        <div class="${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <h3 class="text-lg font-medium mb-4 ${isDarkMode ? 'text-gray-100' : ''}">Add New Task</h3>
           <div class="space-y-4">
             <div class="space-y-2">
-              <label for="title" class="block text-sm font-medium">Title</label>
-              <input id="task-title" type="text" class="w-full border rounded-md px-3 py-2" />
+              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Title</label>
+              <input type="text" id="task-title" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
             </div>
             <div class="space-y-2">
-              <label for="description" class="block text-sm font-medium">Description</label>
-              <textarea id="task-description" class="w-full border rounded-md px-3 py-2 h-20 resize-y" style="max-height: 200px;"></textarea>
+              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Description</label>
+              <textarea id="task-description" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'} h-20 resize-y"></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label for="urgency" class="block text-sm font-medium">Urgency</label>
-                <select id="task-urgency" class="w-full border rounded-md px-3 py-2">
+                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Urgency</label>
+                <select id="task-urgency" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
                   <option value="high">High</option>
                   <option value="low" selected>Low</option>
                 </select>
               </div>
               <div class="space-y-2">
-                <label for="importance" class="block text-sm font-medium">Importance</label>
-                <select id="task-importance" class="w-full border rounded-md px-3 py-2">
+                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Importance</label>
+                <select id="task-importance" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
                   <option value="high">High</option>
                   <option value="low" selected>Low</option>
                 </select>
               </div>
             </div>
             <div class="space-y-2">
-              <label for="dueDate" class="block text-sm font-medium">Due Date (DD/MM)</label>
-              <input id="task-due-date" type="text" placeholder="DD/MM" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])" class="w-full border rounded-md px-3 py-2" />
+              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Due Date (DD/MM)</label>
+              <input id="task-due-date" type="text" 
+                  placeholder="DD/MM" 
+                  pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])"
+                  title="Please enter a valid date in DD/MM format (e.g., 25/12)"
+                  class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
             </div>
           </div>
           <div class="flex justify-end space-x-2 mt-6">
-            <button id="cancel-add-task" class="px-4 py-2 border rounded-md">Cancel</button>
-            <button id="confirm-add-task" class="px-4 py-2 bg-primary text-white rounded-md">Add Task</button>
+            <button id="cancel-add-task" class="px-4 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'border'}">Cancel</button>
+            <button id="confirm-add-task" class="px-4 py-2 ${isDarkMode ? 'bg-blue-600' : 'bg-primary'} text-white rounded-md">Add Task</button>
           </div>
         </div>
       </div>
 
       <!-- Edit Task Dialog -->
       <div id="edit-task-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-          <h3 class="text-lg font-medium mb-4">Edit Task</h3>
+        <div class="${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+          <h3 class="text-lg font-medium mb-4 ${isDarkMode ? 'text-gray-100' : ''}">Edit Task</h3>
           <div class="space-y-4">
             <div class="space-y-2">
-              <label for="edit-title" class="block text-sm font-medium">Title</label>
-              <input id="edit-task-title" type="text" class="w-full border rounded-md px-3 py-2" />
+              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Title</label>
+              <input id="edit-task-title" type="text" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
             </div>
             <div class="space-y-2">
-              <label for="edit-description" class="block text-sm font-medium">Description</label>
-              <textarea id="edit-task-description" class="w-full border rounded-md px-3 py-2 h-20 resize-y" style="max-height: 200px;"></textarea>
+              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Description</label>
+              <textarea id="edit-task-description" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'} h-20 resize-y"></textarea>
             </div>
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label for="edit-urgency" class="block text-sm font-medium">Urgency</label>
-                <select id="edit-task-urgency" class="w-full border rounded-md px-3 py-2">
+                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Urgency</label>
+                <select id="edit-task-urgency" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
                   <option value="high">High</option>
                   <option value="low">Low</option>
                 </select>
               </div>
               <div class="space-y-2">
-                <label for="edit-importance" class="block text-sm font-medium">Importance</label>
-                <select id="edit-task-importance" class="w-full border rounded-md px-3 py-2">
+                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Importance</label>
+                <select id="edit-task-importance" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
                   <option value="high">High</option>
                   <option value="low">Low</option>
                 </select>
               </div>
             </div>
             <div class="space-y-2">
-              <label for="edit-dueDate" class="block text-sm font-medium">Due Date (DD/MM)</label>
-              <input id="edit-task-due-date" type="text" placeholder="DD/MM" pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])" class="w-full border rounded-md px-3 py-2" />
+              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Due Date (DD/MM)</label>
+              <input id="edit-task-due-date" type="text" 
+                  placeholder="DD/MM" 
+                  pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])"
+                  title="Please enter a valid date in DD/MM format (e.g., 25/12)"
+                  class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
             </div>
             <div class="space-y-2">
-              <label for="edit-status" class="block text-sm font-medium">Status</label>
-              <select id="edit-task-status" class="w-full border rounded-md px-3 py-2">
+              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Status</label>
+              <select id="edit-task-status" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
                 <option value="pending">Pending</option>
                 <option value="completed">Completed</option>
               </select>
             </div>
           </div>
           <div class="flex justify-end space-x-2 mt-6">
-            <button id="cancel-edit-task" class="px-4 py-2 border rounded-md">Cancel</button>
-            <button id="confirm-edit-task" class="px-4 py-2 bg-primary text-white rounded-md">Save Changes</button>
+            <button id="cancel-edit-task" class="px-4 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'border'}">Cancel</button>
+            <button id="confirm-edit-task" class="px-4 py-2 ${isDarkMode ? 'bg-blue-600' : 'bg-primary'} text-white rounded-md">Save Changes</button>
           </div>
         </div>
       </div>
@@ -290,8 +300,10 @@ function initTaskMatrix(containerId) {
 
   // Create a task element
   function createTaskElement(task) {
+    const isDarkMode = document.documentElement.classList.contains('dark');
+    
     const taskElement = document.createElement("div");
-    taskElement.className = `mb-3 border rounded-lg ${task.status === "completed" ? "opacity-60" : ""}`;
+    taskElement.className = `mb-3 border rounded-lg ${task.status === "completed" ? "opacity-60" : ""} ${isDarkMode ? 'bg-gray-800 border-gray-700' : 'bg-white'}`;
     
     // Create the inner content using HTML string instead of DOM manipulation
     // This approach ensures proper HTML structure for the Lucide icons
@@ -299,19 +311,19 @@ function initTaskMatrix(containerId) {
       <div class="p-4">
         <div class="flex justify-between items-start">
           <div class="flex-1 mr-2 task-text-container">
-            <h3 class="font-medium ${task.status === "completed" ? "line-through" : ""} break-words">${task.title}</h3>
+            <h3 class="font-medium ${task.status === "completed" ? "line-through" : ""} break-words ${isDarkMode ? 'text-gray-100' : ''}">${task.title}</h3>
             ${createTruncatedText(task.description)}
-            <p class="text-xs mt-2">Due: ${new Date(task.dueDate).toLocaleDateString()}</p>
+            <p class="text-xs mt-2 ${isDarkMode ? 'text-gray-400' : ''}">Due: ${task.dueDate}</p>
           </div>
           <div class="flex space-x-1 shrink-0">
-            <button class="toggle-status p-1 rounded-full hover:bg-gray-100" data-id="${task.id}">
-              <i data-lucide="check-circle" class="${task.status === "completed" ? "text-green-500" : "text-gray-300"}" style="width: 18px; height: 18px;"></i>
+            <button class="toggle-status p-1 rounded-full hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}" data-id="${task.id}">
+              <i data-lucide="check-circle" class="${task.status === "completed" ? "text-green-500" : isDarkMode ? "text-gray-600" : "text-gray-300"}" style="width: 18px; height: 18px;"></i>
             </button>
-            <button class="edit-task p-1 rounded-full hover:bg-gray-100" data-id="${task.id}">
-              <i data-lucide="edit" style="width: 18px; height: 18px;"></i>
+            <button class="edit-task p-1 rounded-full hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}" data-id="${task.id}">
+              <i data-lucide="edit" class="${isDarkMode ? 'text-gray-400' : 'text-gray-600'}" style="width: 18px; height: 18px;"></i>
             </button>
-            <button class="delete-task p-1 rounded-full hover:bg-gray-100" data-id="${task.id}">
-              <i data-lucide="trash-2" style="width: 18px; height: 18px;"></i>
+            <button class="delete-task p-1 rounded-full hover:${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}" data-id="${task.id}">
+              <i data-lucide="trash-2" class="${isDarkMode ? 'text-gray-400' : 'text-gray-600'}" style="width: 18px; height: 18px;"></i>
             </button>
           </div>
         </div>
@@ -364,43 +376,18 @@ function initTaskMatrix(containerId) {
     });
 
     // Confirm add task
-    document
-      .getElementById("confirm-add-task")
-      .addEventListener("click", () => {
-        handleAddTask();
-      });
-
-    // Cancel edit task
-    document
-      .getElementById("cancel-edit-task")
-      .addEventListener("click", () => {
-        hideEditTaskDialog();
-      });
-
-    // Confirm edit task
-    document
-      .getElementById("confirm-edit-task")
-      .addEventListener("click", () => {
-        handleEditTask();
-      });
-      
-    // Add key event listeners for form submission with Enter key
-    // For add task form
-    const addTaskForm = document.getElementById("add-task-dialog");
-    addTaskForm.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        handleAddTask();
-      }
+    document.getElementById("confirm-add-task").addEventListener("click", () => {
+      handleAddTask();
     });
 
-    // For edit task form
-    const editTaskForm = document.getElementById("edit-task-dialog");
-    editTaskForm.addEventListener("keydown", (event) => {
-      if (event.key === "Enter") {
-        event.preventDefault();
-        handleEditTask();
-      }
+    // Cancel edit task
+    document.getElementById("cancel-edit-task").addEventListener("click", () => {
+      hideEditTaskDialog();
+    });
+
+    // Confirm edit task
+    document.getElementById("confirm-edit-task").addEventListener("click", () => {
+      handleEditTask();
     });
   }
 
@@ -456,79 +443,105 @@ function initTaskMatrix(containerId) {
     const description = document.getElementById("task-description").value;
     const urgency = document.getElementById("task-urgency").value;
     const importance = document.getElementById("task-importance").value;
-    const dueDate = document.getElementById("task-due-date").value;
+    const dueDateInput = document.getElementById("task-due-date").value;
 
-    // Validate
-    if (!title || !dueDate) {
-      alert("Please fill in all required fields");
-      return;
+    // Basic validation
+    if (!title || !dueDateInput) {
+        alert("Te rog completează toate câmpurile obligatorii!");
+        return;
     }
+
+    // Validate date format using regex
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])$/;
+    if (!dateRegex.test(dueDateInput)) {
+        alert("Te rog introdu data în formatul corect: ZZ/LL (exemplu: 05/12)");
+        return;
+    }
+
+    // Extract and validate day and month
+    const [day, month] = dueDateInput.split('/').map(Number);
+    
+    // Create a date object to validate the day for specific months
+    const tempDate = new Date(2025, month - 1, day);
+    if (tempDate.getMonth() !== month - 1) {
+        alert(`Data ${day}/${month} nu este validă! Te rog verifică numărul de zile pentru luna selectată.`);
+        return;
+    }
+
+    // Format date properly
+    const dueDate = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${new Date().getFullYear()}`;
 
     // Create new task
     const task = {
-      id: Date.now().toString(),
-      title,
-      description,
-      urgency,
-      importance,
-      dueDate,
-      status: "pending",
+        id: Date.now().toString(),
+        title,
+        description,
+        urgency,
+        importance,
+        dueDate,
+        status: "pending",
     };
 
-    // Add to tasks
     tasks.push(task);
-    
-    // Save to localStorage
     saveTasksToLocalStorage();
-
-    // Hide dialog
     hideAddTaskDialog();
-
-    // Re-render
     render();
-  }
+}
 
   // Handle edit task
   function handleEditTask() {
     if (!editingTask) return;
 
-    // Get form values
     const title = document.getElementById("edit-task-title").value;
     const description = document.getElementById("edit-task-description").value;
     const urgency = document.getElementById("edit-task-urgency").value;
     const importance = document.getElementById("edit-task-importance").value;
-    const dueDate = document.getElementById("edit-task-due-date").value;
-    const status = document.getElementById("edit-task-status").value;
+    const dueDateInput = document.getElementById("edit-task-due-date").value;
 
-    // Validate
-    if (!title || !dueDate) {
-      alert("Please fill in all required fields");
-      return;
+    // Basic validation
+    if (!title || !dueDateInput) {
+        alert("Te rog completează toate câmpurile obligatorii!");
+        return;
     }
+
+    // Validate date format using regex
+    const dateRegex = /^(0[1-9]|[12][0-9]|3[01])\/(0[1-9]|1[0-2])$/;
+    if (!dateRegex.test(dueDateInput)) {
+        alert("Te rog introdu data în formatul corect: ZZ/LL (exemplu: 05/12)");
+        return;
+    }
+
+    // Extract and validate day and month
+    const [day, month] = dueDateInput.split('/').map(Number);
+    
+    // Create a date object to validate the day for specific months
+    const tempDate = new Date(2025, month - 1, day);
+    if (tempDate.getMonth() !== month - 1) {
+        alert(`Data ${day}/${month} nu este validă! Te rog verifică numărul de zile pentru luna selectată.`);
+        return;
+    }
+
+    // Format date properly
+    const dueDate = `${String(day).padStart(2, '0')}/${String(month).padStart(2, '0')}/${new Date().getFullYear()}`;
 
     // Update task
     tasks = tasks.map((task) => {
-      if (task.id === editingTask.id) {
-        return {
-          ...task,
-          title,
-          description,
-          urgency,
-          importance,
-          dueDate,
-          status,
-        };
-      }
-      return task;
+        if (task.id === editingTask.id) {
+            return {
+                ...task,
+                title,
+                description,
+                urgency,
+                importance,
+                dueDate,
+                status: document.getElementById("edit-task-status").value,
+            };
+        }
+        return task;
     });
-    
-    // Save to localStorage
+
     saveTasksToLocalStorage();
-
-    // Hide dialog
     hideEditTaskDialog();
-
-    // Re-render
     render();
   }
 
@@ -571,7 +584,28 @@ function initTaskMatrix(containerId) {
     saveTasksToLocalStorage();
   }
 
-  // Return public methods
+  // Add theme change observer
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class' && 
+          mutation.target === document.documentElement) {
+        render();
+      }
+    });
+  });
+
+  // Start observing theme changes
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
+  // Cleanup function
+  function cleanup() {
+    observer.disconnect();
+  }
+
+  // Modify return statement to include cleanup
   return {
     render,
     addTask: (task) => {
@@ -584,6 +618,12 @@ function initTaskMatrix(containerId) {
       tasks = [];
       saveTasksToLocalStorage();
       render();
-    }
+    },
+    cleanup // Add cleanup method
   };
 }
+
+// Usage example:
+const taskMatrix = initTaskMatrix('task-matrix');
+// When unmounting/cleaning up:
+// taskMatrix.cleanup();
