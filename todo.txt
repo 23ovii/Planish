@@ -1,6 +1,12 @@
 reCAPTCHA for the contact/login/register page
 https://www.youtube.com/watch?v=LShF1c3aLvM&ab_channel=AsmrProg
 
+de adaugat erori moderne pt fiecare chestie (spre ex:
+                                            - la calendar daca adaugi un eveniment care nu se afla in
+                                             timeintervalul 08-21 primesti o eroare, care sa arate modern
+                                             - cand stergi un event
+                                             - cand dai export)
+
 index
 de adaugat in sectiunea about:
 - niste citate
