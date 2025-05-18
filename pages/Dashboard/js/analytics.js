@@ -394,6 +394,57 @@ function initAnalytics(containerId) {
 
   // Prima randare
   render();
+// Adaugă acest cod în funcția initAnalytics, înainte de return
+
+// Funcție pentru a asculta schimbări și actualizări
+function setupAutoRefresh() {
+  // Metoda originală de accesare localStorage
+  const originalGetItem = localStorage.getItem;
+  const originalSetItem = localStorage.setItem;
+  
+  // Suprascriem localStorage.setItem pentru a detecta schimbări în aceeași pagină
+  localStorage.setItem = function(key, value) {
+    // Apelul original
+    originalSetItem.apply(this, arguments);
+    
+    // Dacă cheia este cea a evenimentelor de calendar, reîmprospătăm
+    if (key === 'calendarEvents') {
+      setTimeout(() => render(), 100);
+    }
+  };
+  
+  // Actualizăm când pagina devine vizibilă (când utilizatorul revine la tab)
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      render();
+    }
+  });
+  
+  // Adăugăm un hook la navigarea paginii pentru a actualiza statisticile
+  window.addEventListener('popstate', () => {
+    setTimeout(() => render(), 100);
+  });
+  
+  // Ascultăm schimbările din alte file/ferestre
+  window.addEventListener('storage', (event) => {
+    if (event.key === 'calendarEvents') {
+      render();
+    }
+  });
+  
+  // Verificăm periodic dacă există modificări (ca backup)
+  let lastKnownData = localStorage.getItem('calendarEvents');
+  setInterval(() => {
+    const currentData = localStorage.getItem('calendarEvents');
+    if (currentData !== lastKnownData) {
+      lastKnownData = currentData;
+      render();
+    }
+  }, 2000); // verificăm la fiecare 2 secunde
+}
+
+// Apelăm funcția de configurare
+setupAutoRefresh();
 
   // Returnăm instanța
   return {
