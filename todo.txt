@@ -9,7 +9,7 @@ de adaugat in sectiunea about:
 analytics
 todo:
 cand adaugi un eveniment si intri pe pagina analytics sa nu fie necesar refresh pt a vedea statistica
-
+daca e doar un tip de date(gen doar work) sa se genereze statistica si sa fie in proportie de 100%
 dashboard
 de tradus / modificat toate textele paginii.
 
