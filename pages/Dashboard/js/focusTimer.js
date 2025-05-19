@@ -239,6 +239,35 @@ function initFocusTimer(containerId) {
     render();
   }
 
+  // Replace the audio initialization with this:
+  function createBeep(frequency = 440, duration = 200, volume = 0.5) {
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+    gainNode.gain.setValueAtTime(volume, audioContext.currentTime);
+
+    oscillator.start(audioContext.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + duration / 1000);
+    oscillator.stop(audioContext.currentTime + duration / 1000);
+  }
+
+  // Replace the playNotification function with this:
+  function playNotification(isWorkEnd = true) {
+    try {
+      // Different frequencies for work and break
+      const frequency = isWorkEnd ? 440 : 520; // A4 for work, C5 for break
+      createBeep(frequency);
+    } catch (err) {
+      console.error('Error playing notification:', err);
+    }
+  }
+
   // Start timer interval
   function startTimer() {
     if (interval) clearInterval(interval);
@@ -247,20 +276,20 @@ function initFocusTimer(containerId) {
       timeLeft--;
 
       if (timeLeft <= 0) {
-        // Timer completed
         if (timerState === "work") {
-          // Work period completed, start break
+          // Play notification and switch to break
+          playNotification(true); // Work ended sound
           timerState = "break";
           timeLeft = settings.breakDuration * 60;
-        } else {
-          // Break period completed
+        } else if (timerState === "break") {
+          // Play notification and handle cycle completion
+          playNotification(false); // Break ended sound
+          
           if (currentCycle < settings.cycles) {
-            // Start next cycle
             currentCycle++;
             timerState = "work";
             timeLeft = settings.workDuration * 60;
           } else {
-            // All cycles completed
             stopTimer();
             isRunning = false;
             timerState = "idle";
@@ -268,6 +297,7 @@ function initFocusTimer(containerId) {
             timeLeft = settings.workDuration * 60;
           }
         }
+        render();
       }
 
       render();
