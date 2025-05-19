@@ -255,6 +255,9 @@ generateModernGrid(daysOfWeek) {
   `;
 
   this.container.innerHTML = html;
+  if (window.lucide) {
+        window.lucide.createIcons();
+    }
   this.renderTimeBlocks(daysOfWeek);
   this.setupEventListeners();
 }
@@ -460,27 +463,6 @@ addResizeHandlers(element, block) {
       return false;
     }
   }
-deleteTimeBlock(id) {
-  // Find the index of the time block with the specified ID
-  const index = this.timeBlocks.findIndex(block => block.id === id);
-  
-  if (index !== -1) {
-    // Remove the time block from the array
-    this.timeBlocks.splice(index, 1);
-    
-    // Save changes to localStorage
-    this.saveToLocalStorage();
-    
-    // Re-render calendar to reflect the changes
-    this.render();
-    
-    console.log("Event deleted successfully:", id);
-    return true;
-  } else {
-    console.error("Could not find event with ID:", id);
-    return false;
-  }
-}
 async showDeleteConfirmationDialog(eventId) {
     const isDarkMode = document.documentElement.classList.contains('dark');
     const event = this.timeBlocks.find(e => e.id === eventId);
@@ -578,25 +560,25 @@ animateAndRemoveDialog(dialog) {
 
     // Update deleteTimeBlock to use class methods
     async deleteTimeBlock(id) {
-        try {
-            const shouldDelete = await this.showDeleteConfirmationDialog(id);
-            if (!shouldDelete) return false;
+    try {
+        const shouldDelete = await this.showDeleteConfirmationDialog(id);
+        if (!shouldDelete) return false;
 
-            const index = this.timeBlocks.findIndex(block => block.id === id);
-            if (index === -1) {
-                console.error("Could not find event with ID:", id);
-                return false;
-            }
-
-            this.timeBlocks.splice(index, 1);
-            this.saveToLocalStorage();
-            this.render();
-            return true;
-        } catch (error) {
-            console.error("Error deleting time block:", error);
+        const index = this.timeBlocks.findIndex(block => block.id === id);
+        if (index === -1) {
+            console.error("Could not find event with ID:", id);
             return false;
         }
+
+        this.timeBlocks.splice(index, 1);
+        this.saveToLocalStorage();
+        this.render();
+        return true;
+    } catch (error) {
+        console.error("Error deleting time block:", error);
+        return false;
     }
+}
   getTimeBlockPosition(block) {
   const startHour = block.start.getHours();
   const startMinutes = block.start.getMinutes();
@@ -1435,15 +1417,15 @@ showEditEventModal(event) {
         }, 150);
     });
 
-    document.getElementById('delete-event').addEventListener('click', () => {
-        // Show delete confirmation dialog
-        this.showDeleteConfirmationDialog(event.id);
-        // Remove the edit modal with animation
-        modal.style.opacity = "0";
-        setTimeout(() => {
-            document.body.removeChild(modal);
-        }, 150);
-    });
+   document.getElementById('delete-event').addEventListener('click', async () => {
+            const deleted = await this.deleteTimeBlock(event.id);
+            if (deleted) {
+                modal.style.opacity = "0";
+                setTimeout(() => {
+                    document.body.removeChild(modal);
+                }, 150);
+            }
+        });;
 
     const saveButton = document.getElementById('save-edit');
     if (saveButton) {
@@ -1568,6 +1550,41 @@ exportWeekData() {
             return eventDate >= weekStart && eventDate <= weekEnd;
         });
 
+        // Check if there are any events in the current week
+        if (weekEvents.length === 0) {
+            const isDarkMode = document.documentElement.classList.contains('dark');
+            const toastBg = isDarkMode ? 'bg-gray-800' : 'bg-white';
+            const toastText = isDarkMode ? 'text-gray-200' : 'text-gray-800';
+            
+            // Create and show toast notification
+            const toast = document.createElement('div');
+            toast.className = `fixed bottom-4 right-4 ${toastBg} ${toastText} px-6 py-3 rounded-lg shadow-lg transform transition-all duration-300 translate-y-2 opacity-0`;
+            toast.innerHTML = `
+                <div class="flex items-center space-x-2">
+                    <svg class="w-5 h-5 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <span>Nu există evenimente de exportat în această săptămână</span>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Animate toast in
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-y-2', 'opacity-0');
+            });
+            
+            // Remove toast after 3 seconds
+            setTimeout(() => {
+                toast.classList.add('translate-y-2', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+            
+            return;
+        }
+
+        // Continue with export if there are events
         const exportData = {
             weekRange: `${this.format(weekStart, "dd/MM/yyyy")} - ${this.format(weekEnd, "dd/MM/yyyy")}`,
             events: weekEvents.map(event => ({
