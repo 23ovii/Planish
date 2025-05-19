@@ -23,13 +23,13 @@ function initFocusTimer(containerId) {
     // Detectează dark mode la fiecare render
     isDarkMode = document.documentElement.classList.contains('dark');
 
-    // Calculate progress percentage
-    const totalTime =
-      timerState === "work"
-        ? settings.workDuration * 60
+    // Calculate progress percentage (100 means full circle, 0 means empty)
+    const totalTime = timerState === "work" 
+        ? settings.workDuration * 60 
         : settings.breakDuration * 60;
-    const progress = 100 - (timeLeft / totalTime) * 100;
+    const progress = 100 - ((timeLeft / totalTime) * 100); // Inverted calculation
 
+    // Replace the progress circle section
     container.innerHTML = `
         <div class="w-full max-w-md mx-auto ${isDarkMode ? 'bg-slate-900' : 'bg-white'} shadow-lg rounded-lg ${isDarkMode ? 'border-slate-700' : 'border'}">
             <div class="p-6 ${isDarkMode ? 'border-slate-700' : 'border-b'}">
@@ -57,12 +57,31 @@ function initFocusTimer(containerId) {
                 <div id="timer-content" class="${activeTab === "timer" ? "" : "hidden"} space-y-4">
                     <div class="flex flex-col items-center justify-center">
                         <div class="relative w-64 h-64 flex items-center justify-center">
-                            <!-- Background circle -->
-                            <div class="absolute inset-0 rounded-full border-8 ${isDarkMode ? 'border-[#7a65db]/20' : 'border-[#7a65db]/20'}"></div>
-                            <!-- Progress circle -->
-                            <div class="absolute inset-0 rounded-full border-8 ${isDarkMode ? 'border-[#7a65db]' : 'border-[#7a65db]'}" 
-                                style="clip-path: polygon(50% 50%, 50% 0%, ${progress <= 25 ? 50 + progress * 2 : 100}% 0%, ${progress > 25 && progress <= 50 ? 100 : 50 + (progress - 50) * 2}% ${progress > 25 && progress <= 50 ? (progress - 25) * 4 : 0}%, ${progress > 50 && progress <= 75 ? 100 - (progress - 50) * 4 : 0}% ${progress > 50 ? 100 : 50 + (progress - 25) * 2}%, ${progress > 75 ? 50 - (progress - 75) * 2 : 0}% ${progress > 75 ? 100 - (progress - 75) * 4 : 100}%)">
-                            </div>
+                            <svg class="absolute inset-0 w-full h-full -rotate-90">
+                                <!-- Background circle -->
+                                <circle
+                                    cx="128"
+                                    cy="128"
+                                    r="120"
+                                    stroke="${isDarkMode ? '#7a65db20' : '#7a65db20'}"
+                                    stroke-width="8"
+                                    fill="none"
+                                />
+                                <!-- Progress circle -->
+                                <circle
+                                    cx="128"
+                                    cy="128"
+                                    r="120"
+                                    stroke="#7a65db"
+                                    stroke-width="8"
+                                    fill="none"
+                                    stroke-dasharray="${2 * Math.PI * 120}"
+                                    stroke-dashoffset="${(progress / 100) * (2 * Math.PI * 120)}"
+                                    style="transition: stroke-dashoffset 0.5s ease"
+                                />
+                            </svg>
+
+                            <!-- Timer text -->
                             <div class="text-5xl font-bold ${isDarkMode ? 'text-[#7a65db]' : 'text-[#7a65db]'} z-10">
                                 ${formatTime(timeLeft)}
                             </div>
@@ -187,27 +206,24 @@ function initFocusTimer(containerId) {
         e.target.value;
     });
 
+    // Modify the apply settings click listener
     document.getElementById("apply-settings").addEventListener("click", () => {
-      const workDuration = parseInt(
-        document.getElementById("work-duration").value,
-      );
-      const breakDuration = parseInt(
-        document.getElementById("break-duration").value,
-      );
-      const cycles = parseInt(document.getElementById("cycles").value);
+        const workDuration = parseInt(document.getElementById("work-duration").value);
+        const breakDuration = parseInt(document.getElementById("break-duration").value);
+        const cycles = parseInt(document.getElementById("cycles").value);
 
-      settings = {
-        workDuration,
-        breakDuration,
-        cycles,
-      };
+        // Update settings
+        settings.workDuration = workDuration;
+        settings.breakDuration = breakDuration;
+        settings.cycles = cycles;
 
-      if (timerState === "idle") {
-        timeLeft = settings.workDuration * 60;
-      }
+        // Reset timeLeft if timer is idle
+        if (timerState === "idle") {
+            timeLeft = settings.workDuration * 60;
+        }
 
-      activeTab = "timer";
-      render();
+        activeTab = "timer";
+        render();
     });
   }
 
