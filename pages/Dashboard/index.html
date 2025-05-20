@@ -227,13 +227,20 @@
         transform: translate(-50%, -50%);
       }
 
-      /* User info section styles */
+      /* Updated User info section styles */
 .user-info {
   display: flex;
   align-items: center;
   padding: 0.75rem 1rem;
   border-top: 1px solid hsl(var(--border));
   margin-top: auto;
+  background-color: rgba(122, 101, 219, 0.05);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.user-info:hover {
+  background-color: rgba(122, 101, 219, 0.1);
 }
 
 .avatar {
@@ -242,6 +249,14 @@
   border-radius: 9999px;
   overflow: hidden;
   flex-shrink: 0;
+  border: 2px solid hsl(var(--primary));
+  box-shadow: 0 0 0 2px rgba(122, 101, 219, 0.3);
+  transition: all 0.3s ease;
+}
+
+.avatar:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 3px rgba(122, 101, 219, 0.5);
 }
 
 .avatar img {
@@ -264,13 +279,17 @@
 }
 
 #user-name {
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: hsl(var(--primary));
+  transition: color 0.2s ease;
 }
 
 #user-email {
-  font-size: 0.75rem;
-  color: hsl(var(--muted-foreground));
+  font-size: 0.8125rem;
+  color: hsl(var(--foreground));
+  opacity: 0.9;
+  font-weight: 500;
 }
 
 .logout-button {
@@ -283,10 +302,13 @@
   margin-left: 0.5rem;
   flex-shrink: 0;
   transition: all 0.2s ease;
+  color: hsl(var(--muted-foreground));
 }
 
 .logout-button:hover {
-  background-color: hsl(var(--muted));
+  background-color: hsl(var(--primary));
+  color: white;
+  transform: scale(1.05);
 }
 
 /* Collapsed sidebar user info */
@@ -313,7 +335,8 @@
 }
 
 .sidebar.sidebar-collapsed .logout-button:hover {
-  background-color: hsl(var(--accent));
+  background-color: hsl(var(--primary));
+  color: white;
 }
 
 /* Update the container spacing */
@@ -403,14 +426,14 @@
         <div class="user-info">
           <div class="avatar">
             <img
-              src="https://api.dicebear.com/7.x/avataaars/svg?seed=user123"
+              src="https://api.dicebear.com/7.x/avataaars/svg?seed=guest"
               alt="User Avatar"
               id="user-avatar"
             />
           </div>
           <div class="user-details">
-            <span class="text-sm font-medium" id="user-name">Guest User</span>
-            <span class="text-xs text-muted-foreground" id="user-email">guest@example.com</span>
+            <span class="text-sm font-medium" id="user-name">Welcome</span>
+            <span class="text-xs text-muted-foreground" id="user-email">guest</span>
           </div>
           <!-- Minimalist Logout Button -->
           <button
@@ -535,5 +558,62 @@
 </div>
 
     <script src="js/main.js"></script>
+    
+    <!-- Script to update avatar and user info from localStorage -->
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get username from localStorage - try multiple possible keys
+        let username = localStorage.getItem('username') || 
+                       localStorage.getItem('userName') || 
+                       localStorage.getItem('user') || 
+                       localStorage.getItem('currentUser') || 
+                       'guest';
+        
+        // If the username is stored as JSON, parse it
+        try {
+          // Check if it's a JSON string
+          if (username.startsWith('{') || username.startsWith('[')) {
+            const userObj = JSON.parse(username);
+            // Try to get username from common properties
+            username = userObj.username || userObj.userName || userObj.name || username;
+          }
+        } catch (e) {
+          // Not JSON or invalid JSON, continue with the string value
+          console.log('Using username as string: ' + username);
+        }
+        
+        // Log localStorage contents for debugging
+        console.log('localStorage contents:');
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          console.log(`${key}: ${localStorage.getItem(key)}`);
+        }
+        
+        // Update avatar with username as seed
+        const userAvatar = document.getElementById('user-avatar');
+        if (userAvatar) {
+          userAvatar.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`;
+          console.log('Updated avatar with seed: ' + username);
+        }
+        
+        // Update user info display
+        const userEmailElement = document.getElementById('user-email');
+        if (userEmailElement) {
+          userEmailElement.textContent = username;
+          console.log('Updated username display to: ' + username);
+        }
+        
+        // Ensure welcome text is there
+        const userNameElement = document.getElementById('user-name');
+        if (userNameElement) {
+          userNameElement.textContent = 'Welcome';
+        }
+        
+        // Make sure Lucide icons are properly initialized
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      });
+    </script>
   </body>
 </html>
