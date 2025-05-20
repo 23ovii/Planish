@@ -50,196 +50,213 @@ function initTaskMatrix(containerId) {
     const isDarkMode = document.documentElement.classList.contains('dark');
     
     container.innerHTML = `
-      <div class="${isDarkMode ? 'bg-gray-900' : 'bg-background'} p-6 rounded-lg">
-        <div class="flex justify-between items-center mb-6">
-          <h2 class="text-2xl font-bold ${isDarkMode ? 'text-white' : ''}">Task Prioritization Matrix</h2>
-          <button id="add-task-btn" class="${isDarkMode ? 'bg-[#7a65db]' : 'bg-primary'} text-white px-4 py-2 rounded-md flex items-center">
-            <i data-lucide="plus-circle" class="mr-2" style="width: 18px; height: 18px;"></i>
-            Add Task
+      <div class="w-full h-full bg-gradient-to-br from-white to-gray-50 dark:from-[#1e2837] dark:to-[#151c28] rounded-xl shadow-2xl p-8">
+        <!-- Header Section -->
+        <div class="flex justify-between items-center mb-8">
+          <div class="space-y-2">
+            <h2 class="text-3xl font-bold bg-gradient-to-r from-[#7a65db] to-[#9d88ff] bg-clip-text text-transparent">
+              Task Matrix
+            </h2>
+            <p class="text-gray-500 dark:text-gray-400">Organize your tasks by priority and importance</p>
+          </div>
+          
+          <button id="add-task-btn" 
+            class="px-5 py-3 bg-gradient-to-r from-[#7a65db] to-[#9d88ff] hover:from-[#6952c7] hover:to-[#8b74ff] 
+            text-white rounded-lg shadow-lg shadow-purple-500/20 flex items-center space-x-2 
+            transform hover:scale-105 transition-all duration-200">
+            <i data-lucide="plus-circle" class="w-5 h-5"></i>
+            <span>Add Task</span>
           </button>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Quadrant 1: Urgent & Important -->
-          <div class="border border-red-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
-            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
-              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Urgent & Important</h3>
-            </div>
-            <div class="p-4">
-              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
-                Do these tasks immediately
-              </p>
-              <div id="q1-tasks" class="space-y-2">
-                <!-- Tasks will be inserted here -->
+        <!-- Matrix Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Quadrant 1 -->
+          <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden
+            border border-red-200 dark:border-red-900/30 shadow-xl">
+            <div class="p-5 border-b border-red-100 dark:border-red-900/30 bg-gradient-to-r from-red-50 to-transparent dark:from-red-900/20">
+              <div class="flex items-center space-x-3">
+                <div class="p-2 bg-red-500/10 rounded-lg">
+                  <i data-lucide="alert-triangle" class="w-5 h-5 text-red-500"></i>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Urgent & Important</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Do these tasks immediately</p>
+                </div>
               </div>
             </div>
+            <div id="q1-tasks" class="p-5 space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar"></div>
           </div>
 
-          <!-- Quadrant 2: Not Urgent & Important -->
-          <div class="border border-blue-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
-            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
-              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Important, Not Urgent</h3>
-            </div>
-            <div class="p-4">
-              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
-                Schedule time for these tasks
-              </p>
-              <div id="q2-tasks" class="space-y-2">
-                <!-- Tasks will be inserted here -->
+          <!-- Quadrant 2 -->
+          <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden
+            border border-blue-200 dark:border-blue-900/30 shadow-xl">
+            <div class="p-5 border-b border-blue-100 dark:border-blue-900/30 bg-gradient-to-r from-blue-50 to-transparent dark:from-blue-900/20">
+              <div class="flex items-center space-x-3">
+                <div class="p-2 bg-blue-500/10 rounded-lg">
+                  <i data-lucide="calendar" class="w-5 h-5 text-blue-500"></i>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Important, Not Urgent</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Schedule these tasks</p>
+                </div>
               </div>
             </div>
+            <div id="q2-tasks" class="p-5 space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar"></div>
           </div>
 
-          <!-- Quadrant 3: Urgent & Not Important -->
-          <div class="border border-yellow-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
-            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
-              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Urgent, Not Important</h3>
-            </div>
-            <div class="p-4">
-              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
-                Delegate these tasks if possible
-              </p>
-              <div id="q3-tasks" class="space-y-2">
-                <!-- Tasks will be inserted here -->
+          <!-- Quadrant 3 -->
+          <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden
+            border border-yellow-200 dark:border-yellow-900/30 shadow-xl">
+            <div class="p-5 border-b border-yellow-100 dark:border-yellow-900/30 bg-gradient-to-r from-yellow-50 to-transparent dark:from-yellow-900/20">
+              <div class="flex items-center space-x-3">
+                <div class="p-2 bg-yellow-500/10 rounded-lg">
+                  <i data-lucide="clock" class="w-5 h-5 text-yellow-500"></i>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Urgent, Not Important</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Delegate if possible</p>
+                </div>
               </div>
             </div>
+            <div id="q3-tasks" class="p-5 space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar"></div>
           </div>
 
-          <!-- Quadrant 4: Not Urgent & Not Important -->
-          <div class="border border-gray-500 border-t-4 rounded-lg ${isDarkMode ? 'bg-gray-800' : 'bg-white'}">
-            <div class="p-4 border-b ${isDarkMode ? 'border-gray-700' : ''}">
-              <h3 class="text-lg font-medium ${isDarkMode ? 'text-gray-100' : ''}">Not Urgent, Not Important</h3>
-            </div>
-            <div class="p-4">
-              <p class="text-sm ${isDarkMode ? 'text-gray-400' : 'text-muted-foreground'} mb-4">
-                Eliminate these tasks when possible
-              </p>
-              <div id="q4-tasks" class="space-y-2">
-                <!-- Tasks will be inserted here -->
+          <!-- Quadrant 4 -->
+          <div class="bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm rounded-xl overflow-hidden
+            border border-gray-200 dark:border-gray-800 shadow-xl">
+            <div class="p-5 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-gray-50 to-transparent dark:from-gray-800/50">
+              <div class="flex items-center space-x-3">
+                <div class="p-2 bg-gray-500/10 rounded-lg">
+                  <i data-lucide="battery-low" class="w-5 h-5 text-gray-500"></i>
+                </div>
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Not Urgent, Not Important</h3>
+                  <p class="text-sm text-gray-500 dark:text-gray-400">Eliminate if possible</p>
+                </div>
               </div>
             </div>
+            <div id="q4-tasks" class="p-5 space-y-3 max-h-[400px] overflow-y-auto custom-scrollbar"></div>
           </div>
         </div>
+
+        <style>
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #7a65db40;
+            border-radius: 3px;
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #7a65db60;
+          }
+        </style>
       </div>
 
       <!-- Add Task Dialog -->
-      <div id="add-task-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-          <h3 class="text-lg font-medium mb-4 ${isDarkMode ? 'text-gray-100' : ''}">Add New Task</h3>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Title</label>
-              <input type="text" id="task-title" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Description</label>
-              <textarea id="task-description" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'} h-20 resize-y"></textarea>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-2">
-                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Urgency</label>
-                <select id="task-urgency" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
-                  <option value="high">High</option>
-                  <option value="low" selected>Low</option>
-                </select>
+      <div id="add-task-dialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all duration-200">
+              <div class="p-6">
+                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Add New Task</h3>
+                  <div class="space-y-4">
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title*</label>
+                          <input type="text" id="task-title" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                      </div>
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                          <textarea id="task-description" rows="3" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2"></textarea>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4">
+                          <div>
+                              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Urgency</label>
+                              <select id="task-urgency" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                                  <option value="low">Low</option>
+                                  <option value="high">High</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Importance</label>
+                              <select id="task-importance" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                                  <option value="low">Low</option>
+                                  <option value="high">High</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date* (DD/MM)</label>
+                          <input type="text" id="task-due-date" placeholder="DD/MM" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                      </div>
+                  </div>
               </div>
-              <div class="space-y-2">
-                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Importance</label>
-                <select id="task-importance" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
-                  <option value="high">High</option>
-                  <option value="low" selected>Low</option>
-                </select>
+              <div class="border-t dark:border-gray-700 p-4 flex justify-end space-x-3">
+                  <button id="cancel-add-task" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                      Cancel
+                  </button>
+                  <button id="confirm-add-task" class="px-4 py-2 bg-[#7a65db] hover:bg-[#6952c7] text-white rounded-lg transition-colors">
+                      Add Task
+                  </button>
               </div>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Due Date (DD/MM)</label>
-              <input id="task-due-date" type="text" 
-                  placeholder="DD/MM" 
-                  pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])"
-                  title="Please enter a valid date in DD/MM format (e.g., 25/12)"
-                  class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
-            </div>
           </div>
-          <div class="flex justify-end space-x-2 mt-6">
-            <button id="cancel-add-task" class="px-4 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'border'}">Cancel</button>
-            <button id="confirm-add-task" class="px-4 py-2 ${isDarkMode ? 'bg-blue-600' : 'bg-primary'} text-white rounded-md">Add Task</button>
-          </div>
-        </div>
       </div>
 
       <!-- Edit Task Dialog -->
-      <div id="edit-task-dialog" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
-        <div class="${isDarkMode ? 'bg-gray-800' : 'bg-white'} rounded-lg shadow-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-          <h3 class="text-lg font-medium mb-4 ${isDarkMode ? 'text-gray-100' : ''}">Edit Task</h3>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Title</label>
-              <input id="edit-task-title" type="text" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Description</label>
-              <textarea id="edit-task-description" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'} h-20 resize-y"></textarea>
-            </div>
-            <div class="grid grid-cols-2 gap-4">
-              <div class="space-y-2">
-                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Urgency</label>
-                <select id="edit-task-urgency" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
-                  <option value="high">High</option>
-                  <option value="low">Low</option>
-                </select>
+      <div id="edit-task-dialog" class="fixed inset-0 bg-black/50 backdrop-blur-sm hidden z-50 flex items-center justify-center">
+          <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl max-w-md w-full mx-4 transform transition-all duration-200">
+              <div class="p-6">
+                  <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">Edit Task</h3>
+                  <div class="space-y-4">
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Title*</label>
+                          <input type="text" id="edit-task-title" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                      </div>
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                          <textarea id="edit-task-description" rows="3" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2"></textarea>
+                      </div>
+                      <div class="grid grid-cols-2 gap-4">
+                          <div>
+                              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Urgency</label>
+                              <select id="edit-task-urgency" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                                  <option value="low">Low</option>
+                                  <option value="high">High</option>
+                              </select>
+                          </div>
+                          <div>
+                              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Importance</label>
+                              <select id="edit-task-importance" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                                  <option value="low">Low</option>
+                                  <option value="high">High</option>
+                              </select>
+                          </div>
+                      </div>
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date* (DD/MM)</label>
+                          <input type="text" id="edit-task-due-date" placeholder="DD/MM" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                      </div>
+                      <div>
+                          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Status</label>
+                          <select id="edit-task-status" class="w-full rounded-lg border dark:bg-gray-700 dark:border-gray-600 dark:text-white px-3 py-2">
+                              <option value="pending">Pending</option>
+                              <option value="completed">Completed</option>
+                          </select>
+                      </div>
+                  </div>
               </div>
-              <div class="space-y-2">
-                <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Importance</label>
-                <select id="edit-task-importance" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
-                  <option value="high">High</option>
-                  <option value="low">Low</option>
-                </select>
+              <div class="border-t dark:border-gray-700 p-4 flex justify-end space-x-3">
+                  <button id="cancel-edit-task" class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                      Cancel
+                  </button>
+                  <button id="confirm-edit-task" class="px-4 py-2 bg-[#7a65db] hover:bg-[#6952c7] text-white rounded-lg transition-colors">
+                      Save Changes
+                  </button>
               </div>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Due Date (DD/MM)</label>
-              <input id="edit-task-due-date" type="text" 
-                  placeholder="DD/MM" 
-                  pattern="(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[012])"
-                  title="Please enter a valid date in DD/MM format (e.g., 25/12)"
-                  class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}" />
-            </div>
-            <div class="space-y-2">
-              <label class="block text-sm font-medium ${isDarkMode ? 'text-gray-300' : ''}">Status</label>
-              <select id="edit-task-status" class="w-full px-3 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 border-gray-600 text-gray-100' : 'border'}">
-                <option value="pending">Pending</option>
-                <option value="completed">Completed</option>
-              </select>
-            </div>
           </div>
-          <div class="flex justify-end space-x-2 mt-6">
-            <button id="cancel-edit-task" class="px-4 py-2 rounded-md ${isDarkMode ? 'bg-gray-700 text-gray-300 border-gray-600' : 'border'}">Cancel</button>
-            <button id="confirm-edit-task" class="px-4 py-2 ${isDarkMode ? 'bg-blue-600' : 'bg-primary'} text-white rounded-md">Save Changes</button>
-          </div>
-        </div>
       </div>
-
-      <style>
-        /* Add these styles to ensure proper text wrapping */
-        .task-text-container {
-          width: 100%;
-          overflow-wrap: break-word;
-          word-wrap: break-word;
-          word-break: break-word;
-          hyphens: auto;
-          max-width: 100%;
-        }
-        
-        .truncated-text, .full-text {
-          width: 100%;
-          overflow-wrap: break-word;
-          word-wrap: break-word;
-          word-break: break-word;
-          hyphens: auto;
-          max-width: 100%;
-          white-space: pre-wrap;
-        }
-      </style>
     `;
 
     // Initialize Lucide icons
@@ -282,21 +299,124 @@ function initTaskMatrix(containerId) {
     return "q4-tasks"; // Default
   }
 
-  // Helper function to truncate text with "See more" option
-  function createTruncatedText(text, maxLength = 150) {
-    if (!text || text.length <= maxLength) {
-      return `<p class="text-sm text-muted-foreground mt-1 task-text-container">${text || ""}</p>`;
-    }
+  // Update createTaskElement function for better task cards
+  function createTaskElement(task) {
+    const isDarkMode = document.documentElement.classList.contains('dark');
     
-    const truncatedText = text.substring(0, maxLength) + "...";
-    return `
-      <div class="text-content task-text-container">
-        <p class="text-sm text-muted-foreground mt-1 truncated-text">${truncatedText}</p>
-        <p class="text-sm text-muted-foreground mt-1 full-text hidden">${text}</p>
-        <button class="text-xs text-blue-500 see-more-toggle">See more</button>
+    const taskElement = document.createElement("div");
+    taskElement.className = `
+      group relative bg-white dark:bg-gray-800/50 rounded-lg shadow-sm 
+      hover:shadow-md transition-all duration-200 border border-gray-100 
+      dark:border-gray-700/30 backdrop-blur-sm
+      ${task.status === "completed" ? "opacity-60" : ""}
+    `;
+    
+    taskElement.innerHTML = `
+      <div class="p-4">
+        <div class="flex justify-between items-start gap-4">
+          <div class="flex-1 min-w-0">
+            <h3 class="font-medium text-gray-900 dark:text-white ${task.status === "completed" ? "line-through" : ""} 
+              truncate group-hover:text-[#7a65db] transition-colors">
+              ${task.title}
+            </h3>
+            ${createTruncatedText(task.description)}
+            <div class="flex items-center gap-2 mt-3">
+              <span class="flex items-center text-xs text-gray-500 dark:text-gray-400">
+                <i data-lucide="calendar" class="w-3 h-3 mr-1"></i>
+                ${task.dueDate}
+              </span>
+              <span class="flex items-center text-xs px-2 py-1 rounded-full 
+                ${getPriorityClass(task.urgency, task.importance)}">
+                ${getPriorityLabel(task.urgency, task.importance)}
+              </span>
+            </div>
+          </div>
+          
+          <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button class="toggle-status p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 
+              transition-colors" data-id="${task.id}">
+              <i data-lucide="check-circle" class="${
+                task.status === "completed" 
+                  ? "text-green-500" 
+                  : "text-gray-400 dark:text-gray-600"
+              }" style="width: 18px; height: 18px;"></i>
+            </button>
+            <button class="edit-task p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 
+              transition-colors" data-id="${task.id}">
+              <i data-lucide="edit" class="text-gray-400 dark:text-gray-600" 
+                style="width: 18px; height: 18px;"></i>
+            </button>
+            <button class="delete-task p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 
+              transition-colors" data-id="${task.id}">
+              <i data-lucide="trash-2" class="text-gray-400 dark:text-gray-600" 
+                style="width: 18px; height: 18px;"></i>
+            </button>
+          </div>
+        </div>
       </div>
     `;
+
+    // Add event listeners
+    taskElement.querySelector('.toggle-status').addEventListener('click', () => {
+      handleToggleStatus(task.id);
+    });
+    
+    taskElement.querySelector('.edit-task').addEventListener('click', () => {
+      showEditTaskDialog(task.id);
+    });
+    
+    taskElement.querySelector('.delete-task').addEventListener('click', () => {
+      handleDeleteTask(task.id);
+    });
+    
+    return taskElement;
   }
+
+  // Add helper functions for priority styling
+  function getPriorityClass(urgency, importance) {
+    if (urgency === "high" && importance === "high") 
+      return "bg-red-100 dark:bg-red-900/20 text-red-600 dark:text-red-400";
+    if (urgency === "low" && importance === "high") 
+      return "bg-blue-100 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400";
+    if (urgency === "high" && importance === "low") 
+      return "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-600 dark:text-yellow-400";
+    return "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400";
+  }
+
+  function getPriorityLabel(urgency, importance) {
+    if (urgency === "high" && importance === "high") return "High Priority";
+    if (urgency === "low" && importance === "high") return "Important";
+    if (urgency === "high" && importance === "low") return "Urgent";
+    return "Low Priority";
+  }
+
+  // Helper function to truncate text with "See more" option
+ function createTruncatedText(text, maxLength = 150) {
+  // Cazul 1: Textul este gol sau null
+  if (!text) {
+    return '<p class="text-sm text-gray-500 dark:text-gray-400 mt-1"></p>';
+  }
+  
+  // Cazul 2: Textul este scurt, sub maxLength
+  if (text.length <= maxLength) {
+    return `<p class="text-sm text-gray-500 dark:text-gray-400 mt-1 break-all break-words overflow-hidden">${text}</p>`;
+  }
+  
+  // Cazul 3: Textul este lung, peste maxLength - AICI APLICĂM TRUNCAREA
+  // Indiferent de conținut, dacă e lung, îl trunchiăm
+  const shortVersion = text.substring(0, maxLength) + "...";
+  
+  // Construim elementul HTML cu textul trunchiat și cel complet
+  const truncatedHTML = `
+    <div class="text-content w-full">
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 break-all break-words overflow-hidden truncated-text">${shortVersion}</p>
+      <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 break-all break-words overflow-hidden full-text hidden">${text}</p>
+      <button class="text-xs text-blue-500 see-more-toggle mt-1">See more</button>
+    </div>
+  `;
+  
+  return truncatedHTML;
+}
 
   // Create a task element
   function createTaskElement(task) {
@@ -345,20 +465,21 @@ function initTaskMatrix(containerId) {
     
     // Add event listener for "See more" toggle button if it exists
     const seeMoreBtn = taskElement.querySelector('.see-more-toggle');
-    if (seeMoreBtn) {
-      seeMoreBtn.addEventListener('click', () => {
-        const contentDiv = seeMoreBtn.closest('.text-content');
-        const truncatedText = contentDiv.querySelector('.truncated-text');
-        const fullText = contentDiv.querySelector('.full-text');
-        
-        // Toggle visibility of text elements
-        truncatedText.classList.toggle('hidden');
-        fullText.classList.toggle('hidden');
-        
-        // Toggle button text
-        seeMoreBtn.textContent = truncatedText.classList.contains('hidden') ? 'See less' : 'See more';
-      });
-    }
+if (seeMoreBtn) {
+  // Folosim function() în loc de arrow function pentru a avea this corect
+  seeMoreBtn.addEventListener('click', function() {
+    const textContent = this.parentElement;
+    const truncatedEl = textContent.querySelector('.truncated-text');
+    const fullEl = textContent.querySelector('.full-text');
+    
+    // Comută vizibilitatea
+    truncatedEl.classList.toggle('hidden');
+    fullEl.classList.toggle('hidden');
+    
+    // Actualizează textul butonului
+    this.textContent = truncatedEl.classList.contains('hidden') ? 'See less' : 'See more';
+  });
+}
     
     return taskElement;
   }

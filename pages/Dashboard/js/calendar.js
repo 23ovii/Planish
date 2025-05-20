@@ -217,38 +217,54 @@ generateModernGrid(daysOfWeek) {
   render() {
   const weekStart = this.startOfWeek(this.currentDate, { weekStartsOn: 1 });
   const weekEnd = this.endOfWeek(this.currentDate, { weekStartsOn: 1 });
-  const daysOfWeek = this.eachDayOfInterval({
-    start: weekStart,
-    end: weekEnd,
-  });
+  const daysOfWeek = this.eachDayOfInterval({ start: weekStart, end: weekEnd });
 
   const html = `
-    <div class="w-full h-full bg-white dark:bg-gray-800 rounded-lg shadow dark:shadow-gray-700/20">
-      <div class="flex flex-row items-center justify-between p-4 border-b dark:border-gray-700">
-        <h2 class="text-xl font-bold dark:text-white">Calendar</h2>
-        <div class="flex items-center space-x-2">
-          <div class="flex items-center space-x-2">
-            <button id="prev-week" class="p-1 border dark:border-gray-600 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <span class="h-4 w-4">←</span>
+    <div class="w-full h-full bg-white dark:bg-[#1e2837] rounded-xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-800">
+      <!-- Header Section -->
+      <div class="flex flex-row items-center justify-between p-6 border-b dark:border-gray-800">
+        <div class="flex items-center space-x-4">
+          <h2 class="text-2xl font-bold bg-gradient-to-r from-[#7a65db] to-[#9d88ff] bg-clip-text text-transparent">
+            Calendar
+          </h2>
+          <span class="px-3 py-1 text-sm font-medium text-[#7a65db] dark:text-[#9d88ff] bg-purple-50 dark:bg-purple-900/20 rounded-full">
+            ${this.format(weekStart, "MMM yyyy")}
+          </span>
+        </div>
+        
+        <div class="flex items-center space-x-3">
+          <div class="flex items-center bg-gray-50 dark:bg-gray-800/50 rounded-lg p-1">
+            <button id="prev-week" class="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-all duration-200">
+              <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+              </svg>
             </button>
-            <div class="font-medium dark:text-gray-300">
-              ${this.format(weekStart, "MMM d")} - ${this.format(weekEnd, "MMM d, yyyy")}
+            <div class="px-4 font-medium text-gray-600 dark:text-gray-300">
+              ${this.format(weekStart, "MMM d")} - ${this.format(weekEnd, "MMM d")}
             </div>
-            <button id="next-week" class="p-1 border dark:border-gray-600 rounded-md dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-              <span class="h-4 w-4">→</span>
+            <button id="next-week" class="p-2 hover:bg-white dark:hover:bg-gray-700 rounded-md transition-all duration-200">
+              <svg class="w-5 h-5 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
             </button>
           </div>
 
-          <button id="add-event" class="px-3 py-1.5 bg-[#7a65db] hover:bg-[#7a56db] dark:bg-[#7a65db] dark:hover:bg-[#7a56db] text-white rounded-md text-sm flex items-center">
-            <span class="h-4 w-4 mr-1">+</span> Adaugă eveniment
+          <button id="add-event" class="px-4 py-2 bg-gradient-to-r from-[#7a65db] to-[#9d88ff] hover:from-[#6952c7] hover:to-[#8b74ff] text-white rounded-lg shadow-lg shadow-purple-500/20 flex items-center space-x-2 transform hover:scale-105 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+            </svg>
+            <span>Adaugă eveniment</span>
           </button>
-          <button id="export-week" class="px-3 py-1.5 text-black-900 dark:text-gray-300 hover:text-[#7a65db] flex items-center">
-            <i data-lucide="download" class="w-4 h-4 mr-2"></i>
+
+          <button id="export-week" class="p-2 text-gray-600 dark:text-gray-300 hover:text-[#7a65db] dark:hover:text-[#9d88ff] rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 transition-all duration-200">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
+            </svg>
           </button>
         </div>
       </div>
-      
-      <div class="p-4">
+
+      <div class="p-6">
         ${this.generateModernGrid(daysOfWeek)}
       </div>
     </div>
@@ -256,8 +272,8 @@ generateModernGrid(daysOfWeek) {
 
   this.container.innerHTML = html;
   if (window.lucide) {
-        window.lucide.createIcons();
-    }
+    window.lucide.createIcons();
+  }
   this.renderTimeBlocks(daysOfWeek);
   this.setupEventListeners();
 }
