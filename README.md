@@ -75,7 +75,7 @@
 
 ```bash
 # Clone the magic ✨
-git clone https://github.com/23ovii/Planish.git
+git clone https://github.com/23ovii/Planish
 
 # Enter the realm 🚪
 cd Planish
@@ -155,15 +155,8 @@ open index.html
 
 ## 🗺️ Roadmap
 
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/74038190/212284087-bbe7e430-757e-4901-90bf-4cd2ce3e1852.gif" width="100">
-</div>
-
 ### 🔥 **Next Up (v2.0)**
 - [ ] **⌨️ Keyboard Shortcuts** - `Ctrl+N` for new task, `Enter` to save, `Esc` to cancel
-- [ ] **📂 Task Categories** - Color-coded categories (Work, Personal, Health, etc.)
-- [ ] **⏰ Due Dates & Reminders** - Set deadlines and get gentle notifications
-- [ ] **🔄 Drag & Drop Reordering** - Prioritize tasks with intuitive drag-and-drop
 
 ### 🌟 **Power User Features (v3.0)**
 - [ ] **📊 Productivity Analytics** - Track completion rates and productivity patterns
@@ -171,20 +164,19 @@ open index.html
 - [ ] **📱 PWA Support** - Install as native app on mobile/desktop
 - [ ] **🔄 Task Templates** - Save and reuse common task patterns
 - [ ] **📅 Calendar Integration** - Sync with Google Calendar, Outlook
-- [ ] **⭐ Priority Levels** - High/Medium/Low priority with visual indicators
 
 ### 🚀 **Advanced Features (v4.0)**
 - [ ] **🤖 Smart Suggestions** - AI-powered task recommendations
 - [ ] **📈 Habit Tracking** - Build and maintain daily habits
 - [ ] **👥 Team Collaboration** - Share task lists with colleagues/family
 - [ ] **🔗 API Integration** - Connect with Todoist, Notion, Trello
-- [ ] **📊 Export/Import** - JSON, CSV export for data portability
+- [x] **📊 Export/Import** - JSON, CSV export for data portability
 - [ ] **🌍 Multi-language Support** - Internationalization for global users
 
 ### 💡 **Community Ideas**
 - [ ] **🎵 Focus Sounds** - Built-in ambient sounds for productivity
 - [ ] **🏆 Gamification** - Points, streaks, and achievements
-- [ ] **📝 Task Notes** - Add detailed descriptions to tasks
+- [x] **📝 Task Notes** - Add detailed descriptions to tasks
 - [ ] **🔍 Search & Filter** - Find tasks quickly in large lists
 - [ ] **⏱️ Time Tracking** - Track time spent on each task
 
@@ -192,17 +184,13 @@ open index.html
 
 ## 🤝 Contributing
 
-<div align="center">
-  <img src="https://user-images.githubusercontent.com/74038190/212284145-bf2c01a8-c448-4f1a-b911-996024c84606.gif" width="200">
-</div>
-
 We'd love your help making Planish even better! Here's how to contribute:
 
 ### 🚀 **Quick Contribution**
 ```bash
 # 1. Fork this repo
 # 2. Clone your fork
-git clone https://github.com/YOUR_USERNAME/Planish.git
+git clone https://github.com/YOUR_USERNAME/Planish
 
 # 3. Create a feature branch
 git checkout -b feature/amazing-feature
