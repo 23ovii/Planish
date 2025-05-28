@@ -18,6 +18,22 @@ function initFocusTimer(containerId) {
   let interval = null;
   let isDarkMode = false; // Dark mode state
 
+  // Observer for theme changes
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class') {
+        isDarkMode = document.documentElement.classList.contains('dark');
+        render();
+      }
+    });
+  });
+
+  // Start observing theme changes
+  observer.observe(document.documentElement, {
+    attributes: true,
+    attributeFilter: ['class']
+  });
+
   // Render the focus timer UI
   function render() {
     // Detectează dark mode la fiecare render
@@ -31,22 +47,22 @@ function initFocusTimer(containerId) {
 
     // Replace the progress circle section
     container.innerHTML = `
-        <div class="w-full max-w-md mx-auto ${isDarkMode ? 'bg-slate-900' : 'bg-white'} shadow-lg rounded-lg ${isDarkMode ? 'border-slate-700' : 'border'}">
-            <div class="p-6 ${isDarkMode ? 'border-slate-700' : 'border-b'}">
-              <h2 class="text-2xl font-bold text-center ${isDarkMode ? 'text-[#7a65db]' : 'text-[#7a65db]'}">Focus Timer</h2>
-              <p class="text-center ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}">Stay productive with Pomodoro technique</p>
+        <div class="w-full max-w-md mx-auto ${isDarkMode ? 'bg-slate-900 border-slate-700' : 'bg-white border border-gray-200'} shadow-lg rounded-lg">
+            <div class="p-6 ${isDarkMode ? 'border-slate-700' : 'border-b border-gray-200'}">
+              <h2 class="text-2xl font-bold text-center ${isDarkMode ? 'text-[#7a65db]' : 'text-gray-800'}">Focus Timer</h2>
+              <p class="text-center ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}">Stay productive with Pomodoro technique</p>
               
-              <div class="mt-4 ${isDarkMode ? 'border-slate-700' : 'border-b'}">
+              <div class="mt-4 ${isDarkMode ? 'border-slate-700' : 'border-b border-gray-200'}">
                 <div class="flex space-x-2">
                   <button id="timer-tab" class="px-4 py-2 ${
                     activeTab === "timer" 
                         ? `border-b-2 border-[#7a65db] text-[#7a65db] font-medium` 
-                        : `border-b-2 border-transparent hover:text-[#7a65db] ${isDarkMode ? 'text-slate-400' : ''}`
+                        : `border-b-2 border-transparent hover:text-[#7a65db] ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`
                   }">Timer</button>
                   <button id="settings-tab" class="px-4 py-2 ${
                     activeTab === "settings" 
                         ? `border-b-2 border-[#7a65db] text-[#7a65db] font-medium` 
-                        : `border-b-2 border-transparent hover:text-[#7a65db] ${isDarkMode ? 'text-slate-400' : ''}`
+                        : `border-b-2 border-transparent hover:text-[#7a65db] ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}`
                   }">Settings</button>
                 </div>
               </div>
@@ -82,14 +98,14 @@ function initFocusTimer(containerId) {
                             </svg>
 
                             <!-- Timer text -->
-                            <div class="text-5xl font-bold ${isDarkMode ? 'text-[#7a65db]' : 'text-[#7a65db]'} z-10">
+                            <div class="text-5xl font-bold ${isDarkMode ? 'text-[#7a65db]' : 'text-gray-800'} z-10">
                                 ${formatTime(timeLeft)}
                             </div>
                         </div>
 
                         <!-- Action buttons -->
                         <div class="flex justify-center space-x-4 mt-8">
-                            <button id="reset-btn" class="p-2 rounded-md transition-colors ${isDarkMode ? 'border-slate-700 text-slate-400 hover:border-[#7a65db] hover:text-[#7a65db]' : 'border hover:border-[#7a65db] hover:text-[#7a65db]'} ${
+                            <button id="reset-btn" class="p-2 rounded-md transition-colors ${isDarkMode ? 'border-slate-700 text-slate-400 hover:border-[#7a65db] hover:text-[#7a65db]' : 'border border-gray-300 text-gray-600 hover:border-[#7a65db] hover:text-[#7a65db]'} ${
                                 timerState === "idle" && !isRunning ? "opacity-50 cursor-not-allowed" : ""
                             }">
                                 <i data-lucide="rotate-ccw" class="h-5 w-5"></i>
@@ -99,7 +115,7 @@ function initFocusTimer(containerId) {
                                 ${isRunning ? '<i data-lucide="pause" class="mr-2 h-5 w-5"></i> Pause' : '<i data-lucide="play" class="mr-2 h-5 w-5"></i> Start'}
                             </button>
 
-                            <button id="settings-btn" class="p-2 rounded-md transition-colors ${isDarkMode ? 'border-slate-700 text-slate-400 hover:border-[#7a65db] hover:text-[#7a65db]' : 'border hover:border-[#7a65db] hover:text-[#7a65db]'}">
+                            <button id="settings-btn" class="p-2 rounded-md transition-colors ${isDarkMode ? 'border-slate-700 text-slate-400 hover:border-[#7a65db] hover:text-[#7a65db]' : 'border border-gray-300 text-gray-600 hover:border-[#7a65db] hover:text-[#7a65db]'}">
                                 <i data-lucide="settings" class="h-5 w-5"></i>
                             </button>
                         </div>
@@ -111,29 +127,29 @@ function initFocusTimer(containerId) {
                     <div class="space-y-8">
                         <div>
                             <div class="flex justify-between mb-2">
-                                <label for="work-duration" class="text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}">Work Duration (minutes)</label>
-                                <span class="${isDarkMode ? 'text-slate-300' : 'text-slate-700'}">${settings.workDuration}</span>
+                                <label for="work-duration" class="text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}">Work Duration (minutes)</label>
+                                <span class="${isDarkMode ? 'text-slate-300' : 'text-gray-700'}">${settings.workDuration}</span>
                             </div>
                             <input type="range" id="work-duration" min="1" max="60" step="1" value="${settings.workDuration}" 
-                                class="w-full h-2 rounded-lg appearance-none cursor-pointer ${isDarkMode ? 'bg-slate-700' : 'bg-slate-200'} accent-[#7a65db]">
+                                class="w-full h-2 rounded-lg appearance-none cursor-pointer ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'} accent-[#7a65db]">
                         </div>
 
                         <div>
                             <div class="flex justify-between mb-2">
-                                <label for="break-duration" class="text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}">Break Duration (minutes)</label>
-                                <span class="${isDarkMode ? 'text-slate-300' : 'text-slate-700'}">${settings.breakDuration}</span>
+                                <label for="break-duration" class="text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}">Break Duration (minutes)</label>
+                                <span class="${isDarkMode ? 'text-slate-300' : 'text-gray-700'}">${settings.breakDuration}</span>
                             </div>
                             <input type="range" id="break-duration" min="1" max="30" step="1" value="${settings.breakDuration}" 
-                                class="w-full h-2 rounded-lg appearance-none cursor-pointer ${isDarkMode ? 'bg-slate-700' : 'bg-slate-200'} accent-[#7a65db]">
+                                class="w-full h-2 rounded-lg appearance-none cursor-pointer ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'} accent-[#7a65db]">
                         </div>
 
                         <div>
                             <div class="flex justify-between mb-2">
-                                <label for="cycles" class="text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-slate-700'}">Number of Cycles</label>
-                                <span class="${isDarkMode ? 'text-slate-300' : 'text-slate-700'}">${settings.cycles}</span>
+                                <label for="cycles" class="text-sm font-medium ${isDarkMode ? 'text-slate-300' : 'text-gray-700'}">Number of Cycles</label>
+                                <span class="${isDarkMode ? 'text-slate-300' : 'text-gray-700'}">${settings.cycles}</span>
                             </div>
                             <input type="range" id="cycles" min="1" max="10" step="1" value="${settings.cycles}" 
-                                class="w-full h-2 rounded-lg appearance-none cursor-pointer ${isDarkMode ? 'bg-slate-700' : 'bg-slate-200'} accent-[#7a65db]">
+                                class="w-full h-2 rounded-lg appearance-none cursor-pointer ${isDarkMode ? 'bg-slate-700' : 'bg-gray-200'} accent-[#7a65db]">
                         </div>
                     </div>
 
@@ -143,8 +159,8 @@ function initFocusTimer(containerId) {
                 </div>
             </div>
 
-            <div class="p-4 ${isDarkMode ? 'border-slate-700' : 'border-t'} text-center">
-                <p class="text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}">
+            <div class="p-4 ${isDarkMode ? 'border-slate-700' : 'border-t border-gray-200'} text-center">
+                <p class="text-xs ${isDarkMode ? 'text-slate-400' : 'text-gray-600'}">
                     The Pomodoro Technique helps improve productivity by breaking work
                     into focused intervals with short breaks.
                 </p>
@@ -334,6 +350,7 @@ function initFocusTimer(containerId) {
   // Clean up on destroy
   function destroy() {
     stopTimer();
+    observer.disconnect(); // Clean up the observer when component is destroyed
   }
 
   // Return public methods
