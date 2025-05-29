@@ -157,6 +157,7 @@ open index.html
 
 ### 🔥 **Next Up (v2.0)**
 - [ ] **⌨️ Keyboard Shortcuts** - `Ctrl+N` for new task, `Enter` to save, `Esc` to cancel
+- [ ] **📥 Data Import** – Support for CSV with automatic mapping and preview before saving
 
 ### 🌟 **Power User Features (v3.0)**
 - [ ] **📊 Productivity Analytics** - Track completion rates and productivity patterns
@@ -170,7 +171,7 @@ open index.html
 - [ ] **📈 Habit Tracking** - Build and maintain daily habits
 - [ ] **👥 Team Collaboration** - Share task lists with colleagues/family
 - [ ] **🔗 API Integration** - Connect with Todoist, Notion, Trello
-- [x] **📊 Export/Import** - JSON, CSV export for data portability
+- [x] **📊 Export** - JSON, CSV export for data portability
 - [ ] **🌍 Multi-language Support** - Internationalization for global users
 
 ### 💡 **Community Ideas**
