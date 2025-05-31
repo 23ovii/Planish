@@ -11,6 +11,9 @@
     <img src="https://img.shields.io/badge/Vanilla-JS-yellow?style=for-the-badge&logo=javascript" alt="Vanilla JS">
     <img src="https://img.shields.io/badge/Tailwind-CSS-blue?style=for-the-badge&logo=tailwindcss" alt="Tailwind CSS">
     <img src="https://img.shields.io/badge/License-MIT-green?style=for-the-badge" alt="MIT License">
+     <a href="https://github.com/23ovii/Planish/stargazers" target="_blank">
+    <img src="https://img.shields.io/github/stars/23ovii/Planish?style=for-the-badge" alt="GitHub stars">
+  </a>
   </p>
 
   <p align="center">
