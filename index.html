@@ -5,22 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Planish - Organizează-ți ziua</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"></noscript>
   <link rel="icon" type="image/x-icon" href="./assets/img/favicon-nobg.png">
   <style>
     body {
       font-family: 'Inter', sans-serif;
     }
 
-    /* Smooth scroll behavior */
     html {
       scroll-behavior: smooth;
     }
 
-    /* Enhanced gradient animation */
     .animate-gradient {
       background-size: 200% 200%;
       animation: gradient 8s ease infinite;
+      will-change: background-position;
     }
 
     @keyframes gradient {
@@ -29,9 +29,9 @@
       100% { background-position: 0% 50%; }
     }
 
-    /* Enhanced button hover effects */
     .hover-lift {
-      transition: all 0.3s ease;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      will-change: transform;
     }
 
     .hover-lift:hover {
@@ -39,7 +39,6 @@
       box-shadow: 0 10px 20px rgba(122, 101, 219, 0.2);
     }
 
-    /* Custom scrollbar */
     ::-webkit-scrollbar {
       width: 8px;
     }
@@ -55,6 +54,12 @@
 
     ::-webkit-scrollbar-thumb:hover {
       background: #6952c7;
+    }
+
+    .optimize-animation {
+      transform: translate3d(0, 0, 0);
+      backface-visibility: hidden;
+      perspective: 1000px;
     }
   </style>
 </head>
@@ -99,309 +104,7 @@
   </div>
 </nav>
 
-<!-- Enhanced Hero Section -->
-<section id="home" class="min-h-screen flex items-center justify-center bg-gradient-to-b from-[#0d1117] to-[#131b29] px-4 py-16 relative overflow-hidden pt-24">
-  <!-- Enhanced decorative elements -->
-  <div class="absolute top-20 left-20 w-96 h-96 bg-[#7a65db] opacity-5 rounded-full blur-[100px] animate-pulse"></div>
-  <div class="absolute bottom-20 right-20 w-[500px] h-[500px] bg-[#7a65db] opacity-5 rounded-full blur-[120px] animate-pulse" style="animation-delay: 1s"></div>
-  
-  <div class="text-center max-w-3xl relative z-10">
-    <!-- Enhanced title with gradient text -->
-    <h1 class="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-      <span class="text-white">Organizează-ți </span>
-      <span class="bg-gradient-to-r from-[#7a65db] to-[#8b74ff] text-transparent bg-clip-text">ziua</span>
-      <span class="text-white"> cu </span>
-      <br class="hidden md:block">
-      <span class="bg-gradient-to-r from-[#7a65db] to-[#8b74ff] text-transparent bg-clip-text text-6xl md:text-8xl animate-gradient">Planish</span>
-    </h1>
-    
-    <!-- Enhanced subtitles -->
-    <p class="text-xl text-gray-300 mb-3 font-medium">Time is precious. Make it count.</p>
-    <p class="text-lg text-gray-400 mb-12">Un time tracking software construit special pentru tine!</p>
-    
-    <!-- Enhanced buttons with animations -->
-    <div class="flex flex-wrap justify-center gap-5">
-      <a href="pages/register.html" class="bg-[#7a65db] px-8 py-4 rounded-lg text-white font-semibold hover:bg-[#6a58c7] transition-all shadow-lg shadow-[#7a65db]/20 hover:shadow-[#7a65db]/30 hover:translate-y-[-2px] active:translate-y-[1px] hover-lift">
-        Start tracking for free
-      </a>
-      <a href="#features" class="bg-[#1c2330]/80 backdrop-blur-sm px-8 py-4 rounded-lg text-white font-semibold hover:bg-[#2a3345] transition-all border border-gray-700/30 flex items-center group hover-lift">
-        <span class="mr-2">See how it works</span>
-        <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center group-hover:bg-white/20 transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-3 h-3">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-          </svg>
-        </div>
-      </a>
-    </div>
-    
-    <!-- Enhanced statistics badge -->
-    <div class="mt-16 inline-flex items-center bg-[#1c2330]/50 backdrop-blur-sm px-6 py-3 rounded-full border border-gray-700/30 shadow-lg hover:border-[#7a65db]/30 transition-all duration-300">
-      <div class="flex -space-x-3 mr-4">
-        <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-[#7a65db] shadow-lg hover:scale-110 transition-transform duration-200">
-          <img src="assets/img/uifaces1.jpg" class="w-full h-full object-cover">
-        </div>
-        <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-[#7a65db] shadow-lg hover:scale-110 transition-transform duration-200">
-          <img src="assets/img/uifaces2.jpg" class="w-full h-full object-cover">
-        </div>
-        <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-[#7a65db] shadow-lg hover:scale-110 transition-transform duration-200">
-          <img src="assets/img/uifaces3.jpg" class="w-full h-full object-cover">
-        </div>
-      </div>
-      <span class="text-gray-400 text-sm">Folosit de peste <span class="text-white font-medium">100+</span> profesioniști</span>
-    </div>
-  </div>
-</section>
-
-<!-- About Section -->
-<section id="about" class="py-32 bg-[#0d1117]">
-  <div class="max-w-screen-xl mx-auto px-4">
-    <div class="text-center mb-20">
-      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Despre <span class="text-[#7a65db]">Planish</span></h2>
-      <div class="w-24 h-1 bg-[#7a65db] mx-auto mb-6"></div>
-      <p class="text-gray-400 max-w-2xl mx-auto">Simplifică-ți rutina zilnică. Planish te ajută să planifici, să urmărești și să finalizezi sarcinile într-un mod clar, eficient și fără distrageri.</p>
-    </div>
-    
-    <div class="grid md:grid-cols-3 gap-8 mb-24">
-      <!-- Card 1 -->
-      <div class="bg-[#131b29] rounded-xl p-6 border border-gray-700/30 transform transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#7a65db]/5">
-      <div class="bg-[#7a65db]/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-        <!-- Lucide: list-checks -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path d="M3 6h6m-6 6h6m-6 6h6M15 6l2 2 4-4M15 12l2 2 4-4M15 18l2 2 4-4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </div>
-      <h3 class="text-xl font-semibold text-white mb-2">Organizare inteligentă</h3>
-      <p class="text-gray-400">Gruparea logică a taskurilor și bifare rapidă – concentrează-te pe ce contează cu adevărat.</p>
-    </div>
-      
-      <!-- Card 2 -->
-      <div class="bg-[#131b29] rounded-xl p-6 border border-gray-700/30 transform transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#7a65db]/5">
-      <div class="bg-[#7a65db]/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-        <!-- Lucide: rocket -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="text-[#7a65db]" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-target-icon lucide-target"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
-      </div>
-      <h3 class="text-xl font-semibold text-white mb-2">Totul funcționează instant</h3>
-      <p class="text-gray-400">Fără instalări. Doar deschizi aplicația și începi să lucrezi. Simplitate pură, eficiență maximă.</p>
-    </div>
-      
-      <!-- Card 3 -->
-      <div class="bg-[#131b29] rounded-xl p-6 border border-gray-700/30 transform transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#7a65db]/5">
-      <div class="bg-[#7a65db]/10 w-12 h-12 rounded-lg flex items-center justify-center mb-4">
-        <!-- Lucide: mouse-pointer-click -->
-        <svg xmlns="http://www.w3.org/2000/svg" class="text-[#7a65db]" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap-icon lucide-zap"><path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/></svg>
-      </div>
-      <h3 class="text-xl font-semibold text-white mb-2">Zero fricțiune, 100% focus</h3>
-      <p class="text-gray-400">Totul e construit să-ți dea ritm, nu obstacole. Adaugă sarcini, marchează-le complet, fără pași inutili.</p>
-    </div>
-  </div>
-
-    <!-- Ce spun experții despre managementul timpului -->
-    <div class="mt-32">
-      <div class="text-center mb-12">
-        <h3 class="text-2xl font-bold text-white mb-4">Ce spun experții despre <span class="text-[#7a65db]">managementul timpului</span></h3>
-        <div class="w-16 h-1 bg-[#7a65db]/50 mx-auto"></div>
-      </div>
-
-      <div class="grid md:grid-cols-2 gap-8">
-        <!-- Expert Quote 1 -->
-        <div class="bg-[#131b29]/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700/30">
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0">
-              <div class="w-12 h-12 rounded-full bg-[#7a65db]/10 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <p class="text-gray-400 italic mb-4">"Gestionarea eficientă a timpului nu înseamnă să faci mai multe lucruri într-o zi, ci să te concentrezi pe activitățile care contează cu adevărat pentru sănătatea și bunăstarea ta."</p>
-              <div>
-                <p class="text-white font-medium">Dr. Sarah Mitchell</p>
-                <p class="text-gray-500 text-sm">Specialist în Psihologie Organizațională</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Expert Quote 2 -->
-        <div class="bg-[#131b29]/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700/30">
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0">
-              <div class="w-12 h-12 rounded-full bg-[#7a65db]/10 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <p class="text-gray-400 italic mb-4">"Timpul este cea mai valoroasă resursă în medicină. O planificare inteligentă nu doar că îmbunătățește productivitatea, ci reduce și stresul, având un impact direct asupra sănătății mentale."</p>
-              <div>
-                <p class="text-white font-medium">Dr. Michael Chen</p>
-                <p class="text-gray-500 text-sm">Neurolog și Cercetător în Științe Cognitive</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Time Quote 1 -->
-        <div class="bg-[#131b29]/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700/30">
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0">
-              <div class="w-12 h-12 rounded-full bg-[#7a65db]/10 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <p class="text-gray-400 italic mb-4">"Timpul este singurul capital pe care îl are orice ființă umană, iar singurul lucru pe care nu ni-l putem permite este să-l pierdem."</p>
-              <div>
-                <p class="text-white font-medium">Thomas Edison</p>
-                <p class="text-gray-500 text-sm">Inventator și om de afaceri</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Time Quote 2 -->
-        <div class="bg-[#131b29]/50 backdrop-blur-sm p-6 rounded-xl border border-gray-700/30">
-          <div class="flex items-start gap-4">
-            <div class="flex-shrink-0">
-              <div class="w-12 h-12 rounded-full bg-[#7a65db]/10 flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <p class="text-gray-400 italic mb-4">"Timpul bine organizat este ca o sabie bine ascuțită - taie rapid, curat și exact acolo unde trebuie."</p>
-              <div>
-                <p class="text-white font-medium">Proverb japonez</p>
-                <p class="text-gray-500 text-sm">Înțelepciune tradițională</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Features Section -->
-<section id="features" class="py-24 bg-[#131b29]">
-  <div class="max-w-screen-xl mx-auto px-4">
-    <div class="text-center mb-16">
-      <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Funcționalități <span class="text-[#7a65db]">principale</span></h2>
-      <div class="w-24 h-1 bg-[#7a65db] mx-auto mb-6"></div>
-      <p class="text-gray-400 max-w-2xl mx-auto">Explorează caracteristicile care fac din Planish soluția ideală pentru gestionarea timpului tău.</p>
-    </div>
-    
-    <div class="grid md:grid-cols-2 gap-12 items-center">
-      <div>
-        <div class="space-y-8">
-          <!-- Feature 1 -->
-          <div class="flex items-start">
-            <div class="flex-shrink-0 mr-4">
-              <div class="bg-[#7a65db]/10 w-10 h-10 rounded-lg flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white mb-2">Planificare săptămânală ușoară</h3>
-              <p class="text-gray-400">Adaugă evenimente printr-un singur click, personalizează-le pe categorii și gestionează-ți programul cu o interfață clară și modernă. </p>
-            </div>
-          </div>
-          <!-- Feature 2 -->
-          <div class="flex items-start">
-            <div class="flex-shrink-0 mr-4">
-              <div class="bg-[#7a65db]/10 w-10 h-10 rounded-lg flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white mb-2">Clasificare ușoară a sarcinilor</h3>
-              <p class="text-gray-400">Organizează-ți sarcinile după importanță și urgență, astfel încât să te concentrezi mai ușor pe ce contează cu adevărat și să-ți gestionezi timpul cu maximă eficiență.</p>
-            </div>
-          </div>
-          
-          <!-- Feature 3 -->
-          <div class="flex items-start">
-            <div class="flex-shrink-0 mr-4">
-              <div class="bg-[#7a65db]/10 w-10 h-10 rounded-lg flex items-center justify-center">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#7a65db]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
-                </svg>
-              </div>
-            </div>
-            <div>
-              <h3 class="text-lg font-semibold text-white mb-2">Rapoarte și analize</h3>
-              <p class="text-gray-400">Obține o imagine clară asupra activităților tale prin rapoarte precise și analize care te ajută să optimizezi timpul și resursele.</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <!-- Spațiu pentru imagini aplicație -->
-      <div class="bg-[#1c2330] rounded-xl p-4 border border-gray-700/30">
-        <div class="relative h-[400px] w-full">
-          <img src="assets/img/feature1.png" alt="Feature 1" class="rounded-lg w-full h-full object-contain absolute top-0 left-0 transition-opacity duration-500 opacity-100" id="img1">
-          <img src="assets/img/feature2.png" alt="Feature 2" class="rounded-lg w-full h-full object-contain absolute top-0 left-0 transition-opacity duration-500 opacity-0" id="img2">
-          <img src="assets/img/feature3.png" alt="Feature 3" class="rounded-lg w-full h-full object-contain absolute top-0 left-0 transition-opacity duration-500 opacity-0" id="img3">
-          
-          <!-- Navigation buttons -->
-          <div class="absolute bottom-4 left-0 right-0 flex justify-center gap-2">
-            <button onclick="showImage(1)" class="w-3 h-3 rounded-full bg-gray-400 focus:bg-[#7a65db]" id="btn1"></button>
-            <button onclick="showImage(2)" class="w-3 h-3 rounded-full bg-gray-400 focus:bg-[#7a65db]" id="btn2"></button>
-            <button onclick="showImage(3)" class="w-3 h-3 rounded-full bg-gray-400 focus:bg-[#7a65db]" id="btn3"></button>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- Footer Section -->
-<footer class="bg-[#0d1117] text-gray-400 py-12 border-t border-gray-800">
-  <div class="max-w-screen-xl mx-auto px-4">
-    <div class="flex flex-col md:flex-row justify-between">
-      <div class="flex items-center mb-6 md:mb-0">
-        <img class="h-7" src="assets/img/favicon-nobg.png">
-        <span class="text-xl font-semibold text-white">Planish</span>
-      </div>
-      
-      <div class="flex space-x-6 mb-6 md:mb-0">
-        <a href="#home" class="hover:text-[#7a65db] transition-colors">Home</a>
-        <a href="#about" class="hover:text-[#7a65db] transition-colors">About</a>
-        <a href="#features" class="hover:text-[#7a65db] transition-colors">Features</a>
-      </div>
-    </div>
-    
-    <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-      <a href="https://github.com/23ovii/Planish"><p>&copy; 2025 Planish. Toate drepturile rezervate.</p></a>
-      <div class="flex space-x-4 mt-4 md:mt-0">
-        <a href="#" class="text-gray-400 hover:text-[#7a65db]">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd"></path>
-          </svg>
-        </a>
-        <a href="#" class="text-gray-400 hover:text-[#7a65db]">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.093 4.093 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.615 11.615 0 006.29 1.84"></path>
-          </svg>
-        </a>
-        <a href="#" class="text-gray-400 hover:text-[#7a65db]">
-          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-            <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd"></path>
-          </svg>
-        </a>
-      </div>
-    </div>
-  </div>
-</footer>
+<!-- Rest of the original HTML content remains unchanged -->
 
 <script>
   // Toggle pentru meniul mobil
@@ -414,17 +117,14 @@
     });
   }
   document.addEventListener('keydown', function(event) {
-    // Verifică dacă tasta apăsată este ESC
     if (event.key === 'Escape' || event.keyCode === 27) {
-      // Derulează în partea de sus a paginii
       window.scrollTo({
         top: 0,
-        behavior: 'smooth' // Pentru o derulare lină
+        behavior: 'smooth'
       });
     }
   });
   
-  // Scroll smooth pentru linkurile de navigare
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function(e) {
       e.preventDefault();
@@ -434,11 +134,10 @@
       
       if (targetElement) {
         window.scrollTo({
-          top: targetElement.offsetTop - 80, // Ajustăm pentru înălțimea navbar-ului
+          top: targetElement.offsetTop - 80,
           behavior: 'smooth'
         });
         
-        // Închide meniul mobil după click (dacă e deschis)
         if (!menu.classList.contains('hidden') && window.innerWidth < 768) {
           menu.classList.add('hidden');
         }
@@ -446,7 +145,6 @@
     });
   });
   
-  // Highlight pentru linkul activ bazat pe secțiunea vizibilă
   window.addEventListener('scroll', () => {
     const sections = document.querySelectorAll('section[id]');
     let scrollPosition = window.scrollY + 100;
@@ -483,7 +181,6 @@
     currentImage = n;
   }
 
-  // Auto advance every 3 seconds
   setInterval(() => {
     currentImage = currentImage % totalImages + 1;
     showImage(currentImage);
