@@ -399,7 +399,6 @@ function initAnalytics(containerId) {
 // Funcție pentru a asculta schimbări și actualizări
 function setupAutoRefresh() {
   // Metoda originală de accesare localStorage
-  const originalGetItem = localStorage.getItem;
   const originalSetItem = localStorage.setItem;
   
   // Suprascriem localStorage.setItem pentru a detecta schimbări în aceeași pagină
